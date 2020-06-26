@@ -1,0 +1,13 @@
+{
+  "coc.preferences.formatOnSaveFiletypes": [
+    "typescript",
+    "javascript",
+    "html",
+    "json",
+    "css",
+    "scss"
+  ],
+  "prettier.tslintIntegration": true,
+  "tslint.configFile": "tslint.json",
+  "tslint.autoFixOnSave": true
+}
