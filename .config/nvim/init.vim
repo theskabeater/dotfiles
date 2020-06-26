@@ -1,5 +1,4 @@
-"https://github.com/erkrnt/awesome-streamerrc/blob/master/ThePrimeagen/init.vim
-"vim
+"vis
 syntax on
 
 set relativenumber
@@ -8,19 +7,13 @@ set tabstop=4 softtabstop=4
 set shiftwidth=4
 set expandtab
 set smartindent
-set nu
-set cursorline
 set nowrap
-set smartcase
 set noswapfile
 set nobackup
-set incsearch
-set scrolloff=8
-set cmdheight=2
 set updatetime=100
 set shortmess+=c
 set colorcolumn=110
-set signcolumn=yes:1
+set signcolumn=yes
 set noshowmode
 set nohls
 set diffopt=vertical
@@ -32,29 +25,98 @@ set guicursor=n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50
 "plugins
 call plug#begin('~/.vim/plugged')
 
+"lsp
+Plug 'neovim/nvim-lsp'
+Plug 'haorenW1025/completion-nvim'
+Plug 'haorenW1025/diagnostic-nvim'
+
+"git
 Plug 'airblade/vim-gitgutter'
+Plug 'tpope/vim-fugitive'
+
+"syntax
 Plug 'cakebaker/scss-syntax.vim'
+Plug 'jonsmithers/vim-html-template-literals'
+Plug 'leafgarland/typescript-vim'
+
+"theme
 Plug 'fatih/molokai'
+
+"status bar
 Plug 'itchyny/lightline.vim'
-Plug 'junegunn/goyo.vim'
-let g:goyo_width = 120
+
+"landing page
+Plug 'mhinz/vim-startify'
+
+"indent guides
+Plug 'nathanaelkane/vim-indent-guides'
+
+"search
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
-Plug 'mhinz/vim-startify'
-Plug 'sheerun/vim-polyglot'
-Plug 'tpope/vim-fugitive'
-Plug 'tpope/vim-sleuth'
-Plug 'vim-utils/vim-man'
-
-"coc
-Plug 'iamcco/coc-angular'
-Plug 'neoclide/coc.nvim', {'do': { -> coc#util#install()}}
-Plug 'neoclide/coc-tsserver', {'do': 'yarn install --frozen-lockfile'}
-Plug 'neoclide/coc-tslint-plugin', {'do': 'yarn install --frozen-lockfile'}
-Plug 'neoclide/coc-prettier', {'do': 'yarn install --frozen-lockfile'}
-Plug 'prettier/vim-prettier', { 'do': 'yarn install' }
 
 call plug#end()
+
+"set leader
+let mapleader = " "
+
+" lsp
+lua << EOF
+  local nvim_lsp = require('nvim_lsp')
+
+  local on_attach = function(_, bufnr)
+    vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+    require'diagnostic'.on_attach()
+    require'completion'.on_attach()
+
+    -- Mappings.
+    local opts = { noremap=true, silent=true }
+    vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gD', '<Cmd>lua vim.lsp.buf.declaration()<CR>', opts)
+    vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gd', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
+    vim.api.nvim_buf_set_keymap(bufnr, 'n', 'K', '<Cmd>lua vim.lsp.buf.hover()<CR>', opts)
+    vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
+    vim.api.nvim_buf_set_keymap(bufnr, 'n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
+    vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
+    vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
+    vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
+    vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>e', '<cmd>lua vim.lsp.util.show_line_diagnostics()<CR>', opts)
+  end
+
+  local servers = {'tsserver'}
+  for _, lsp in ipairs(servers) do
+    nvim_lsp[lsp].setup {
+      on_attach = on_attach,
+    }
+  end
+EOF
+
+let g:completion_enable_snippet = 'UltiSnips'
+let g:completion_enable_fuzzy_match = 1
+let g:completion_enable_autopopup = 0
+
+" enable syntax highlighting for template literals
+let g:htl_all_templates = 1
+
+"highlight yank
+augroup highlight_yank
+    autocmd!
+    autocmd TextYankPost * silent! lua require'vim.highlight'.on_yank("IncSearch", 100)
+augroup END
+
+"reload lsp
+nnoremap <leader><S-r> :lua vim.lsp.stop_client(vim.lsp.get_active_clients())<CR>
+
+"use tab for autocompletion
+function! s:check_back_space() abort
+    let col = col('.') - 1
+    return !col || getline('.')[col - 1]  =~ '\s'
+endfunction
+
+inoremap <silent><expr> <TAB>
+    \ pumvisible() ? "\<C-n>" :
+    \ <SID>check_back_space() ? "\<TAB>" :
+    \ completion#trigger_completion()
+
 
 "lightline
 let g:lightline = {
@@ -77,49 +139,28 @@ function! LightlineFilename()
   return expand('%')
 endfunction
 
+"search binds
+nnoremap <C-p> :GFiles<CR>
+nnoremap <leader>f :Rg<space>
+
 "netrw
 let g:netrw_banner = 0
 let g:netrw_liststyle = 3
 let g:netrw_browse_split = 4
 let g:netrw_altv = 1
 
-"keybinds
-let mapleader="\<Space>"
-nnoremap <leader><S-f> :Rg<space>
-nnoremap <C-p> :GFiles<CR>
-nnoremap <leader><Up>   :<C-u>silent! move-2<CR>==
-nnoremap <leader><Down> :<C-u>silent! move+<CR>==
-xnoremap <leader><Up>   :<C-u>silent! '<,'>move-2<CR>gv=gv
-xnoremap <leader><Down> :<C-u>silent! '<,'>move'>+<CR>gv=gv
-inoremap <expr> <c-space> coc#refresh()
-nmap <leader>rr <Plug>(coc-rename)
-nmap <leader>jj <Plug>(coc-definition)
-nmap <leader>jr <Plug>(coc-references)
-nmap <leader>jn <Plug>(coc-diagnostic-next)
-nmap <leader>jp <Plug>(coc-diagnostic-prev)
-nmap <leader>qf  <Plug>(coc-fix-current)
-
 "theme
 au ColorScheme molokai hi Normal ctermbg=None
 let g:rehash256 = 1
 colorscheme molokai
 
-"autocomplete
-inoremap <silent><expr> <TAB>
-      \ pumvisible() ? "\<C-n>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
-      \ coc#refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-function! s:check_back_space() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~# '\s'
-endfunction
-if exists('*complete_info')
-  inoremap <expr> <cr> complete_info()["selected"] != "-1" ? "\<C-y>" : "\<C-g>u\<CR>"
-else
-  inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
-endif
-inoremap <silent><expr> <leader><space> coc#refresh()
-
 "trim trailing white space
 autocmd BufWritePre * %s/\s\+$//e
+
+"util for checking syntax
+function! SynStack()
+    if !exists("*synstack")
+        return
+    endif
+    echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
+endfunc
