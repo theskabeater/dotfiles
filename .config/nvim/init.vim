@@ -81,6 +81,7 @@ syntax on
 autocmd FileType typescript call jspretmpl#register_tag('template:\s', 'html')
 autocmd FileType typescript JsPreTmpl
 autocmd FileType typescript syn clear foldBraces
+autocmd FileType scss set iskeyword+=-
 
 """""""""""""""""""""""""""""""
 " Theme
