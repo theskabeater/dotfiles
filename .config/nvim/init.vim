@@ -25,7 +25,7 @@ nnoremap <leader>l <C-w>l
 nnoremap <leader>o <C-w>o
 nnoremap <leader>r :resize 100<CR>
 nnoremap <leader>t :new term://bash<CR>
-nnoremap <C-n>n :bnext<CR>
+nnoremap <C-n> :bnext<CR>
 nnoremap <C-p> :bprevious<CR>
 nnoremap <C-r> q:
 nnoremap ~ :Startify <CR>
