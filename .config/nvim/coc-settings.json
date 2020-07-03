@@ -9,5 +9,6 @@
   ],
   "prettier.tslintIntegration": true,
   "tslint.configFile": "tslint.json",
-  "tslint.autoFixOnSave": true
+  "tslint.autoFixOnSave": true,
+  "tsserver.organizeImport": true
 }
