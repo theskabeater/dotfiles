@@ -143,6 +143,9 @@ nnoremap <leader>pp :GFiles<CR>
 nnoremap <leader>pw :Rg <C-R>=expand("<cword>")<CR><CR>
 nnoremap <leader>pa :Files<space>
 nnoremap <leader>pf :Rg<space>
+let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.9 } }
+let $FZF_DEFAULT_OPTS="--ansi --preview-window 'right:60%' --layout reverse --margin=1,4
+    \ --color=always --style=header,grid --line-range :300 {}'"
 
 """""""""""""""""""""""""""""""
 " GIT
