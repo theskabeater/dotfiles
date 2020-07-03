@@ -11,29 +11,24 @@ let g:startify_bookmarks = [ '~/.config/nvim/init.vim',
 " VIM keymappings
 """""""""""""""""""""""""""""""
 let mapleader = " "
-noremap <space>jj <Esc>
+tnoremap <Esc> <C-\><C-n>
+tnoremap <C-[> <C-\><C-n>
 
 """""""""""""""""""""""""""""""
 " Navigation
 """""""""""""""""""""""""""""""
 set mouse=a
-tnoremap <leader>h <C-\><C-N><C-w>h
-tnoremap <leader>j <C-\><C-N><C-w>j
-tnoremap <leader>k <C-\><C-N><C-w>k
-tnoremap <leader>l <C-\><C-N><C-w>l
-inoremap <leader>h <C-\><C-N><C-w>h
-inoremap <leader>j <C-\><C-N><C-w>j
-inoremap <leader>k <C-\><C-N><C-w>k
-inoremap <leader>l <C-\><C-N><C-w>l
 nnoremap <leader>h <C-w>h
 nnoremap <leader>j <C-w>j
 nnoremap <leader>k <C-w>k
 nnoremap <leader>l <C-w>l
-nnoremap <leader>rr :resize 100<CR>
+nnoremap <leader>o <C-w>o
+nnoremap <leader>r :resize 100<CR>
 nnoremap <leader>n :bnext<CR>
 nnoremap <leader>p :bprevious<CR>
+nnoremap <leader>t :new term://bash<CR>
 nnoremap ~ :Startify <CR>
- 
+
 """""""""""""""""""""""""""""""
 " Plugins
 " https://github.com/junegunn/vim-plug
@@ -160,21 +155,21 @@ inoremap <silent><expr> <c-space> coc#refresh()
 
 """"" <TAB> completion list
 inoremap <silent><expr> <TAB>
-      \ pumvisible() ? "\<C-n>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
-      \ coc#refresh()
+    \ pumvisible() ? "\<C-n>" :
+    \ <SID>check_back_space() ? "\<TAB>" :
+    \ coc#refresh()
 inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
 """"" Confirm completion
 if exists('*complete_info')
-  inoremap <expr> <cr> complete_info()["selected"] != "-1" ? "\<C-y>" : "\<C-g>u\<CR>"
+    inoremap <expr> <cr> complete_info()["selected"] != "-1" ? "\<C-y>" : "\<C-g>u\<CR>"
 else
-  inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+    inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 endif
 
 function! s:check_back_space() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~# '\s'
+    let col = col('.') - 1
+    return !col || getline('.')[col - 1]  =~# '\s'
 endfunction
 
 """"" Diagnostics
@@ -192,11 +187,11 @@ nmap <silent> gr <Plug>(coc-references)
 nnoremap <silent> K :call <SID>show_documentation()<CR>
 
 function! s:show_documentation()
-  if (index(['vim','help'], &filetype) >= 0)
-    execute 'h '.expand('<cword>')
-  else
-    call CocAction('doHover')
-  endif
+    if (index(['vim','help'], &filetype) >= 0)
+        execute 'h '.expand('<cword>')
+    else
+        call CocAction('doHover')
+    endif
 endfunction
 
 """"" Highlight references
@@ -214,9 +209,9 @@ command! -nargs=? Fold :call CocAction('fold', <f-args>)
 command! -nargs=0 OR :call CocAction('runCommand', 'editor.action.organizeImport')
 
 augroup format_selection
-  autocmd!
-  autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
-  autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
+    autocmd!
+    autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
+    autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
 augroup end
 
 """"" Code actions
@@ -243,12 +238,12 @@ let g:lightline = {
     \ }
 
 function! LightlineFilename()
-  let root = fnamemodify(get(b:, 'git_dir'), ':h')
-  let path = expand('%:p')
-  if path[:len(root)-1] ==# root
-    return path[len(root)+1:]
-  endif
-  return expand('%')
+    let root = fnamemodify(get(b:, 'git_dir'), ':h')
+    let path = expand('%:p')
+    if path[:len(root)-1] ==# root
+        return path[len(root)+1:]
+    endif
+    return expand('%')
 endfunction
 
 """""""""""""""""""""""""""""""
