@@ -24,9 +24,10 @@ nnoremap <leader>k <C-w>k
 nnoremap <leader>l <C-w>l
 nnoremap <leader>o <C-w>o
 nnoremap <leader>r :resize 100<CR>
-nnoremap <leader>n :bnext<CR>
-nnoremap <leader>p :bprevious<CR>
 nnoremap <leader>t :new term://bash<CR>
+nnoremap <C-n>n :bnext<CR>
+nnoremap <C-p> :bprevious<CR>
+nnoremap <C-r> q:
 nnoremap ~ :Startify <CR>
 
 """""""""""""""""""""""""""""""
@@ -139,7 +140,10 @@ augroup END
 " Search
 """""""""""""""""""""""""""""""
 set nohls
-nnoremap <C-p> :GFiles<CR>
+nnoremap <leader>pp :GFiles<CR>
+nnoremap <leader>pw :Rg <C-R>=expand("<cword>")<CR><CR>
+nnoremap <leader>pa :Files<space>
+nnoremap <leader>pf :Rg<space>
 
 """""""""""""""""""""""""""""""
 " GIT
