@@ -78,7 +78,6 @@ call plug#end()
 " Syntax highlighting
 """""""""""""""""""""""""""""""
 syntax on
-autocmd BufEnter * :syntax sync fromstart
 autocmd FileType typescript call jspretmpl#register_tag('template:\s', 'html')
 autocmd FileType typescript JsPreTmpl
 autocmd FileType typescript syn clear foldBraces
