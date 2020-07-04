@@ -78,6 +78,10 @@ Plug 'junegunn/fzf.vim'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-repeat'
 
+""""" Autoclose tags
+Plug 'alvan/vim-closetag'
+
+
 call plug#end()
 
 """""""""""""""""""""""""""""""
@@ -86,8 +90,14 @@ call plug#end()
 syntax on
 autocmd FileType typescript call jspretmpl#register_tag('template:\s', 'html')
 autocmd FileType typescript JsPreTmpl
-autocmd FileType typescript syn clear foldBraces
+autocmd FileType typescript silent syn clear foldBraces
 autocmd FileType scss set iskeyword+=-
+
+
+"""""""""""""""""""""""""""""""
+" Autoclose tag file types
+"""""""""""""""""""""""""""""""
+let g:closetag_filenames = '*.html,*.xhtml,*.phtml,*.ts,*.tsx,*.js,*.jsx'
 
 """""""""""""""""""""""""""""""
 " Theme
@@ -167,12 +177,16 @@ set diffopt=vertical
 """"" Trigger completion
 inoremap <silent><expr> <c-space> coc#refresh()
 
-""""" <TAB> completion list
-inoremap <silent><expr> <TAB>
-    \ pumvisible() ? "\<C-n>" :
-    \ <SID>check_back_space() ? "\<TAB>" :
-    \ coc#refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+""""" Trigger completion
+function! s:check_back_space() abort
+    let col = col('.') - 1
+    return !col || getline('.')[col - 1]  =~ '\s'
+endfunction
+
+inoremap <silent><expr> <Tab>
+            \ pumvisible() ? "\<C-n>" :
+            \ <SID>check_back_space() ? "\<Tab>" :
+            \ coc#refresh()
 
 """"" Confirm completion
 if exists('*complete_info')
@@ -266,7 +280,7 @@ endfunction
 let $NNN_TRASH=1 
 let g:nnn#layout = { 'window': { 'width': 0.9, 'height': 0.6, 'highlight': 'Debug' } }
 let g:nnn#replace_netrw = 1
-nnoremap <silent>n :NnnPicker '%:p:h'<CR>
+nnoremap <leader>n :NnnPicker '%:p:h'<CR>
 
 """""""""""""""""""""""""""""""
 " Utils
