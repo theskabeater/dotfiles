@@ -9,9 +9,10 @@ let g:startify_bookmarks = [ '~/.config/nvim/init.vim',
                            \ '~/src/raasdev/salt' ]
 
 """""""""""""""""""""""""""""""
-" VIM keymappings
+" VIM
 """""""""""""""""""""""""""""""
 let mapleader = " "
+set autochdir
 
 """""""""""""""""""""""""""""""
 " Navigation
