@@ -25,10 +25,10 @@ nnoremap <leader>l <C-w>l
 nnoremap <leader>o <C-w>o
 nnoremap <leader>r :resize 100<CR>
 nnoremap <leader>t :new term://bash<CR>
+nnoremap <leader>~ :Startify <CR>
 nnoremap <C-n> :bnext<CR>
 nnoremap <C-p> :bprevious<CR>
 nnoremap <C-r> q:
-nnoremap ~ :Startify <CR>
 
 """""""""""""""""""""""""""""""
 " Plugins
@@ -273,7 +273,7 @@ function! ToggleNetrw()
             let i-=1
         endwhile
     if !wasOpen
-        let @/=expand("%:t") | execute 'Lexplore' expand("%:h") | normal n
+        let @/=expand("%:t") | execute 'Vexplore' expand("%:h") | normal n
     endif
 endfunction
 map <leader>b :call ToggleNetrw() <CR>
