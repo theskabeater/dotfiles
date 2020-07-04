@@ -23,6 +23,8 @@ nnoremap <leader>k <C-w>k
 nnoremap <leader>l <C-w>l
 nnoremap <leader>o <C-w>o
 nnoremap <leader>= <C-w>=
+nnoremap <leader>s <C-w>s
+nnoremap <leader>v <C-w>v
 nnoremap <leader><left> :vertical resize -5<CR>
 nnoremap <leader><right> :vertical resize +5<CR>
 nnoremap <leader><up> :resize -5<CR>
@@ -92,10 +94,16 @@ call plug#end()
 " Syntax highlighting
 """""""""""""""""""""""""""""""
 syntax on
-autocmd FileType typescript call jspretmpl#register_tag('template:\s', 'html')
-autocmd FileType typescript JsPreTmpl
-autocmd FileType typescript silent syn clear foldBraces
 autocmd FileType scss set iskeyword+=-
+function! RefreshSyntaxHighlighting()
+    if (&filetype == 'typescript')
+        call jspretmpl#register_tag('template:\s', 'html')
+        JsPreTmpl
+        syn clear foldBraces
+    endif
+    syn sync fromstart
+endfunction
+autocmd  BufEnter * call RefreshSyntaxHighlighting()
 
 
 """""""""""""""""""""""""""""""
@@ -165,9 +173,6 @@ nnoremap <leader>pp :GFiles<CR>
 nnoremap <leader>pw :Rg <C-R>=expand("<cword>")<CR><CR>
 nnoremap <leader>pa :Files<space>
 nnoremap <leader>pf :Rg<space>
-let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.9 } }
-let $FZF_DEFAULT_OPTS="--ansi --preview-window 'right:60%' --layout reverse --margin=1,4
-    \ --color=always --style=header,grid --line-range :300 {}'"
 
 """""""""""""""""""""""""""""""
 " GIT
@@ -281,6 +286,7 @@ endfunction
 """""""""""""""""""""""""""""""
 " File explorer
 """""""""""""""""""""""""""""""
+let g:nnn#set_default_mappings = 0
 let g:nnn#layout={ 'left': '~30%' }
 let g:nnn#replace_netrw=1
 let $EDITOR='vi'
