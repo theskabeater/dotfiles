@@ -175,10 +175,12 @@ nnoremap <leader>pa :Files<space>
 nnoremap <leader>pf :Rg<space>
 
 """""""""""""""""""""""""""""""
-" GIT
+" Git
 """""""""""""""""""""""""""""""
 set diffopt=vertical
-
+nmap [h <Plug>(GitGutterPrevHunk)
+nmap ]h <Plug>(GitGutterNextHunk)
+                
 """""""""""""""""""""""""""""""
 " LSP
 " https://github.com/neoclide/coc.nvim
