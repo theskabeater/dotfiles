@@ -1,6 +1,7 @@
 """""""""""""""""""""""""""""""
 " Bookmarks
 """""""""""""""""""""""""""""""
+let g:startify_list_order = ['bookmarks', 'files']
 let g:startify_bookmarks = [ '~/.config/nvim/init.vim',
                            \ '~/src/raasdev/raas-ui',
                            \ '~/src/raasdev/raas',
@@ -11,8 +12,6 @@ let g:startify_bookmarks = [ '~/.config/nvim/init.vim',
 " VIM keymappings
 """""""""""""""""""""""""""""""
 let mapleader = " "
-tnoremap <Esc> <C-\><C-n>
-tnoremap <C-[> <C-\><C-n>
 
 """""""""""""""""""""""""""""""
 " Navigation
@@ -25,10 +24,16 @@ nnoremap <leader>l <C-w>l
 nnoremap <leader>o <C-w>o
 nnoremap <leader>r :resize 100<CR>
 nnoremap <leader>t :new term://bash<CR>
-nnoremap <leader>~ :Startify <CR>
 nnoremap <C-n> :bnext<CR>
 nnoremap <C-p> :bprevious<CR>
 nnoremap <C-r> q:
+nnoremap ~ :Startify <CR>
+
+"""""""""""""""""""""""""""""""
+" Terminal
+"""""""""""""""""""""""""""""""
+tnoremap <Esc> <C-\><C-n>
+tnoremap <C-[> <C-\><C-n>
 
 """""""""""""""""""""""""""""""
 " Plugins
@@ -62,7 +67,7 @@ Plug 'mhinz/vim-startify'
 Plug 'nathanaelkane/vim-indent-guides'
 
 """"" File explorer
-Plug 'tpope/vim-vinegar'
+Plug 'mcchrish/nnn.vim'
 
 """"" Search
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
@@ -256,27 +261,10 @@ endfunction
 """""""""""""""""""""""""""""""
 " File explorer
 """""""""""""""""""""""""""""""
-let g:netrw_banner = 0
-let g:netrw_liststyle = 3
-let g:netrw_browse_split = 4
-let g:netrw_altv = 1
-let g:netrw_winsize = 30
-
-function! ToggleNetrw()
-        let i = bufnr("$")
-        let wasOpen = 0
-        while (i >= 1)
-            if (getbufvar(i, "&filetype") == "netrw")
-                silent exe "bwipeout " . i
-                let wasOpen = 1
-            endif
-            let i-=1
-        endwhile
-    if !wasOpen
-        let @/=expand("%:t") | execute 'Vexplore' expand("%:h") | normal n
-    endif
-endfunction
-map <leader>b :call ToggleNetrw() <CR>
+let $NNN_TRASH=1 
+let g:nnn#layout = { 'window': { 'width': 0.9, 'height': 0.6, 'highlight': 'Debug' } }
+let g:nnn#replace_netrw = 1
+nnoremap <silent>q :NnnPicker '%:p:h'<CR>
 
 """""""""""""""""""""""""""""""
 " Utils
