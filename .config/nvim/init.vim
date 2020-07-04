@@ -12,7 +12,6 @@ let g:startify_bookmarks = [ '~/.config/nvim/init.vim',
 " VIM
 """""""""""""""""""""""""""""""
 let mapleader = " "
-set autochdir
 
 """""""""""""""""""""""""""""""
 " Navigation
@@ -23,7 +22,11 @@ nnoremap <leader>j <C-w>j
 nnoremap <leader>k <C-w>k
 nnoremap <leader>l <C-w>l
 nnoremap <leader>o <C-w>o
-nnoremap <leader>r :resize 100<CR>
+nnoremap <leader>= <C-w>=
+nnoremap <leader><left> :vertical resize -5<CR>
+nnoremap <leader><right> :vertical resize +5<CR>
+nnoremap <leader><up> :resize -5<CR>
+nnoremap <leader><down> :resize +5<CR>
 nnoremap <leader>t :new term://bash<CR>
 nnoremap <C-n> :bnext<CR>
 nnoremap <C-p> :bprevious<CR>
@@ -278,10 +281,13 @@ endfunction
 """""""""""""""""""""""""""""""
 " File explorer
 """""""""""""""""""""""""""""""
-let $NNN_TRASH=1 
-let g:nnn#layout = { 'window': { 'width': 0.9, 'height': 0.6, 'highlight': 'Debug' } }
-let g:nnn#replace_netrw = 1
-nnoremap <leader>n :NnnPicker '%:p:h'<CR>
+let g:nnn#layout={ 'left': '~30%' }
+let g:nnn#replace_netrw=1
+let $EDITOR='vi'
+let $VISUAL='nvim'
+let $NNN_TRASH=1
+let $NNN_PLUG='t:treeview'
+nnoremap <silent>q :NnnPicker '%:p:h'<CR>
 
 """""""""""""""""""""""""""""""
 " Utils
