@@ -26,7 +26,7 @@ nnoremap <leader>r :resize 100<CR>
 nnoremap <leader>t :new term://bash<CR>
 nnoremap <C-n> :bnext<CR>
 nnoremap <C-p> :bprevious<CR>
-nnoremap <C-r> q:
+nnoremap <C-h> q:
 nnoremap ~ :Startify <CR>
 
 """""""""""""""""""""""""""""""
@@ -266,7 +266,7 @@ endfunction
 let $NNN_TRASH=1 
 let g:nnn#layout = { 'window': { 'width': 0.9, 'height': 0.6, 'highlight': 'Debug' } }
 let g:nnn#replace_netrw = 1
-nnoremap <silent>q :NnnPicker '%:p:h'<CR>
+nnoremap <silent>n :NnnPicker '%:p:h'<CR>
 
 """""""""""""""""""""""""""""""
 " Utils
