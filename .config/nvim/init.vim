@@ -169,6 +169,8 @@ augroup END
 " Search
 """""""""""""""""""""""""""""""
 set nohls
+set ignorecase
+set smartcase
 nnoremap <leader>pp :GFiles<CR>
 nnoremap <leader>pw :Rg <C-R>=expand("<cword>")<CR><CR>
 nnoremap <leader>pa :Files<space>
@@ -264,6 +266,7 @@ nmap <leader>ac  <Plug>(coc-codeaction)
 """""""""""""""""""""""""""""""
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#formatter = 'unique_tail'
+let g:airline#extensions#tabline#ignore_bufadd_pat = 'defx|gundo|nerd_tree|startify|tagbar|undotree|vimfiler'
 
 """""""""""""""""""""""""""""""
 " File explorer
