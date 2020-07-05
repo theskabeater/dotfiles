@@ -13,6 +13,12 @@ let g:startify_bookmarks = [ '~/.config/nvim/init.vim',
 let mapleader = " "
 
 """""""""""""""""""""""""""""""
+" Buffers
+"""""""""""""""""""""""""""""""
+set hidden
+set updatetime=100
+
+"""""""""""""""""""""""""""""""
 " Navigation
 """""""""""""""""""""""""""""""
 set mouse=a
@@ -127,12 +133,6 @@ let g:closetag_filenames = '*.html,*.xhtml,*.phtml,*.ts,*.tsx,*.js,*.jsx'
 " Line numbers
 """""""""""""""""""""""""""""""
 set relativenumber
-
-"""""""""""""""""""""""""""""""
-" Buffers
-"""""""""""""""""""""""""""""""
-set hidden
-set updatetime=100
 
 """""""""""""""""""""""""""""""
 " Tabs
