@@ -266,6 +266,7 @@ nmap <silent><leader>ac  <Plug>(coc-codeaction)
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#formatter = 'unique_tail'
 let g:airline#extensions#tabline#ignore_bufadd_pat = 'defx|gundo|nerd_tree|startify|tagbar|undotree|vimfiler'
+let g:airline_section_c = '%t %{coc#status()}'
 
 """""""""""""""""""""""""""""""
 " File explorer
