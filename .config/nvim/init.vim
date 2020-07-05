@@ -254,12 +254,6 @@ command! -nargs=0 Format :call CocAction('format')
 command! -nargs=? Fold :call CocAction('fold', <f-args>)
 command! -nargs=0 OR :call CocAction('runCommand', 'editor.action.organizeImport')
 
-augroup format_selection
-    autocmd!
-    autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
-    autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
-augroup end
-
 """"" Code actions
 """"" Example: `<leader>aap` for current paragraph
 xmap <silent><leader>a  <Plug>(coc-codeaction-selected)
