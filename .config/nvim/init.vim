@@ -28,6 +28,7 @@ nnoremap <leader>j <C-w>j
 nnoremap <leader>k <C-w>k
 nnoremap <leader>l <C-w>l
 nnoremap <leader>o <C-w>o
+nnoremap <leader>w <C-w>w
 nnoremap <leader>= <C-w>=
 nnoremap <leader>s <C-w>s <C-w><C-w>
 nnoremap <leader>v <C-w>v <C-w><C-w>
@@ -273,27 +274,7 @@ let g:airline_section_c = '%t %{coc#status()}'
 """""""""""""""""""""""""""""""
 let g:netrw_banner = 0
 let g:netrw_liststyle = 3
-let g:netrw_altv = 1
-let g:netrw_winsize = -40
-
-""""" Toggle Lexplore without introducing hidden buffers
-let g:NetrwIsOpen=0
-function! ToggleNetrw()
-    if g:NetrwIsOpen
-        let i = bufnr("$")
-        while (i >= 1)
-            if (getbufvar(i, "&filetype") == "netrw")
-                silent exe "bwipeout " . i 
-            endif
-            let i-=1
-        endwhile
-        let g:NetrwIsOpen=0
-    else
-        let g:NetrwIsOpen=1
-        silent Lexplore
-    endif
-endfunction
-noremap <silent><leader>b :call ToggleNetrw()<CR>
+noremap <silent><leader> :wincmd v<bar> :Ex <bar> :vertical resize 40<CR>
 
 """""""""""""""""""""""""""""""
 " Utils
