@@ -48,8 +48,14 @@ set termguicolors
 """""""""""""""""""""""""""""""
 call plug#begin('~/.vim/plugged')
 
-""""" LSP
+"""""CoCC
 Plug 'neoclide/coc.nvim'
+Plug 'neoclide/coc-tsserver', { 'do': 'yarn install --frozen-lockfile' }
+Plug 'neoclide/coc-tslint-plugin', { 'do': 'yarn install --frozen-lockfile' }
+Plug 'iamcco/coc-angular', { 'do': 'yarn install --frozen-lockfile' }
+Plug 'neoclide/coc-prettier'
+Plug 'neoclide/coc-html'
+Plug 'neoclide/coc-json'
 
 """"" Git
 Plug 'airblade/vim-gitgutter'
@@ -184,7 +190,7 @@ nmap [h <Plug>(GitGutterPrevHunk)
 nmap ]h <Plug>(GitGutterNextHunk)
                 
 """""""""""""""""""""""""""""""
-" LSP
+" CoC
 " https://github.com/neoclide/coc.nvim
 """""""""""""""""""""""""""""""
 """"" Trigger completion
