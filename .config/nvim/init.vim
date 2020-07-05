@@ -1,4 +1,3 @@
-"""""""""""""""""""""""""""""""
 " Bookmarks
 """""""""""""""""""""""""""""""
 let g:startify_list_order = ['bookmarks', 'files']
@@ -38,6 +37,7 @@ nnoremap ~ :Startify <CR>
 """""""""""""""""""""""""""""""
 " Terminal
 """""""""""""""""""""""""""""""
+au TermOpen * setlocal nonumber norelativenumber
 tnoremap <Esc> <C-\><C-n>
 tnoremap <C-[> <C-\><C-n>
 set termguicolors
@@ -65,7 +65,7 @@ Plug 'Quramy/vim-js-pretty-template'
 Plug 'gruvbox-community/gruvbox'
 
 """"" Status bar
-Plug 'itchyny/lightline.vim'
+Plug 'vim-airline/vim-airline'
 
 """"" Landing page
 Plug 'mhinz/vim-startify'
@@ -112,12 +112,6 @@ autocmd  BufEnter * call RefreshSyntaxHighlighting()
 let g:closetag_filenames = '*.html,*.xhtml,*.phtml,*.ts,*.tsx,*.js,*.jsx'
 
 """""""""""""""""""""""""""""""
-" Theme
-"""""""""""""""""""""""""""""""
-let g:gruvbox_contrast_dark='hard'
-colorscheme gruvbox
-
-"""""""""""""""""""""""""""""""
 " Line numbers
 """""""""""""""""""""""""""""""
 set relativenumber
@@ -151,14 +145,20 @@ set nobackup
 " Editor appearance
 """""""""""""""""""""""""""""""
 set colorcolumn=110
-hi ColorColumn ctermbg=0 guibg=lightgrey
 set cursorline
 set signcolumn=yes
 set scrolloff=8
 set shortmess+=c
 set noshowmode
+set cmdheight=2
+
+""""" Cursor
 set guicursor=n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50
     \,a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor
+
+""""" Theme
+let g:gruvbox_contrast_dark='hard'
+colorscheme gruvbox
 
 augroup highlight_yank
     autocmd!
@@ -262,33 +262,14 @@ nmap <leader>ac  <Plug>(coc-codeaction)
 """""""""""""""""""""""""""""""
 " Statusline
 """""""""""""""""""""""""""""""
-set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
-let g:lightline = {
-    \ 'colorscheme': 'wombat',
-    \ 'active': {
-    \   'left': [ [ 'mode', 'paste' ],
-    \           [ 'gitbranch', 'cocstatus', 'readonly', 'filename', 'modified' ] ]
-    \ },
-    \ 'component_function': {
-    \   'gitbranch': 'FugitiveHead',
-    \   'cocstatus': 'coc#status',
-    \   'filename': 'LightlineFilename'
-    \   }
-    \ }
-
-function! LightlineFilename()
-    let root = fnamemodify(get(b:, 'git_dir'), ':h')
-    let path = expand('%:p')
-    if path[:len(root)-1] ==# root
-        return path[len(root)+1:]
-    endif
-    return expand('%')
-endfunction
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#formatter = 'unique_tail'
 
 """""""""""""""""""""""""""""""
 " File explorer
 """""""""""""""""""""""""""""""
 let g:nnn#set_default_mappings = 0
+let g:nnn#statusline = 0
 let g:nnn#layout={ 'left': '~30%' }
 let g:nnn#replace_netrw=1
 let $EDITOR='vi'
