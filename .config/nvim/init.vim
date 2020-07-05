@@ -272,14 +272,7 @@ let g:netrw_liststyle = 3
 map <expr> <silent><leader>b &ft == 'netrw' ?
     \ winnr() == 1 ? ":bd<cr>" : ":q<cr>" :
     \ ":let @/=expand(\"%:t\") <bar> execute 'Vexplore' expand(\"%:h\") <bar> normal n<cr>"
-augroup netrw_mapping
-    autocmd!
-    autocmd filetype netrw call NetrwMapping()
-augroup END
-
-function! NetrwMapping()
-    noremap <buffer> <silent>? :h netrw-quickmaps <bar> /netrw-mb<cr>
-endfunction
+au FileType netrw nnoremap <buffer> <silent>? :h netrw-quickmaps <bar> /netrw-mb<cr>
 
 """""""""""""""""""""""""""""""
 " Utils
