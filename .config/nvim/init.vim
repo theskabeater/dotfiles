@@ -22,25 +22,28 @@ nnoremap <leader>k <C-w>k
 nnoremap <leader>l <C-w>l
 nnoremap <leader>o <C-w>o
 nnoremap <leader>= <C-w>=
-nnoremap <leader>s <C-w>s
-nnoremap <leader>v <C-w>v
+nnoremap <leader>s <C-w>s <C-w><C-w>
+nnoremap <leader>v <C-w>v <C-w><C-w>
 nnoremap <silent><leader><left> :vertical resize -5<CR>
 nnoremap <silent><leader><right> :vertical resize +5<CR>
 nnoremap <silent><leader><up> :resize -5<CR>
 nnoremap <silent><leader><down> :resize +5<CR>
-nnoremap <leader>t :new term://bash<CR>
 nnoremap <C-n> :bnext<CR>
 nnoremap <C-p> :bprevious<CR>
 nnoremap <C-h> q:
 nnoremap <silent>~ :Startify <CR>
+nnoremap <leader>cd :cd %:p:h<CR>:pwd<CR>
 
 """""""""""""""""""""""""""""""
 " Terminal
 """""""""""""""""""""""""""""""
 au TermOpen * setlocal nonumber norelativenumber
+au TermOpen * startinsert
 tnoremap <Esc> <C-\><C-n>
 tnoremap <C-[> <C-\><C-n>
 set termguicolors
+nnoremap <silent><leader>tv <C-w>v <C-w><C-w> <Bar> :term<CR>
+nnoremap <silent><leader>ts <C-w>s <C-w><C-w> <Bar> :term<CR>
 
 """""""""""""""""""""""""""""""
 " Plugins
@@ -48,7 +51,7 @@ set termguicolors
 """""""""""""""""""""""""""""""
 call plug#begin('~/.vim/plugged')
 
-"""""CoCC
+"""""CoC
 Plug 'neoclide/coc.nvim'
 Plug 'neoclide/coc-tsserver', { 'do': 'yarn install --frozen-lockfile' }
 Plug 'neoclide/coc-tslint-plugin', { 'do': 'yarn install --frozen-lockfile' }
@@ -93,6 +96,8 @@ Plug 'tpope/vim-repeat'
 """"" Autoclose tags
 Plug 'alvan/vim-closetag'
 
+""""" Comments
+Plug 'tomtom/tcomment_vim'
 
 call plug#end()
 
@@ -111,10 +116,11 @@ function! RefreshSyntaxHighlighting()
 endfunction
 autocmd  BufEnter * call RefreshSyntaxHighlighting()
 
-
 """""""""""""""""""""""""""""""
 " Autoclose tag file types
 """""""""""""""""""""""""""""""
+set formatoptions-=cro " disable auto comment
+let g:closetag_shortcut = '<leader>>'
 let g:closetag_filenames = '*.html,*.xhtml,*.phtml,*.ts,*.tsx,*.js,*.jsx'
 
 """""""""""""""""""""""""""""""
@@ -194,7 +200,7 @@ nmap ]h <Plug>(GitGutterNextHunk)
 " https://github.com/neoclide/coc.nvim
 """""""""""""""""""""""""""""""
 """"" Trigger completion
-inoremap <silent><expr> <c-space> coc#refresh()
+inoremap <silent><expr> <C-space> coc#refresh()
 
 """"" Trigger completion
 function! s:check_back_space() abort
@@ -209,9 +215,9 @@ inoremap <silent><expr> <Tab>
 
 """"" Confirm completion
 if exists('*complete_info')
-    inoremap <expr> <cr> complete_info()["selected"] != "-1" ? "\<C-y>" : "\<C-g>u\<CR>"
+    inoremap <expr> <CR> complete_info()["selected"] != "-1" ? "\<C-y>" : "\<C-g>u\<CR>"
 else
-    inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+    inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 endif
 
 function! s:check_back_space() abort
@@ -220,7 +226,7 @@ function! s:check_back_space() abort
 endfunction
 
 """"" Diagnostics
-nnoremap <silent><nowait> <leader>a :<C-u>CocList diagnostics<cr>
+nnoremap <silent><nowait> <leader>a :<C-u>CocList diagnostics<CR>
 nmap <silent>[g <Plug>(coc-diagnostic-prev)
 nmap <silent>]g <Plug>(coc-diagnostic-next)
 
