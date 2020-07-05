@@ -1,3 +1,4 @@
+"""""""""""""""""""""""""""""""
 " Bookmarks
 """""""""""""""""""""""""""""""
 let g:startify_list_order = ['bookmarks', 'files']
@@ -11,6 +12,8 @@ let g:startify_bookmarks = [ '~/.config/nvim/init.vim',
 " VIM
 """""""""""""""""""""""""""""""
 let mapleader = " "
+set mouse=a
+set formatoptions-=cro
 
 """""""""""""""""""""""""""""""
 " Buffers
@@ -21,50 +24,42 @@ set updatetime=100
 """""""""""""""""""""""""""""""
 " Navigation
 """""""""""""""""""""""""""""""
-set mouse=a
-nnoremap <leader>h <C-w>h
-nnoremap <leader>j <C-w>j
-nnoremap <leader>k <C-w>k
-nnoremap <leader>l <C-w>l
-nnoremap <leader>o <C-w>o
-nnoremap <leader>w <C-w>w
-nnoremap <leader>= <C-w>=
-nnoremap <leader>s <C-w>s <C-w><C-w>
-nnoremap <leader>v <C-w>v <C-w><C-w>
-nnoremap <silent><leader><left> :vertical resize -5<CR>
-nnoremap <silent><leader><right> :vertical resize +5<CR>
-nnoremap <silent><leader><up> :resize -5<CR>
-nnoremap <silent><leader><down> :resize +5<CR>
-nnoremap <silent>]b :bnext<CR>
-nnoremap <silent>[b :bprevious<CR>
-nnoremap <silent><C-h> q:
-nnoremap <silent>~ :Startify <CR>
+nnoremap <leader>h <c-w>h
+nnoremap <leader>j <c-w>j
+nnoremap <leader>k <c-w>k
+nnoremap <leader>l <c-w>l
+nnoremap <leader>o <c-w>o
+nnoremap <leader>w <c-w>w
+nnoremap <leader>= <c-w>=
+nnoremap <leader>s <c-w>s <c-w><c-w>
+nnoremap <leader>v <c-w>v <c-w><c-w>
+nnoremap <silent><leader><left> :vertical resize -5<cr>
+nnoremap <silent><leader><right> :vertical resize +5<cr>
+nnoremap <silent><leader><up> :resize -5<cr>
+nnoremap <silent><leader><down> :resize +5<cr>
+nnoremap <silent>]<space> :bnext<cr>
+nnoremap <silent>[<space> :bprevious<cr>
+nnoremap <silent><c-h> q:
+nnoremap <silent>~ :Startify <cr>
 
 """""""""""""""""""""""""""""""
 " Terminal
 """""""""""""""""""""""""""""""
+set termguicolors
+tnoremap <c-[> <c-\><c-n>
+tnoremap <esc> <c-\><c-n>
+nnoremap <silent><leader>tv <c-w>v <c-w><c-w> <bar> :term<cr>
+nnoremap <silent><leader>ts <c-w>s <c-w><c-w> <bar> :term<cr>
 au TermOpen * setlocal nonumber norelativenumber
 au TermOpen * startinsert
-tnoremap <Esc> <C-\><C-n>
-tnoremap <C-[> <C-\><C-n>
-set termguicolors
-nnoremap <silent><leader>tv <C-w>v <C-w><C-w> <Bar> :term<CR>
-nnoremap <silent><leader>ts <C-w>s <C-w><C-w> <Bar> :term<CR>
 
 """""""""""""""""""""""""""""""
 " Plugins
-" https://github.com/junegunn/vim-plug
 """""""""""""""""""""""""""""""
 call plug#begin('~/.vim/plugged')
 
 """""CoC
 Plug 'neoclide/coc.nvim'
-Plug 'neoclide/coc-tsserver', { 'do': 'yarn install --frozen-lockfile' }
-Plug 'neoclide/coc-tslint-plugin', { 'do': 'yarn install --frozen-lockfile' }
-Plug 'iamcco/coc-angular', { 'do': 'yarn install --frozen-lockfile' }
-Plug 'neoclide/coc-prettier'
-Plug 'neoclide/coc-html'
-Plug 'neoclide/coc-json'
 
 """"" Git
 Plug 'airblade/vim-gitgutter'
@@ -111,14 +106,13 @@ call plug#end()
 " Syntax highlighting
 """""""""""""""""""""""""""""""
 syntax on
-autocmd FileType scss set iskeyword+=- 
 let g:htl_all_templates = 1
-autocmd BufEnter * syntax sync fromstart
+au FileType scss set iskeyword+=- 
+au BufEnter * syntax sync fromstart
 
 """""""""""""""""""""""""""""""
 " Autoclose tag file types
 """""""""""""""""""""""""""""""
-set formatoptions-=cro " disable auto comment
 let g:closetag_shortcut = '<leader>>'
 let g:closetag_filenames = '*.html,*.xhtml,*.phtml,*.ts,*.tsx,*.js,*.jsx'
 
@@ -165,11 +159,6 @@ set guicursor=n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50
 let g:gruvbox_contrast_dark='hard'
 colorscheme gruvbox
 
-augroup highlight_yank
-    autocmd!
-    autocmd TextYankPost * silent! lua require'vim.highlight'.on_yank("IncSearch", 100)
-augroup END
-
 """""""""""""""""""""""""""""""
 " Search
 """""""""""""""""""""""""""""""
@@ -178,69 +167,67 @@ set ignorecase
 set smartcase
 
 """"" Search files
-nnoremap <silent><leader>p :GFiles<CR>
-nnoremap <leader><S-p> :Files<space>
-
-""""" Search word
-nnoremap <leader><S-f> :Rg<space>
-nnoremap <silent><leader><S-k> :Rg <C-R>=expand("<cword>")<CR><CR>
+command! -bang -nargs=* GGrep
+    \ call fzf#vim#grep(
+    \   'git grep --line-number -- '.shellescape(<q-args>), 0,
+    \   fzf#vim#with_preview({'dir': systemlist('git rev-parse --show-toplevel')[0]}), <bang>0)
+nnoremap <silent><leader>f :GGrep<cr>
+nnoremap <silent><leader>p :GFiles<cr>
 
 """""""""""""""""""""""""""""""
 " Git
 """""""""""""""""""""""""""""""
 set diffopt=vertical
 let g:gitgutter_map_keys = 0
-nmap [g <Plug>(GitGutterPrevHunk)
-nmap ]g <Plug>(GitGutterNextHunk)
-nmap gp <Plug>(GitGutterPreviewHunk)
-nmap gs <Plug>(GitGutterStageHunk)
-nmap gu <Plug>(GitGutterUndoHunk)
+nmap [g <plug>(GitGutterPrevHunk)
+nmap ]g <plug>(GitGutterNextHunk)
+nmap gp <plug>(GitGutterPreviewHunk)
+nmap gs <plug>(GitGutterStageHunk)
+nmap gu <plug>(GitGutterUndoHunk)
 
                 
 """""""""""""""""""""""""""""""
 " CoC
 " https://github.com/neoclide/coc.nvim
 """""""""""""""""""""""""""""""
-""""" Trigger completion
-inoremap <silent><expr> <C-space> coc#refresh()
+let g:coc_global_extensions = [
+    \ 'coc-tsserver', 
+    \ 'coc-tslint-plugin', 
+    \ 'coc-angular', 
+    \ 'coc-prettier', 
+    \ 'coc-html', 
+    \ 'coc-json', 
+    \ 'coc-yank' ]
 
 """"" Trigger completion
 function! s:check_back_space() abort
     let col = col('.') - 1
     return !col || getline('.')[col - 1]  =~ '\s'
 endfunction
-
-inoremap <silent><expr> <Tab>
-            \ pumvisible() ? "\<C-n>" :
-            \ <SID>check_back_space() ? "\<Tab>" :
+inoremap <expr> <silent><tab>
+            \ pumvisible() ? "\<c-n>" :
+            \ <sid>check_back_space() ? "\<tab>" :
             \ coc#refresh()
 
 """"" Confirm completion
 if exists('*complete_info')
-    inoremap <expr> <CR> complete_info()["selected"] != "-1" ? "\<C-y>" : "\<C-g>u\<CR>"
+    inoremap <expr> <cr> complete_info()["selected"] != "-1" ? "\<c-y>" : "\<c-g>u\<cr>"
 else
-    inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+    inoremap <expr> <cr> pumvisible() ? "\<c-y>" : "\<c-g>u\<cr>"
 endif
 
-function! s:check_back_space() abort
-    let col = col('.') - 1
-    return !col || getline('.')[col - 1]  =~# '\s'
-endfunction
-
 """"" Diagnostics
-nnoremap <silent><nowait> <leader>a :<C-u>CocList diagnostics<CR>
-nmap <silent>[d <Plug>(coc-diagnostic-prev)
-nmap <silent>]d <Plug>(coc-diagnostic-next)
+nnoremap <silent><nowait> <leader>a :<c-u>CocList diagnostics<cr>
+nmap <silent>[d <plug>(coc-diagnostic-prev)
+nmap <silent>]d <plug>(coc-diagnostic-next)
 
 """"" Code navigation
-nmap <silent>gd <Plug>(coc-definition)
-nmap <silent>gy <Plug>(coc-type-definition)
-nmap <silent>gi <Plug>(coc-implementation)
-nmap <silent>gr <Plug>(coc-references)
+nmap <silent>gd <plug>(coc-definition)
+nmap <silent>gy <plug>(coc-type-definition)
+nmap <silent>gi <plug>(coc-implementation)
+nmap <silent>gr <plug>(coc-references)
 
 """"" Documentation
-nnoremap <silent><S-k> :call <SID>show_documentation()<CR>
-
 function! s:show_documentation()
     if (index(['vim','help'], &filetype) >= 0)
         execute 'h '.expand('<cword>')
@@ -248,43 +235,44 @@ function! s:show_documentation()
         call CocAction('doHover')
     endif
 endfunction
+nnoremap <silent>K :call <sid>show_documentation()<cr>
 
 """"" Highlight references
-autocmd CursorHold * silent call CocActionAsync('highlight')
+au CursorHold * silent call CocActionAsync('highlight')
 
 """"" Refactoring
-nmap <leader>rn <Plug>(coc-rename)
+nmap <silent><leader>rn <plug>(coc-rename)
+nmap <silent><leader>rr :call coc#refresh()<cr>
 
 """"" Formatting
-xmap <silent><leader>f  <Plug>(coc-format-selected)
-nmap <silent><leader>f  <Plug>(coc-format-selected)
-nmap <silent><leader>qf  <Plug>(coc-fix-current)
+xmap <silent><leader>qq  <plug>(coc-format-selected)
+nmap <silent><leader>qq  <plug>(coc-format-selected)
+nmap <silent><leader>qf  <plug>(coc-fix-current)
 command! -nargs=0 Format :call CocAction('format')
 command! -nargs=? Fold :call CocAction('fold', <f-args>)
 command! -nargs=0 OR :call CocAction('runCommand', 'editor.action.organizeImport')
 
 """"" Code actions
 """"" Example: `<leader>aap` for current paragraph
-xmap <silent><leader>a  <Plug>(coc-codeaction-selected)
-nmap <silent><leader>a  <Plug>(coc-codeaction-selected)
-nmap <silent><leader>ac  <Plug>(coc-codeaction)
+xmap <silent><leader>a  <plug>(coc-codeaction-selected)
+nmap <silent><leader>a  <plug>(coc-codeaction-selected)
+nmap <silent><leader>ac  <plug>(coc-codeaction)
 
 """""""""""""""""""""""""""""""
 " Statusline
 """""""""""""""""""""""""""""""
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#formatter = 'unique_tail'
-let g:airline#extensions#tabline#ignore_bufadd_pat = 'defx|gundo|nerd_tree|startify|tagbar|undotree|vimfiler'
+let g:airline#extensions#tabline#ignore_bufadd_pat = '!'
 
 """""""""""""""""""""""""""""""
 " File explorer
 """""""""""""""""""""""""""""""
 let g:netrw_banner = 0
 let g:netrw_liststyle = 3
-
 map <expr> <silent><leader>b &ft == 'netrw' ?
-    \ winnr() == 1 ? ":bd<CR>" : ":q<CR>" :
-    \ ":let @/=expand(\"%:t\") <Bar> execute 'Vexplore' expand(\"%:h\") <Bar> normal n<CR>"
+    \ winnr() == 1 ? ":bd<cr>" : ":q<cr>" :
+    \ ":let @/=expand(\"%:t\") <bar> execute 'Vexplore' expand(\"%:h\") <bar> normal n<cr>"
 
 
 """""""""""""""""""""""""""""""

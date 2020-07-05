@@ -11,5 +11,5 @@
   "prettier.tslintIntegration": true,
   "tslint.configFile": "tslint.json",
   "tslint.autoFixOnSave": true,
-  "tsserver.organizeImport": true
+  "yank.highlight.duration": 100
 }
