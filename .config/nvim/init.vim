@@ -17,7 +17,6 @@ let mapleader = " "
 """""""""""""""""""""""""""""""
 set hidden
 set updatetime=100
-set autochdir
 
 """""""""""""""""""""""""""""""
 " Navigation
@@ -147,7 +146,7 @@ set nowrap
 set noswapfile
 set nobackup
 
-"""""""""""""""""""""""""""""""
+""""""""""""""""""""""""""""""
 " Editor appearance
 """""""""""""""""""""""""""""""
 set colorcolumn=110
@@ -177,17 +176,26 @@ augroup END
 set nohls
 set ignorecase
 set smartcase
-nnoremap <silent><leader>pp :GFiles<CR>
-nnoremap <silent><leader>pw :Rg <C-R>=expand("<cword>")<CR><CR>
-nnoremap <leader>pa :Files<space>
-nnoremap <leader>pf :Rg<space>
+
+""""" Search files
+nnoremap <silent><leader>p :GFiles<CR>
+nnoremap <leader><S-p> :Files<space>
+
+""""" Search word
+nnoremap <leader><S-f> :Rg<space>
+nnoremap <silent><leader><S-k> :Rg <C-R>=expand("<cword>")<CR><CR>
 
 """""""""""""""""""""""""""""""
 " Git
 """""""""""""""""""""""""""""""
 set diffopt=vertical
-nmap [h <Plug>(GitGutterPrevHunk)
-nmap ]h <Plug>(GitGutterNextHunk)
+let g:gitgutter_map_keys = 0
+nmap [g <Plug>(GitGutterPrevHunk)
+nmap ]g <Plug>(GitGutterNextHunk)
+nmap gp <Plug>(GitGutterPreviewHunk)
+nmap gs <Plug>(GitGutterStageHunk)
+nmap gu <Plug>(GitGutterUndoHunk)
+
                 
 """""""""""""""""""""""""""""""
 " CoC
@@ -221,8 +229,8 @@ endfunction
 
 """"" Diagnostics
 nnoremap <silent><nowait> <leader>a :<C-u>CocList diagnostics<CR>
-nmap <silent>[g <Plug>(coc-diagnostic-prev)
-nmap <silent>]g <Plug>(coc-diagnostic-next)
+nmap <silent>[d <Plug>(coc-diagnostic-prev)
+nmap <silent>]d <Plug>(coc-diagnostic-next)
 
 """"" Code navigation
 nmap <silent>gd <Plug>(coc-definition)
@@ -231,7 +239,7 @@ nmap <silent>gi <Plug>(coc-implementation)
 nmap <silent>gr <Plug>(coc-references)
 
 """"" Documentation
-nnoremap <silent>K :call <SID>show_documentation()<CR>
+nnoremap <silent><S-k> :call <SID>show_documentation()<CR>
 
 function! s:show_documentation()
     if (index(['vim','help'], &filetype) >= 0)
@@ -267,14 +275,17 @@ nmap <silent><leader>ac  <Plug>(coc-codeaction)
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#formatter = 'unique_tail'
 let g:airline#extensions#tabline#ignore_bufadd_pat = 'defx|gundo|nerd_tree|startify|tagbar|undotree|vimfiler'
-let g:airline_section_c = '%t %{coc#status()}'
 
 """""""""""""""""""""""""""""""
 " File explorer
 """""""""""""""""""""""""""""""
 let g:netrw_banner = 0
 let g:netrw_liststyle = 3
-noremap <silent><leader> :wincmd v<bar> :Ex <bar> :vertical resize 40<CR>
+
+map <expr> <silent><leader>b &ft == 'netrw' ?
+    \ winnr() == 1 ? ":bd<CR>" : ":q<CR>" :
+    \ ":let @/=expand(\"%:t\") <Bar> execute 'Vexplore' expand(\"%:h\") <Bar> normal n<CR>"
+
 
 """""""""""""""""""""""""""""""
 " Utils
