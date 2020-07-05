@@ -35,8 +35,8 @@ nnoremap <silent><leader><left> :vertical resize -5<CR>
 nnoremap <silent><leader><right> :vertical resize +5<CR>
 nnoremap <silent><leader><up> :resize -5<CR>
 nnoremap <silent><leader><down> :resize +5<CR>
-nnoremap <silent><C-n> :bnext<CR>
-nnoremap <silent><C-p> :bprevious<CR>
+nnoremap <silent>]b :bnext<CR>
+nnoremap <silent>[b :bprevious<CR>
 nnoremap <silent><C-h> q:
 nnoremap <silent>~ :Startify <CR>
 
