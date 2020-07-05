@@ -24,15 +24,15 @@ nnoremap <leader>o <C-w>o
 nnoremap <leader>= <C-w>=
 nnoremap <leader>s <C-w>s
 nnoremap <leader>v <C-w>v
-nnoremap <leader><left> :vertical resize -5<CR>
-nnoremap <leader><right> :vertical resize +5<CR>
-nnoremap <leader><up> :resize -5<CR>
-nnoremap <leader><down> :resize +5<CR>
+nnoremap <silent><leader><left> :vertical resize -5<CR>
+nnoremap <silent><leader><right> :vertical resize +5<CR>
+nnoremap <silent><leader><up> :resize -5<CR>
+nnoremap <silent><leader><down> :resize +5<CR>
 nnoremap <leader>t :new term://bash<CR>
 nnoremap <C-n> :bnext<CR>
 nnoremap <C-p> :bprevious<CR>
 nnoremap <C-h> q:
-nnoremap ~ :Startify <CR>
+nnoremap <silent>~ :Startify <CR>
 
 """""""""""""""""""""""""""""""
 " Terminal
@@ -177,8 +177,8 @@ augroup END
 set nohls
 set ignorecase
 set smartcase
-nnoremap <leader>pp :GFiles<CR>
-nnoremap <leader>pw :Rg <C-R>=expand("<cword>")<CR><CR>
+nnoremap <silent><leader>pp :GFiles<CR>
+nnoremap <silent><leader>pw :Rg <C-R>=expand("<cword>")<CR><CR>
 nnoremap <leader>pa :Files<space>
 nnoremap <leader>pf :Rg<space>
 
@@ -221,17 +221,17 @@ endfunction
 
 """"" Diagnostics
 nnoremap <silent><nowait> <leader>a :<C-u>CocList diagnostics<cr>
-nmap <silent> [g <Plug>(coc-diagnostic-prev)
-nmap <silent> ]g <Plug>(coc-diagnostic-next)
+nmap <silent>[g <Plug>(coc-diagnostic-prev)
+nmap <silent>]g <Plug>(coc-diagnostic-next)
 
 """"" Code navigation
-nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> gy <Plug>(coc-type-definition)
-nmap <silent> gi <Plug>(coc-implementation)
-nmap <silent> gr <Plug>(coc-references)
+nmap <silent>gd <Plug>(coc-definition)
+nmap <silent>gy <Plug>(coc-type-definition)
+nmap <silent>gi <Plug>(coc-implementation)
+nmap <silent>gr <Plug>(coc-references)
 
 """"" Documentation
-nnoremap <silent> K :call <SID>show_documentation()<CR>
+nnoremap <silent>K :call <SID>show_documentation()<CR>
 
 function! s:show_documentation()
     if (index(['vim','help'], &filetype) >= 0)
@@ -248,9 +248,9 @@ autocmd CursorHold * silent call CocActionAsync('highlight')
 nmap <leader>rn <Plug>(coc-rename)
 
 """"" Formatting
-xmap <leader>f  <Plug>(coc-format-selected)
-nmap <leader>f  <Plug>(coc-format-selected)
-nmap <leader>qf  <Plug>(coc-fix-current)
+xmap <silent><leader>f  <Plug>(coc-format-selected)
+nmap <silent><leader>f  <Plug>(coc-format-selected)
+nmap <silent><leader>qf  <Plug>(coc-fix-current)
 command! -nargs=0 Format :call CocAction('format')
 command! -nargs=? Fold :call CocAction('fold', <f-args>)
 command! -nargs=0 OR :call CocAction('runCommand', 'editor.action.organizeImport')
@@ -263,9 +263,9 @@ augroup end
 
 """"" Code actions
 """"" Example: `<leader>aap` for current paragraph
-xmap <leader>a  <Plug>(coc-codeaction-selected)
-nmap <leader>a  <Plug>(coc-codeaction-selected)
-nmap <leader>ac  <Plug>(coc-codeaction)
+xmap <silent><leader>a  <Plug>(coc-codeaction-selected)
+nmap <silent><leader>a  <Plug>(coc-codeaction-selected)
+nmap <silent><leader>ac  <Plug>(coc-codeaction)
 
 """""""""""""""""""""""""""""""
 " Statusline
