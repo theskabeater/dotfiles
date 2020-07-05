@@ -17,6 +17,7 @@ let mapleader = " "
 """""""""""""""""""""""""""""""
 set hidden
 set updatetime=100
+set autochdir
 
 """""""""""""""""""""""""""""""
 " Navigation
@@ -34,11 +35,10 @@ nnoremap <silent><leader><left> :vertical resize -5<CR>
 nnoremap <silent><leader><right> :vertical resize +5<CR>
 nnoremap <silent><leader><up> :resize -5<CR>
 nnoremap <silent><leader><down> :resize +5<CR>
-nnoremap <C-n> :bnext<CR>
-nnoremap <C-p> :bprevious<CR>
-nnoremap <C-h> q:
+nnoremap <silent><C-n> :bnext<CR>
+nnoremap <silent><C-p> :bprevious<CR>
+nnoremap <silent><C-h> q:
 nnoremap <silent>~ :Startify <CR>
-nnoremap <leader>cd :cd %:p:h<CR>:pwd<CR>
 
 """""""""""""""""""""""""""""""
 " Terminal
@@ -74,7 +74,7 @@ Plug 'tpope/vim-fugitive'
 Plug 'leafgarland/typescript-vim'
 Plug 'cakebaker/scss-syntax.vim'
 Plug 'othree/html5.vim'
-Plug 'Quramy/vim-js-pretty-template'
+Plug 'jonsmithers/vim-html-template-literals'
 
 """"" Themes
 Plug 'gruvbox-community/gruvbox'
@@ -89,7 +89,7 @@ Plug 'mhinz/vim-startify'
 Plug 'nathanaelkane/vim-indent-guides'
 
 """"" File explorer
-Plug 'mcchrish/nnn.vim'
+Plug 'tpope/vim-vinegar'
 
 """"" Search
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
@@ -111,16 +111,9 @@ call plug#end()
 " Syntax highlighting
 """""""""""""""""""""""""""""""
 syntax on
-autocmd FileType scss set iskeyword+=-
-function! RefreshSyntaxHighlighting()
-    if (&filetype == 'typescript')
-        call jspretmpl#register_tag('template:\s', 'html')
-        JsPreTmpl
-        syn clear foldBraces
-    endif
-    syn sync fromstart
-endfunction
-autocmd  BufEnter * call RefreshSyntaxHighlighting()
+autocmd FileType scss set iskeyword+=- 
+let g:htl_all_templates = 1
+autocmd BufEnter * syntax sync fromstart
 
 """""""""""""""""""""""""""""""
 " Autoclose tag file types
@@ -283,15 +276,29 @@ let g:airline#extensions#tabline#ignore_bufadd_pat = 'defx|gundo|nerd_tree|start
 """""""""""""""""""""""""""""""
 " File explorer
 """""""""""""""""""""""""""""""
-let g:nnn#set_default_mappings = 0
-let g:nnn#statusline = 0
-let g:nnn#layout={ 'left': '~30%' }
-let g:nnn#replace_netrw=1
-let $EDITOR='vi'
-let $VISUAL='nvim'
-let $NNN_TRASH=1
-let $NNN_PLUG='t:treeview'
-nnoremap <silent>q :NnnPicker '%:p:h'<CR>
+let g:netrw_banner = 0
+let g:netrw_liststyle = 3
+let g:netrw_altv = 1
+let g:netrw_winsize = -40
+
+""""" Toggle Lexplore without introducing hidden buffers
+let g:NetrwIsOpen=0
+function! ToggleNetrw()
+    if g:NetrwIsOpen
+        let i = bufnr("$")
+        while (i >= 1)
+            if (getbufvar(i, "&filetype") == "netrw")
+                silent exe "bwipeout " . i 
+            endif
+            let i-=1
+        endwhile
+        let g:NetrwIsOpen=0
+    else
+        let g:NetrwIsOpen=1
+        silent Lexplore
+    endif
+endfunction
+noremap <silent><leader>b :call ToggleNetrw()<CR>
 
 """""""""""""""""""""""""""""""
 " Utils
