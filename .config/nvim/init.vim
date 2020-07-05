@@ -269,10 +269,9 @@ let g:airline#extensions#tabline#ignore_bufadd_pat = '!'
 " File explorer
 """""""""""""""""""""""""""""""
 let g:netrw_liststyle = 3
-let g:netrw_winsize = -40
 map <expr> <silent><leader>b &ft == 'netrw' ?
     \ winnr() == 1 ? ":bd<cr>" : ":q<cr>" :
-    \ ":let @/=expand(\"%:t\") <bar> execute 'Vexplore' expand(\"%:h\") <bar> normal n<cr>"
+    \ ":let @/=expand(\"%:t\") <bar> execute 'Explore' expand(\"%:h\") <bar> normal n<cr>"
 au FileType netrw nnoremap <buffer> <silent>? :h netrw-quickmaps<cr>z- <bar> z+ <c-e><c-e>
 
 """""""""""""""""""""""""""""""
