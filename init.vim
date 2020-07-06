@@ -223,7 +223,7 @@ endif
 """"" Diagnostics
 nnoremap <silent><nowait> <leader>a :<c-u>CocList diagnostics<cr>
 nmap <silent>[d <plug>(coc-diagnostic-prev)
-nmap <silent>]d <plug>(coc-diagnostic-next)
+nmap <silent>]d <plug>(coc-diagnostic-next)"
 
 """"" Code navigation
 nmap <silent>gd <plug>(coc-definition)
@@ -272,9 +272,13 @@ let g:airline#extensions#tabline#ignore_bufadd_pat = '!'
 """""""""""""""""""""""""""""""
 " File explorer
 """""""""""""""""""""""""""""""
-map <expr> <silent><leader>b &ft == 'dirvish' ?
-    \ ":normal gq<cr>" :
-    \ ":let @/=expand(\"%:t\") <bar> exe 'e' expand(\"%:h\") <bar> normal n<cr>"
+let g:loaded_netrwPlugin = 1
+command! -nargs=? -complete=dir Explore Dirvish <args>
+command! -nargs=? -complete=dir Sexplore belowright split | silent Dirvish <args>
+command! -nargs=? -complete=dir Vexplore leftabove vsplit | silent Dirvish <args>
+nmap <expr> <silent><leader>b &ft == 'dirvish' ?
+    \ 'gq' :
+    \ ':Explore <bar> exec '/' expand("%:t") <cr>'
 
 """""""""""""""""""""""""""""""
 " Utils
