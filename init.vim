@@ -13,13 +13,12 @@ let g:startify_bookmarks = [ '~/src/raasdev/raas-ui',
 """""""""""""""""""""""""""""""
 let mapleader = " "
 set mouse=a
-set formatoptions-=cro
+map <silent><f2> :exec &nu==&rnu? "se nu!" : "se rnu!"<cr>
 
 """""""""""""""""""""""""""""""
 " Buffers
 """""""""""""""""""""""""""""""
-set hidden
-set updatetime=100
+set updatetime=50
 nnoremap <silent><leader>o :%bd<bar>e#<bar>bd#<cr><bar>'"
 
 """""""""""""""""""""""""""""""
@@ -49,7 +48,7 @@ tnoremap <c-[> <c-\><c-n>
 tnoremap <esc> <c-\><c-n>
 nnoremap <silent><leader>tv <c-w>v <c-w><c-w> <bar> :term<cr>
 nnoremap <silent><leader>ts <c-w>s <c-w><c-w> <bar> :term<cr>
-au TermOpen * setlocal nonumber norelativenumber
+au TermOpen * setlocal nonu nornu
 au TermOpen * startinsert
 
 """""""""""""""""""""""""""""""
@@ -71,6 +70,7 @@ Plug 'leafgarland/typescript-vim'
 Plug 'cakebaker/scss-syntax.vim'
 Plug 'othree/html5.vim'
 Plug 'jonsmithers/vim-html-template-literals'
+Plug 'thaerkh/vim-indentguides'
 
 """"" Themes
 Plug 'gruvbox-community/gruvbox'
@@ -80,9 +80,6 @@ Plug 'vim-airline/vim-airline'
 
 """"" Landing page
 Plug 'mhinz/vim-startify'
-
-""""" Editor appearance
-Plug 'nathanaelkane/vim-indent-guides'
 
 """"" File explore
 Plug 'justinmk/vim-dirvish'
@@ -123,7 +120,7 @@ let g:closetag_filenames = '*.html,*.xhtml,*.phtml,*.ts,*.tsx,*.js,*.jsx'
 """""""""""""""""""""""""""""""
 " Line numbers
 """""""""""""""""""""""""""""""
-set relativenumber
+set nu rnu
 
 """""""""""""""""""""""""""""""
 " Tabs
@@ -158,6 +155,11 @@ set cmdheight=2
 """"" Cursor
 set guicursor=n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50
     \,a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor
+aug CursorLineOnlyInActiveWindow
+    au!
+    au VimEnter,WinEnter,BufWinEnter * setlocal cursorline
+    au WinLeave * setlocal nocursorline
+aug END
 
 """"" Theme
 let g:gruvbox_contrast_dark='hard'
@@ -278,15 +280,22 @@ command! -nargs=? -complete=dir Sexplore belowright split | silent Dirvish <args
 command! -nargs=? -complete=dir Vexplore leftabove vsplit | silent Dirvish <args>
 fun! DirvishConfig()
 	if &ft == 'dirvish'
+        setlocal nonu nornu
         nnoremap <silent><buffer><leader>b :exec 'normal gq'<cr>
+        nnoremap <silent><buffer>t ddO<esc>:let @"=substitute(@", '\n', '', 'g')<cr>
+            \:r ! find "<c-r>"" -maxdepth 1 -print0 \| xargs -0 ls -Fd<cr>
+            \:silent! keeppatterns %s/\/\//\//g<cr>
+            \:silent! keeppatterns %s/[^a-zA-Z0-9\/]$//g<cr>
+            \:silent! keeppatterns g/^$/d<cr>:noh<cr>
 	else
 		nnoremap <silent><buffer><leader>b :Dirvish %<cr>
-	endif
+    endif
 endfun
 aug dirvish_config
 	au!
 	au FileType * call DirvishConfig()
 aug END
+
 """""""""""""""""""""""""""""""
 " Utils
 """""""""""""""""""""""""""""""
