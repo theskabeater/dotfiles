@@ -13,7 +13,7 @@ window:
         y: 2
 
 font:
-    size: 18
+    size: 16
 
     normal:
         family: 'Roboto Mono for Powerline'
