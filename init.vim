@@ -1,5 +1,5 @@
 """""""""""""""""""""""""""""""
-" Bookmarks
+" Startify
 """""""""""""""""""""""""""""""
 let g:startify_list_order = ['bookmarks', 'files']
 let g:startify_bookmarks = [ '~/.config/nvim/init.vim',
@@ -84,7 +84,8 @@ Plug 'mhinz/vim-startify'
 Plug 'nathanaelkane/vim-indent-guides'
 
 """"" File explorer
-Plug 'tpope/vim-vinegar'
+Plug 'justinmk/vim-dirvish'
+Plug 'kristijanhusak/vim-dirvish-git'
 
 """"" Search
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
@@ -268,11 +269,9 @@ let g:airline#extensions#tabline#ignore_bufadd_pat = '!'
 """""""""""""""""""""""""""""""
 " File explorer
 """""""""""""""""""""""""""""""
-let g:netrw_liststyle = 3
-map <expr> <silent><leader>b &ft == 'netrw' ?
-    \ winnr() == 1 ? ":bd<cr>" : ":q<cr>" :
-    \ ":let @/=expand(\"%:t\") <bar> execute 'Explore' expand(\"%:h\") <bar> normal n<cr>"
-au FileType netrw nnoremap <buffer> <silent>? :h netrw-quickmaps<cr>z- <bar> z+ <c-e><c-e>
+map <expr> <silent><leader>b &ft == 'dirvish' ?
+    \ ":bprev<cr>" :
+    \ ":let @/=expand(\"%:t\") <bar> execute 'e' expand(\"%:h\") <bar> normal n<cr>"
 
 """""""""""""""""""""""""""""""
 " Utils
