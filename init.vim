@@ -20,6 +20,8 @@ set formatoptions-=cro
 """""""""""""""""""""""""""""""
 set hidden
 set updatetime=100
+nnoremap <silent><leader>o :%bd<bar>e#<bar>bd#<cr><bar>'"
+
 
 """""""""""""""""""""""""""""""
 " Navigation
@@ -28,7 +30,6 @@ nnoremap <leader>h <c-w>h
 nnoremap <leader>j <c-w>j
 nnoremap <leader>k <c-w>k
 nnoremap <leader>l <c-w>l
-nnoremap <leader>o <c-w>o
 nnoremap <leader>w <c-w>w
 nnoremap <leader>= <c-w>=
 nnoremap <leader>s <c-w>s <c-w><c-w>
@@ -37,8 +38,8 @@ nnoremap <silent><leader><left> :vertical resize -5<cr>
 nnoremap <silent><leader><right> :vertical resize +5<cr>
 nnoremap <silent><leader><up> :resize -5<cr>
 nnoremap <silent><leader><down> :resize +5<cr>
-nnoremap <silent>]<space> :bnext<cr>
-nnoremap <silent>[<space> :bprevious<cr>
+nnoremap <silent>]b :bnext<cr>
+nnoremap <silent>[b :bprevious<cr>
 nnoremap <silent><c-h> q:
 nnoremap <silent>~ :Startify <cr>
 
