@@ -18,7 +18,7 @@ map <silent><f2> :exec &nu==&rnu? "se nu!" : "se rnu!"<cr>
 """""""""""""""""""""""""""""""
 " Buffers
 """""""""""""""""""""""""""""""
-set updatetime=50
+set updatetime=250
 nnoremap <silent><leader>o :%bd<bar>e#<bar>bd#<cr><bar>'"
 
 """""""""""""""""""""""""""""""
