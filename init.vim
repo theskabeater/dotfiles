@@ -22,7 +22,6 @@ set hidden
 set updatetime=100
 nnoremap <silent><leader>o :%bd<bar>e#<bar>bd#<cr><bar>'"
 
-
 """""""""""""""""""""""""""""""
 " Navigation
 """""""""""""""""""""""""""""""
@@ -63,6 +62,8 @@ Plug 'neoclide/coc.nvim'
 
 """"" Git
 Plug 'airblade/vim-gitgutter'
+Plug 'airblade/vim-rooter'
+Plug 'aymericbeaumet/vim-symlink'
 Plug 'tpope/vim-fugitive'
 
 """"" Syntax highlighting
@@ -94,6 +95,7 @@ Plug 'junegunn/fzf.vim'
 """"" Movements
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-repeat'
+Plug 'tpope/vim-rsi'
 
 """"" Autoclose tags
 Plug 'alvan/vim-closetag'
@@ -183,9 +185,9 @@ set diffopt=vertical
 let g:gitgutter_map_keys = 0
 nmap [g <plug>(GitGutterPrevHunk)
 nmap ]g <plug>(GitGutterNextHunk)
-nmap gp <plug>(GitGutterPreviewHunk)
-nmap gs <plug>(GitGutterStageHunk)
-nmap gu <plug>(GitGutterUndoHunk)
+nmap <silent><leader>gp <plug>(GitGutterPreviewHunk)
+nmap <silent><leader>gs <plug>(GitGutterStageHunk)
+nmap <silent><leader>gu <plug>(GitGutterUndoHunk)
 
                 
 """""""""""""""""""""""""""""""
@@ -271,8 +273,8 @@ let g:airline#extensions#tabline#ignore_bufadd_pat = '!'
 " File explorer
 """""""""""""""""""""""""""""""
 map <expr> <silent><leader>b &ft == 'dirvish' ?
-    \ ":bprev<cr>" :
-    \ ":let @/=expand(\"%:t\") <bar> execute 'e' expand(\"%:h\") <bar> normal n<cr>"
+    \ ":b%<cr><cr>" :
+    \ ":let @/=expand(\"%:t\") <bar> exe 'e' expand(\"%:h\") <bar> normal n<cr>"
 
 """""""""""""""""""""""""""""""
 " Utils
