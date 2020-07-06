@@ -1,0 +1,19 @@
+env:
+  TERM: screen-256color
+
+font:
+    size: 18
+
+    normal:
+        family: 'Roboto Mono for Powerline'
+        style: 'Regular'
+ 
+    italic:
+        family: 'Roboto Mono for Powerline'
+        style: 'Italic'
+
+    bold:
+        family: 'Roboto Mono Medium for Powerline'
+        style: 'Medium'
+    size: 18
+
