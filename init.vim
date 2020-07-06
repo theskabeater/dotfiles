@@ -2,11 +2,11 @@
 " Startify
 """""""""""""""""""""""""""""""
 let g:startify_list_order = ['bookmarks', 'files']
-let g:startify_bookmarks = [ '~/.config/nvim/init.vim',
-                           \ '~/src/raasdev/raas-ui',
+let g:startify_bookmarks = [ '~/src/raasdev/raas-ui',
                            \ '~/src/raasdev/raas',
                            \ '~/src/raasdev/raas-docker',
-                           \ '~/src/raasdev/salt' ]
+                           \ '~/src/raasdev/salt',
+                           \ '~/dotfiles']
 
 """""""""""""""""""""""""""""""
 " VIM
