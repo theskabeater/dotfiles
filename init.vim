@@ -111,6 +111,7 @@ filetype on
 syntax on
 let g:htl_all_templates = 1
 au FileType scss set iskeyword+=- 
+autocmd BufEnter * :syntax sync fromstart
 
 """""""""""""""""""""""""""""""
 " Autoclose tag file types
