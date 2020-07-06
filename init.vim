@@ -40,7 +40,6 @@ nnoremap <silent><leader><up> :resize -5<cr>
 nnoremap <silent><leader><down> :resize +5<cr>
 nnoremap <silent>]b :bnext<cr>
 nnoremap <silent>[b :bprevious<cr>
-nnoremap <silent><c-h> q:
 nnoremap <silent>~ :Startify <cr>
 
 """""""""""""""""""""""""""""""
