@@ -48,8 +48,7 @@ tnoremap <c-[> <c-\><c-n>
 tnoremap <esc> <c-\><c-n>
 nnoremap <silent><leader>tv <c-w>v <c-w><c-w> <bar> :term<cr>
 nnoremap <silent><leader>ts <c-w>s <c-w><c-w> <bar> :term<cr>
-au TermOpen * setlocal nonu nornu
-au TermOpen * startinsert
+au TermOpen * setlocal nonu nornu | startinsert
 
 """""""""""""""""""""""""""""""
 " Plugins
@@ -155,14 +154,14 @@ set cmdheight=2
 """"" Cursor
 set guicursor=n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50
     \,a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor
-aug CursorLineOnlyInActiveWindow
+aug cursor_line_active_window
     au!
     au VimEnter,WinEnter,BufWinEnter * setlocal cursorline
     au WinLeave * setlocal nocursorline
-aug END
+aug end
 
 """"" Theme
-let g:gruvbox_contrast_dark='hard'
+let g:gruvbox_contrast_dark = 'hard'
 colorscheme gruvbox
 
 """""""""""""""""""""""""""""""
@@ -260,9 +259,9 @@ command! -nargs=0 OR :call CocAction('runCommand', 'editor.action.organizeImport
 
 """"" Code actions
 """"" Example: `<leader>aap` for current paragraph
-xmap <silent><leader>a  <plug>(coc-codeaction-selected)
-nmap <silent><leader>a  <plug>(coc-codeaction-selected)
-nmap <silent><leader>ac  <plug>(coc-codeaction)
+xmap <silent><leader>a <plug>(coc-codeaction-selected)
+nmap <silent><leader>a <plug>(coc-codeaction-selected)
+nmap <silent><leader>ac <plug>(coc-codeaction)
 
 """""""""""""""""""""""""""""""
 " Statusline
@@ -283,10 +282,10 @@ fun! DirvishConfig()
         setlocal nonu nornu
         nnoremap <silent><buffer><leader>b :exec 'normal gq'<cr>
         nnoremap <silent><buffer>t ddO<esc>:let @"=substitute(@", '\n', '', 'g')<cr>
-            \:r ! find "<c-r>"" -maxdepth 1 -print0 \| xargs -0 ls -Fd<cr>
-            \:silent! keeppatterns %s/\/\//\//g<cr>
-            \:silent! keeppatterns %s/[^a-zA-Z0-9\/]$//g<cr>
-            \:silent! keeppatterns g/^$/d<cr>:noh<cr>
+            \ :r ! find "<c-r>"" -maxdepth 1 -print0 \| xargs -0 ls -Fd<cr>
+            \ :silent! keeppatterns %s/\/\//\//g<cr>
+            \ :silent! keeppatterns %s/[^a-zA-Z0-9\/]$//g<cr>
+            \ :silent! keeppatterns g/^$/d<cr>:noh<cr>
 	else
 		nnoremap <silent><buffer><leader>b :Dirvish %<cr>
     endif
@@ -294,7 +293,7 @@ endfun
 aug dirvish_config
 	au!
 	au FileType * call DirvishConfig()
-aug END
+aug end
 
 """""""""""""""""""""""""""""""
 " Utils
