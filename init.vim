@@ -234,7 +234,7 @@ nmap <silent>gr <plug>(coc-references)
 """"" Documentation
 fun! s:show_documentation()
     if (index(['vim','help'], &filetype) >= 0)
-        execute 'h '.expand('<cword>')
+        exec 'h '.expand('<cword>')
     else
         call CocAction('doHover')
     endif
@@ -276,10 +276,17 @@ let g:loaded_netrwPlugin = 1
 command! -nargs=? -complete=dir Explore Dirvish <args>
 command! -nargs=? -complete=dir Sexplore belowright split | silent Dirvish <args>
 command! -nargs=? -complete=dir Vexplore leftabove vsplit | silent Dirvish <args>
-nmap <expr> <silent><leader>b &ft == 'dirvish' ?
-    \ 'gq' :
-    \ ':Explore <bar> exec '/' expand("%:t") <cr>'
-
+fun! DirvishConfig()
+	if &ft == 'dirvish'
+        nnoremap <silent><buffer><leader>b :normal gq<cr>
+	else
+		nnoremap <silent><buffer><leader>b :Dirvish %<cr>
+	endif
+endfun
+aug dirvish_config
+	au!
+	au FileType * call DirvishConfig()
+aug END
 """""""""""""""""""""""""""""""
 " Utils
 """""""""""""""""""""""""""""""
