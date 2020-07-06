@@ -278,7 +278,7 @@ command! -nargs=? -complete=dir Sexplore belowright split | silent Dirvish <args
 command! -nargs=? -complete=dir Vexplore leftabove vsplit | silent Dirvish <args>
 fun! DirvishConfig()
 	if &ft == 'dirvish'
-        nnoremap <silent><buffer><leader>b :normal gq<cr>
+        nnoremap <silent><buffer><leader>b :exec 'normal gq'<cr>
 	else
 		nnoremap <silent><buffer><leader>b :Dirvish %<cr>
 	endif
