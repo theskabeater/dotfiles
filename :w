@@ -274,7 +274,7 @@ let g:airline#extensions#tabline#ignore_bufadd_pat = '!'
 """""""""""""""""""""""""""""""
 map <expr> <silent><leader>b &ft == 'dirvish' ?
     \ ":normal gq<cr>" :
-    \ ":let @/=expand(\"%:t\") <bar> exe 'e' expand(\"%:h\") <bar> normal n<cr>"
+    \ ":let @/=expand(\"%:t\") <bar> exe 'Dirvish' expand(\"%:h\") <bar> normal n<cr>"
 
 """""""""""""""""""""""""""""""
 " Utils
