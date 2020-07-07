@@ -71,7 +71,7 @@ Plug 'othree/html5.vim'
 Plug 'jonsmithers/vim-html-template-literals'
 Plug 'thaerkh/vim-indentguides'
 
-""""" Themes
+""""" Color schemes
 Plug 'gruvbox-community/gruvbox'
 
 """"" Status bar
@@ -160,9 +160,15 @@ aug cursor_line_active_window
     au WinLeave * setlocal nocursorline
 aug end
 
-""""" Theme
+""""" Color scheme
+if exists('+termguicolors')
+    let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+    let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+endif
 let g:gruvbox_contrast_dark = 'hard'
+let g:gruvbox_invert_selection = 0
 colorscheme gruvbox
+set background=dark
 
 """""""""""""""""""""""""""""""
 " Search
