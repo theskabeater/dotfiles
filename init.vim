@@ -1,29 +1,28 @@
 """""""""""""""""""""""""""""""
 " Startify
 """""""""""""""""""""""""""""""
-let g:startify_list_order = ['bookmarks', 'files']
+let g:startify_list_order = ['files', 'bookmarks']
 let g:startify_bookmarks =  [ '~/src/raasdev/raas-ui',
                             \ '~/src/raasdev/raas',
                             \ '~/src/raasdev/raas-docker',
                             \ '~/src/raasdev/salt',
+                            \ '~/src/raasdev/',
                             \ '~/dotfiles']
+nnoremap <silent>~ :Startify <cr>
 
 """""""""""""""""""""""""""""""
 " VIM
 """""""""""""""""""""""""""""""
 let mapleader = " "
 set mouse=a
-map <silent><f2> :exec &nu==&rnu? "se nu!" : "se rnu!"<cr>
+let g:highlightedyank_highlight_duration = 200
+syntax on
 
 """""""""""""""""""""""""""""""
 " Buffers
 """""""""""""""""""""""""""""""
 set updatetime=250
-nnoremap <silent><leader>o :%bd<bar>e#<bar>bd#<cr><bar>'"
-
-"""""""""""""""""""""""""""""""
-" Navigation
-"""""""""""""""""""""""""""""""
+set hidden
 nnoremap <leader>h <c-w>h
 nnoremap <leader>j <c-w>j
 nnoremap <leader>k <c-w>k
@@ -38,7 +37,6 @@ nnoremap <silent><leader><up> :resize -5<cr>
 nnoremap <silent><leader><down> :resize +5<cr>
 nnoremap <silent>]b :bn<cr>
 nnoremap <silent>[b :bp<cr>
-nnoremap <silent>~ :Startify <cr>
 
 """""""""""""""""""""""""""""""
 " Terminal
@@ -55,32 +53,31 @@ au TermOpen * setlocal nonu nornu | startinsert
 """""""""""""""""""""""""""""""
 call plug#begin('~/.vim/plugged')
 
-"""""CoC
-Plug 'neoclide/coc.nvim'
+""""" VIM
+Plug 'machakann/vim-highlightedyank'
+Plug 'vim-airline/vim-airline'
+Plug 'mhinz/vim-startify'
+Plug 'tpope/vim-surround'
+Plug 'tpope/vim-repeat'
+Plug 'tpope/vim-rsi'
 
 """"" Git
 Plug 'airblade/vim-gitgutter'
 Plug 'airblade/vim-rooter'
-Plug 'aymericbeaumet/vim-symlink'
 Plug 'tpope/vim-fugitive'
 
-""""" Syntax highlighting
-Plug 'leafgarland/typescript-vim'
+""""" Code
+Plug 'nvim-treesitter/nvim-treesitter'
+Plug 'neovim/nvim-lsp'
 Plug 'cakebaker/scss-syntax.vim'
-Plug 'othree/html5.vim'
-Plug 'jonsmithers/vim-html-template-literals'
+Plug 'alvan/vim-closetag'
+Plug 'tpope/vim-commentary'
 Plug 'thaerkh/vim-indentguides'
 
 """"" Color schemes
 Plug 'gruvbox-community/gruvbox'
 
-""""" Status bar
-Plug 'vim-airline/vim-airline'
-
-""""" Landing page
-Plug 'mhinz/vim-startify'
-
-""""" File explore
+""""" File explorer
 Plug 'justinmk/vim-dirvish'
 Plug 'kristijanhusak/vim-dirvish-git'
 
@@ -88,27 +85,18 @@ Plug 'kristijanhusak/vim-dirvish-git'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 
-""""" Movements
-Plug 'tpope/vim-surround'
-Plug 'tpope/vim-repeat'
-Plug 'tpope/vim-rsi'
-
-""""" Autoclose tags
-Plug 'alvan/vim-closetag'
-
-""""" Comments
-Plug 'tomtom/tcomment_vim'
-
 call plug#end()
 
 """""""""""""""""""""""""""""""
 " Syntax highlighting
 """""""""""""""""""""""""""""""
-filetype on
-syntax on
-let g:htl_all_templates = 1
-au FileType scss set iskeyword+=- 
-autocmd BufEnter * :syntax sync fromstart
+lua <<EOF
+require'nvim-treesitter.configs'.setup {
+    highlight = {
+    },
+    ensure_installed = 'all'
+}
+EOF
 
 """""""""""""""""""""""""""""""
 " Autoclose tag file types
@@ -170,6 +158,11 @@ let g:gruvbox_invert_selection = 0
 colorscheme gruvbox
 set background=dark
 
+""""" Statusline
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#formatter = 'unique_tail'
+let g:airline#extensions#tabline#ignore_bufadd_pat = '!'
+
 """""""""""""""""""""""""""""""
 " Search
 """""""""""""""""""""""""""""""
@@ -196,85 +189,22 @@ nmap <silent><leader>gp <plug>(GitGutterPreviewHunk)
 nmap <silent><leader>gs <plug>(GitGutterStageHunk)
 nmap <silent><leader>gu <plug>(GitGutterUndoHunk)
 
-                
 """""""""""""""""""""""""""""""
-" CoC
-" https://github.com/neoclide/coc.nvim
+" LSP
 """""""""""""""""""""""""""""""
-let g:coc_global_extensions = [
-    \ 'coc-tsserver', 
-    \ 'coc-tslint-plugin', 
-    \ 'coc-angular', 
-    \ 'coc-prettier', 
-    \ 'coc-html', 
-    \ 'coc-json', 
-    \ 'coc-yank' ]
+lua <<EOF
+    require'nvim_lsp'.tsserver.setup{}
+EOF
+nnoremap <silent> gd <cmd>lua vim.lsp.buf.declaration()<CR>
+nnoremap <silent> <c-]> <cmd>lua vim.lsp.buf.definition()<CR>
+nnoremap <silent> K <cmd>lua vim.lsp.buf.hover()<CR>
+nnoremap <silent> gD <cmd>lua vim.lsp.buf.implementation()<CR>
+nnoremap <silent> <c-k> <cmd>lua vim.lsp.buf.signature_help()<CR>
+nnoremap <silent> 1gD <cmd>lua vim.lsp.buf.type_definition()<CR>
+nnoremap <silent> gr <cmd>lua vim.lsp.buf.references()<CR>
+nnoremap <silent> g0 <cmd>lua vim.lsp.buf.document_symbol()<CR>
+nnoremap <silent> gW <cmd>lua vim.lsp.buf.workspace_symbol()<CR>
 
-""""" Trigger completion
-fun! s:check_back_space() abort
-    let col = col('.') - 1
-    return !col || getline('.')[col - 1]  =~ '\s'
-endfun
-inoremap <expr> <silent><tab>
-            \ pumvisible() ? "\<c-n>" :
-            \ <sid>check_back_space() ? "\<tab>" :
-            \ coc#refresh()
-
-""""" Confirm completion
-if exists('*complete_info')
-    inoremap <expr> <cr> complete_info()["selected"] != "-1" ? "\<c-y>" : "\<c-g>u\<cr>"
-else
-    inoremap <expr> <cr> pumvisible() ? "\<c-y>" : "\<c-g>u\<cr>"
-endif
-
-""""" Diagnostics
-nnoremap <silent><nowait> <leader>a :<c-u>CocList diagnostics<cr>
-nmap <silent>[d <plug>(coc-diagnostic-prev)
-nmap <silent>]d <plug>(coc-diagnostic-next)"
-
-""""" Code navigation
-nmap <silent>gd <plug>(coc-definition)
-nmap <silent>gy <plug>(coc-type-definition)
-nmap <silent>gi <plug>(coc-implementation)
-nmap <silent>gr <plug>(coc-references)
-
-""""" Documentation
-fun! s:show_documentation()
-    if (index(['vim','help'], &filetype) >= 0)
-        exec 'h '.expand('<cword>')
-    else
-        call CocAction('doHover')
-    endif
-endfun
-nnoremap <silent>K :call <sid>show_documentation()<cr>
-
-""""" Highlight references
-au CursorHold * silent call CocActionAsync('highlight')
-
-""""" Refactoring
-nmap <silent><leader>rn <plug>(coc-rename)
-nmap <silent><leader>rr :call coc#refresh()<cr>
-
-""""" Formatting
-xmap <silent><leader>qq  <plug>(coc-format-selected)
-nmap <silent><leader>qq  <plug>(coc-format-selected)
-nmap <silent><leader>qf  <plug>(coc-fix-current)
-command! -nargs=0 Format :call CocAction('format')
-command! -nargs=? Fold :call CocAction('fold', <f-args>)
-command! -nargs=0 OR :call CocAction('runCommand', 'editor.action.organizeImport')
-
-""""" Code actions
-""""" Example: `<leader>aap` for current paragraph
-xmap <silent><leader>a <plug>(coc-codeaction-selected)
-nmap <silent><leader>a <plug>(coc-codeaction-selected)
-nmap <silent><leader>ac <plug>(coc-codeaction)
-
-"""""""""""""""""""""""""""""""
-" Statusline
-"""""""""""""""""""""""""""""""
-let g:airline#extensions#tabline#enabled = 1
-let g:airline#extensions#tabline#formatter = 'unique_tail'
-let g:airline#extensions#tabline#ignore_bufadd_pat = '!'
 
 """""""""""""""""""""""""""""""
 " File explorer
@@ -304,9 +234,16 @@ aug end
 """""""""""""""""""""""""""""""
 " Utils
 """""""""""""""""""""""""""""""
-fun! SynStack()
-    if !exists("*synstack")
-        return
-    endif
-    echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
+function! SynStack()
+  if !exists("*synstack")
+    return
+  endif
+  echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
 endfunc
+
+fun! TrimWhitespace()
+    let l:save = winsaveview()
+    keeppatterns %s/\s\+$//e
+    call winrestview(l:save)
+endfun
+autocmd BufWritePre * :call TrimWhitespace()
