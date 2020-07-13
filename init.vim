@@ -87,7 +87,6 @@ let g:sneak#label = 1
 set nobackup
 set nowritebackup
 set shortmess+=c
-set updatetime=100
 let g:coc_global_extensions = [
     \ 'coc-tsserver',
     \ 'coc-tslint-plugin',
@@ -123,7 +122,6 @@ function! s:show_documentation()
     call CocAction('doHover')
   endif
 endfunction
-autocmd CursorHold * silent call CocActionAsync('highlight')
 nmap <leader>qf  <plug>(coc-fix-current)
 command! -nargs=0 Prettier :CocCommand prettier.formatFile
 xmap <leader>= <plug>(coc-format-selected)
@@ -135,7 +133,7 @@ let $FZF_DEFAULT_OPTS="--ansi --preview-window 'right:60%' --layout reverse --ma
 let $FZF_DEFAULT_COMMAND = 'rg --files --ignore-case --hidden -g "!{.git,node_modules,vendor}/*"'
 command! -bang -nargs=* GGrep
     \ call fzf#vim#grep(
-    \   'git grep --line-numb}er -- '.shellescape(<q-args>), 0,
+    \   'git grep --line-number -- '.shellescape(<q-args>), 0,
     \   fzf#vim#with_preview({'dir': systemlist('git rev-parse --show-toplevel')[0]}), <bang>0)
 command! -bang -nargs=? -complete=dir Files
      \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
