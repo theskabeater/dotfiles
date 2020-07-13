@@ -1,23 +1,24 @@
 call plug#begin('~/.vim/plugged')
-  Plug 'morhetz/gruvbox'
-  Plug 'neoclide/coc.nvim', {'branch': 'release'}
-  Plug 'tpope/vim-fugitive'
-  Plug 'tpope/vim-commentary'
-  Plug 'tpope/vim-surround'
-  Plug 'tpope/vim-repeat'
-  Plug 'tpope/vim-rsi'
-  Plug 'tpope/vim-sleuth'
-  Plug 'airblade/vim-gitgutter'
-  Plug 'junegunn/fzf', {'do': { -> fzf#install() }}
-  Plug 'junegunn/fzf.vim'
-  Plug 'sheerun/vim-polyglot'
-  Plug 'jonsmithers/vim-html-template-literals'
-  Plug 'alvan/vim-closetag'
-  Plug 'justinmk/vim-dirvish'
-  Plug 'justinmk/vim-sneak'
-  Plug 'kristijanhusak/vim-dirvish-git'
-  Plug 'mhinz/vim-startify'
-  Plug 'vim-airline/vim-airline'
+Plug 'morhetz/gruvbox'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-commentary'
+Plug 'tpope/vim-surround'
+Plug 'tpope/vim-repeat'
+Plug 'tpope/vim-rsi'
+Plug 'tpope/vim-sleuth'
+Plug 'airblade/vim-gitgutter'
+Plug 'junegunn/fzf', {'do': { -> fzf#install() }}
+Plug 'junegunn/fzf.vim'
+Plug 'sheerun/vim-polyglot'
+Plug 'jonsmithers/vim-html-template-literals'
+Plug 'alvan/vim-closetag'
+Plug 'justinmk/vim-dirvish'
+Plug 'justinmk/vim-sneak'
+Plug 'kristijanhusak/vim-dirvish-git'
+Plug 'mhinz/vim-startify'
+Plug 'vim-airline/vim-airline'
+Plug 'Valloric/MatchTagAlways'
 call plug#end()
 
 """"" Global
@@ -72,6 +73,17 @@ let g:htl_all_templates = 1
 """""" Closetag
 let g:closetag_filenames = '*.html,*.xhtml,*.phtml,*.ts,*.tsx,*.js,*.jsx'
 
+"""""" MatchTagAlways
+let g:mta_use_matchparen_group = 1
+nnoremap <leader>% :MtaJumpToOtherTag<cr>
+let g:mta_filetypes = {
+    \ 'html' : 1,
+    \ 'xhtml' : 1,
+    \ 'xml' : 1,
+    \ 'jinja' : 1,
+    \ 'typescript': 1,
+    \}
+
 """"" Sneak
 let g:sneak#label = 1
 
@@ -110,7 +122,7 @@ nmap <silent> gr <plug>(coc-references)
 nnoremap <silent> K :call <sid>show_documentation()<cr>
 function! s:show_documentation()
   if (index(['vim','help'], &filetype) >= 0)
-    execute 'h '.expand('<cword>)
+    execute 'h '.expand('<cword>')
   else
     call CocAction('doHover')
   endif
@@ -123,17 +135,22 @@ nmap <leader>= <plug>(coc-format-selected)
 nmap <leader>rn <plug>(coc-rename)
 
 """""" FZF
+let $FZF_DEFAULT_OPTS="--ansi --preview-window 'right:60%' --layout reverse --margin=1,4"
+let $FZF_DEFAULT_COMMAND = 'rg --files --ignore-case --hidden -g "!{.git,node_modules,vendor}/*"'
+command! -bang -nargs=* GGrep
+    \ call fzf#vim#grep(
+    \   'git grep --line-number -- '.shellescape(<q-args>), 0,
+    \   fzf#vim#with_preview({'dir': systemlist('git rev-parse --show-toplevel')[0]}), <bang>0)
+command! -bang -nargs=? -complete=dir Files
+     \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
 set termguicolors
 nmap <leader>p :GFiles<cr>
-nmap <leader>P :Files<cr>
+nmap <leader>P :Files ~<cr>
 nmap <leader>b :Buffers<cr>
 nmap <leader>h :History<cr>
 nmap <leader>f :Lines<cr>
-nmap <leader>F :Rg<space>
+nmap <leader>F :GGrep<cr>
 let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.9 } }
-let $FZF_DEFAULT_OPTS="--ansi --preview-window 'right:60%' --layout reverse --margin=1,4"
-let $FZF_DEFAULT_OPTS="--ansi --preview-window 'right:60%' --layout reverse --margin=1,4
-    \ --preview 'bat --color=always --style=header,grid --line-range :300 {}'"
 
 """"" Dirvish
 autocmd BufEnter * silent! lcd %:p:h
