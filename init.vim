@@ -39,6 +39,7 @@ set scrolloff=8
 set incsearch
 set noshowmode
 set cmdheight=2
+set cursorline
 nmap <silent> ]b :bn<cr>
 nmap <silent> [b :bp<cr>
 fun! TrimWhitespace()
@@ -74,7 +75,6 @@ let g:htl_all_templates = 1
 let g:closetag_filenames = '*.html,*.xhtml,*.phtml,*.ts,*.tsx,*.js,*.jsx'
 
 """""" MatchTagAlways
-let g:mta_use_matchparen_group = 1
 nnoremap <leader>% :MtaJumpToOtherTag<cr>
 let g:mta_filetypes = {
     \ 'html' : 1,
@@ -139,7 +139,7 @@ let $FZF_DEFAULT_OPTS="--ansi --preview-window 'right:60%' --layout reverse --ma
 let $FZF_DEFAULT_COMMAND = 'rg --files --ignore-case --hidden -g "!{.git,node_modules,vendor}/*"'
 command! -bang -nargs=* GGrep
     \ call fzf#vim#grep(
-    \   'git grep --line-number -- '.shellescape(<q-args>), 0,
+    \   'git grep --line-numb}er -- '.shellescape(<q-args>), 0,
     \   fzf#vim#with_preview({'dir': systemlist('git rev-parse --show-toplevel')[0]}), <bang>0)
 command! -bang -nargs=? -complete=dir Files
      \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
@@ -196,15 +196,20 @@ augroup END
 """"" Startify
 nnoremap <silent>~ :Startify <cr>
 autocmd FileType startify nnoremap <silent> <esc> :normal q<cr>
-let g:startify_list_order = ['bookmarks', 'files']
-let g:startify_bookmarks =  ['~/dotfiles/init.vim',
-                            \'~/src/raasdev/raas-ui',
-                            \ '~/src/raasdev/raas',
-                            \ '~/src/raasdev/raas-docker',
-                            \ '~/src/raasdev/salt',
-                            \ '~/dotfiles']
+let g:startify_list_order = ['files', 'bookmarks']
+let g:startify_bookmarks =  [{'c': '~/dotfiles/init.vim'},
+                            \{'ru': '~/src/raasdev/raas-ui'},
+                            \{'rr': '~/src/raasdev/raas'},
+                            \{'rd':'~/src/raasdev/raas-docker'},
+                            \{'s': '~/src/raasdev/salt'},
+                            \{'w': '~/src/raasdev'},
+                            \{'d': '~/dotfiles'}]
 
 """"" Airline
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#formatter = 'unique_tail'
 let g:airline#extensions#tabline#ignore_bufadd_pat = '!'
+
+""""" Format options (autocomment)
+set formatoptions-=ro
+
