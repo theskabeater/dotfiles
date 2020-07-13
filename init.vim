@@ -28,7 +28,6 @@ set tabstop=4 softtabstop=4
 set shiftwidth=4
 set expandtab
 set smartindent
-set nohls
 set signcolumn=yes
 set nowrap
 set nu rnu
@@ -38,7 +37,6 @@ set hidden
 set scrolloff=8
 set incsearch
 set noshowmode
-set cmdheight=2
 set cursorline
 nmap <silent> ]b :bn<cr>
 nmap <silent> [b :bp<cr>
@@ -49,6 +47,12 @@ fun! TrimWhitespace()
 endfun
 autocmd BufWritePre * :call TrimWhitespace()
 set diffopt=vertical
+set smartcase
+set ignorecase
+nnoremap / /\v
+vnoremap / /\v
+nnoremap <silent> <leader>l :noh<cr>
+
 
 """"" Git gutter
 let g:gitgutter_map_keys = 0
@@ -68,7 +72,6 @@ let g:gruvbox_contrast_dark = 'hard'
 let g:gruvbox_invert_selection = 0
 colorscheme gruvbox
 set background=dark
-let g:html_indent_style1 = "inc"
 let g:htl_all_templates = 1
 
 """""" Closetag
