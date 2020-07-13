@@ -14,6 +14,7 @@ call plug#begin('~/.vim/plugged')
   Plug 'jonsmithers/vim-html-template-literals'
   Plug 'alvan/vim-closetag'
   Plug 'justinmk/vim-dirvish'
+  Plug 'justinmk/vim-sneak'
   Plug 'kristijanhusak/vim-dirvish-git'
   Plug 'mhinz/vim-startify'
   Plug 'vim-airline/vim-airline'
@@ -33,6 +34,10 @@ set nu rnu
 set noswapfile
 set nobackup
 set hidden
+set scrolloff=8
+set incsearch
+set noshowmode
+set cmdheight=2
 nmap <silent> ]b :bn<cr>
 nmap <silent> [b :bp<cr>
 fun! TrimWhitespace()
@@ -41,6 +46,7 @@ fun! TrimWhitespace()
     call winrestview(l:save)
 endfun
 autocmd BufWritePre * :call TrimWhitespace()
+set diffopt=vertical
 
 """"" Git gutter
 let g:gitgutter_map_keys = 0
@@ -65,6 +71,9 @@ let g:htl_all_templates = 1
 
 """""" Closetag
 let g:closetag_filenames = '*.html,*.xhtml,*.phtml,*.ts,*.tsx,*.js,*.jsx'
+
+""""" Sneak
+let g:sneak#label = 1
 
 """"" CoC
 set nobackup
@@ -127,7 +136,6 @@ function! s:dirvish_toggle() abort
   let l:last_buffer = bufnr('$')
   let l:i = 1
   let l:dirvish_already_open = 0
-
   while l:i <= l:last_buffer
     if bufexists(l:i) && bufloaded(l:i) && getbufvar(l:i, '&filetype') ==? 'dirvish'
       let l:dirvish_already_open = 1
@@ -135,7 +143,6 @@ function! s:dirvish_toggle() abort
     endif
     let l:i += 1
   endwhile
-
   if !l:dirvish_already_open
     35vsp +Dirvish
   endif
@@ -156,10 +163,14 @@ augroup dirvish_commands
   autocmd FileType dirvish nnoremap <silent> <buffer> <cr> :<c-u> call <sid>dirvish_open()<cr>
   autocmd FileType dirvish setlocal nonumber norelativenumber statusline=%F
   autocmd FileType dirvish nnoremap <silent> <buffer> t :!tree %<cr>
+  autocmd FileType dirvish nnoremap <silent> <buffer> <esc> :call <sid>dirvish_toggle()<cr>
+  autocmd FileType dirvish nnoremap <silent> <buffer> <c-c> :call <sid>dirvish_toggle()<cr>
+  autocmd FileType dirvish nnoremap <silent> <buffer> <c-[> :call <sid>dirvish_toggle()<cr>
 augroup END
 
 """"" Startify
 nnoremap <silent>~ :Startify <cr>
+autocmd FileType startify nnoremap <silent> <esc> :normal q<cr>
 let g:startify_list_order = ['bookmarks', 'files']
 let g:startify_bookmarks =  ['~/dotfiles/init.vim',
                             \'~/src/raasdev/raas-ui',
