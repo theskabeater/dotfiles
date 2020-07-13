@@ -18,7 +18,6 @@ Plug 'justinmk/vim-sneak'
 Plug 'kristijanhusak/vim-dirvish-git'
 Plug 'mhinz/vim-startify'
 Plug 'vim-airline/vim-airline'
-Plug 'Valloric/MatchTagAlways'
 call plug#end()
 
 """"" Global
@@ -28,6 +27,7 @@ set tabstop=4 softtabstop=4
 set shiftwidth=4
 set expandtab
 set smartindent
+set cmdheight=2
 set signcolumn=yes
 set nowrap
 set nu rnu
@@ -51,8 +51,7 @@ set smartcase
 set ignorecase
 nnoremap / /\v
 vnoremap / /\v
-nnoremap <silent> <leader>l :noh<cr>
-
+nnoremap <silent> <leader>l :set hls! hlsearch?<cr>
 
 """"" Git gutter
 let g:gitgutter_map_keys = 0
@@ -77,15 +76,8 @@ let g:htl_all_templates = 1
 """""" Closetag
 let g:closetag_filenames = '*.html,*.xhtml,*.phtml,*.ts,*.tsx,*.js,*.jsx'
 
-"""""" MatchTagAlways
-nnoremap <leader>% :MtaJumpToOtherTag<cr>
-let g:mta_filetypes = {
-    \ 'html' : 1,
-    \ 'xhtml' : 1,
-    \ 'xml' : 1,
-    \ 'jinja' : 1,
-    \ 'typescript': 1,
-    \}
+"""""" matchit
+autocmd FileType typescript let b:match_words  = '<\(\w\w*\):</\1,{:}'
 
 """"" Sneak
 let g:sneak#label = 1
@@ -214,5 +206,4 @@ let g:airline#extensions#tabline#formatter = 'unique_tail'
 let g:airline#extensions#tabline#ignore_bufadd_pat = '!'
 
 """"" Format options (autocomment)
-set formatoptions-=ro
-
+au BufEnter * set fo-=c fo-=r fo-=o`
