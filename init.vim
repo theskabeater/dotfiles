@@ -1,249 +1,174 @@
-"""""""""""""""""""""""""""""""
-" Startify
-"""""""""""""""""""""""""""""""
-let g:startify_list_order = ['files', 'bookmarks']
-let g:startify_bookmarks =  [ '~/src/raasdev/raas-ui',
-                            \ '~/src/raasdev/raas',
-                            \ '~/src/raasdev/raas-docker',
-                            \ '~/src/raasdev/salt',
-                            \ '~/src/raasdev/',
-                            \ '~/dotfiles']
-nnoremap <silent>~ :Startify <cr>
-
-"""""""""""""""""""""""""""""""
-" VIM
-"""""""""""""""""""""""""""""""
-let mapleader = " "
-set mouse=a
-let g:highlightedyank_highlight_duration = 200
-syntax on
-
-"""""""""""""""""""""""""""""""
-" Buffers
-"""""""""""""""""""""""""""""""
-set updatetime=250
-set hidden
-nnoremap <leader>h <c-w>h
-nnoremap <leader>j <c-w>j
-nnoremap <leader>k <c-w>k
-nnoremap <leader>l <c-w>l
-nnoremap <leader>w <c-w>w
-nnoremap <leader>= <c-w>=
-nnoremap <leader>s <c-w>s <c-w><c-w>
-nnoremap <leader>v <c-w>v <c-w><c-w>
-nnoremap <silent><leader><left> :vertical resize -5<cr>
-nnoremap <silent><leader><right> :vertical resize +5<cr>
-nnoremap <silent><leader><up> :resize -5<cr>
-nnoremap <silent><leader><down> :resize +5<cr>
-nnoremap <silent>]b :bn<cr>
-nnoremap <silent>[b :bp<cr>
-
-"""""""""""""""""""""""""""""""
-" Terminal
-"""""""""""""""""""""""""""""""
-set termguicolors
-tnoremap <c-[> <c-\><c-n>
-tnoremap <esc> <c-\><c-n>
-nnoremap <silent><leader>tv <c-w>v <c-w><c-w> <bar> :term<cr>
-nnoremap <silent><leader>ts <c-w>s <c-w><c-w> <bar> :term<cr>
-au TermOpen * setlocal nonu nornu | startinsert
-
-"""""""""""""""""""""""""""""""
-" Plugins
-"""""""""""""""""""""""""""""""
 call plug#begin('~/.vim/plugged')
-
-""""" VIM
-Plug 'machakann/vim-highlightedyank'
-Plug 'vim-airline/vim-airline'
-Plug 'mhinz/vim-startify'
-Plug 'tpope/vim-surround'
-Plug 'tpope/vim-repeat'
-Plug 'tpope/vim-rsi'
-
-""""" Git
-Plug 'airblade/vim-gitgutter'
-Plug 'airblade/vim-rooter'
-Plug 'tpope/vim-fugitive'
-
-""""" Code
-Plug 'nvim-treesitter/nvim-treesitter'
-Plug 'neovim/nvim-lsp'
-Plug 'cakebaker/scss-syntax.vim'
-Plug 'alvan/vim-closetag'
-Plug 'tpope/vim-commentary'
-Plug 'thaerkh/vim-indentguides'
-
-""""" Color schemes
-Plug 'gruvbox-community/gruvbox'
-
-""""" File explorer
-Plug 'justinmk/vim-dirvish'
-Plug 'kristijanhusak/vim-dirvish-git'
-
-""""" Search
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plug 'junegunn/fzf.vim'
-
+  Plug 'morhetz/gruvbox'
+  Plug 'neoclide/coc.nvim', {'branch': 'release'}
+  Plug 'tpope/vim-fugitive'
+  Plug 'tpope/vim-commentary'
+  Plug 'tpope/vim-surround'
+  Plug 'tpope/vim-repeat'
+  Plug 'tpope/vim-rsi'
+  Plug 'tpope/vim-sleuth'
+  Plug 'airblade/vim-gitgutter'
+  Plug 'junegunn/fzf', {'do': { -> fzf#install() }}
+  Plug 'junegunn/fzf.vim'
+  Plug 'sheerun/vim-polyglot'
+  Plug 'jonsmithers/vim-html-template-literals'
+  Plug 'alvan/vim-closetag'
+  Plug 'justinmk/vim-dirvish'
+  Plug 'kristijanhusak/vim-dirvish-git'
+  Plug 'mhinz/vim-startify'
+  Plug 'vim-airline/vim-airline'
 call plug#end()
 
-"""""""""""""""""""""""""""""""
-" Syntax highlighting
-"""""""""""""""""""""""""""""""
-lua <<EOF
-require'nvim-treesitter.configs'.setup {
-    highlight = {
-    },
-    ensure_installed = 'all'
-}
-EOF
-
-"""""""""""""""""""""""""""""""
-" Autoclose tag file types
-"""""""""""""""""""""""""""""""
-let g:closetag_shortcut = '<leader>>'
-let g:closetag_filenames = '*.html,*.xhtml,*.phtml,*.ts,*.tsx,*.js,*.jsx'
-
-"""""""""""""""""""""""""""""""
-" Line numbers
-"""""""""""""""""""""""""""""""
-set nu rnu
-
-"""""""""""""""""""""""""""""""
-" Tabs
-"""""""""""""""""""""""""""""""
+""""" Global
+set mouse=a
+let mapleader = ' '
 set tabstop=4 softtabstop=4
 set shiftwidth=4
 set expandtab
 set smartindent
-
-"""""""""""""""""""""""""""""""
-" Linewrap
-"""""""""""""""""""""""""""""""
+set nohls
+set signcolumn=yes
 set nowrap
-
-"""""""""""""""""""""""""""""""
-" Backup files
-"""""""""""""""""""""""""""""""
+set nu rnu
 set noswapfile
 set nobackup
-
-""""""""""""""""""""""""""""""
-" Editor appearance
-"""""""""""""""""""""""""""""""
-set colorcolumn=110
-set cursorline
-set signcolumn=yes
-set scrolloff=8
-set shortmess+=c
-set noshowmode
-set cmdheight=2
-
-""""" Cursor
-set guicursor=n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50
-    \,a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor
-aug cursor_line_active_window
-    au!
-    au VimEnter,WinEnter,BufWinEnter * setlocal cursorline
-    au WinLeave * setlocal nocursorline
-aug end
-
-""""" Color scheme
-if exists('+termguicolors')
-    let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
-    let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
-endif
-let g:gruvbox_contrast_dark = 'hard'
-let g:gruvbox_invert_selection = 0
-colorscheme gruvbox
-set background=dark
-
-""""" Statusline
-let g:airline#extensions#tabline#enabled = 1
-let g:airline#extensions#tabline#formatter = 'unique_tail'
-let g:airline#extensions#tabline#ignore_bufadd_pat = '!'
-
-"""""""""""""""""""""""""""""""
-" Search
-"""""""""""""""""""""""""""""""
-set nohls
-set ignorecase
-set smartcase
-
-""""" Search files
-command! -bang -nargs=* GGrep
-    \ call fzf#vim#grep(
-    \   'git grep --line-number -- '.shellescape(<q-args>), 0,
-    \   fzf#vim#with_preview({'dir': systemlist('git rev-parse --show-toplevel')[0]}), <bang>0)
-nnoremap <silent><leader>f :GGrep<cr>
-nnoremap <silent><leader>p :GFiles<cr>
-
-"""""""""""""""""""""""""""""""
-" Git
-"""""""""""""""""""""""""""""""
-set diffopt=vertical
-let g:gitgutter_map_keys = 0
-nmap [g <plug>(GitGutterPrevHunk)
-nmap ]g <plug>(GitGutterNextHunk)
-nmap <silent><leader>gp <plug>(GitGutterPreviewHunk)
-nmap <silent><leader>gs <plug>(GitGutterStageHunk)
-nmap <silent><leader>gu <plug>(GitGutterUndoHunk)
-
-"""""""""""""""""""""""""""""""
-" LSP
-"""""""""""""""""""""""""""""""
-lua <<EOF
-    require'nvim_lsp'.tsserver.setup{}
-EOF
-nnoremap <silent> gd <cmd>lua vim.lsp.buf.declaration()<CR>
-nnoremap <silent> <c-]> <cmd>lua vim.lsp.buf.definition()<CR>
-nnoremap <silent> K <cmd>lua vim.lsp.buf.hover()<CR>
-nnoremap <silent> gD <cmd>lua vim.lsp.buf.implementation()<CR>
-nnoremap <silent> <c-k> <cmd>lua vim.lsp.buf.signature_help()<CR>
-nnoremap <silent> 1gD <cmd>lua vim.lsp.buf.type_definition()<CR>
-nnoremap <silent> gr <cmd>lua vim.lsp.buf.references()<CR>
-nnoremap <silent> g0 <cmd>lua vim.lsp.buf.document_symbol()<CR>
-nnoremap <silent> gW <cmd>lua vim.lsp.buf.workspace_symbol()<CR>
-
-
-"""""""""""""""""""""""""""""""
-" File explorer
-"""""""""""""""""""""""""""""""
-let g:loaded_netrwPlugin = 1
-command! -nargs=? -complete=dir Explore Dirvish <args>
-command! -nargs=? -complete=dir Sexplore belowright split | silent Dirvish <args>
-command! -nargs=? -complete=dir Vexplore leftabove vsplit | silent Dirvish <args>
-fun! DirvishConfig()
-	if &ft == 'dirvish'
-        setlocal nonu nornu
-        nnoremap <silent><buffer><leader>b :exec 'normal gq'<cr>
-        nnoremap <silent><buffer>t ddO<esc>:let @"=substitute(@", '\n', '', 'g')<cr>
-            \ :r ! find "<c-r>"" -maxdepth 1 -print0 \| xargs -0 ls -Fd<cr>
-            \ :silent! keeppatterns %s/\/\//\//g<cr>
-            \ :silent! keeppatterns %s/[^a-zA-Z0-9\/]$//g<cr>
-            \ :silent! keeppatterns g/^$/d<cr>:noh<cr>
-	else
-		nnoremap <silent><buffer><leader>b :Dirvish %<cr>
-    endif
-endfun
-aug dirvish_config
-	au!
-	au FileType * call DirvishConfig()
-aug end
-
-"""""""""""""""""""""""""""""""
-" Utils
-"""""""""""""""""""""""""""""""
-function! SynStack()
-  if !exists("*synstack")
-    return
-  endif
-  echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
-endfunc
-
+set hidden
+nmap <silent> ]b :bn<cr>
+nmap <silent> [b :bp<cr>
 fun! TrimWhitespace()
     let l:save = winsaveview()
     keeppatterns %s/\s\+$//e
     call winrestview(l:save)
 endfun
 autocmd BufWritePre * :call TrimWhitespace()
+
+""""" Git gutter
+let g:gitgutter_map_keys = 0
+nmap <silent> ]g <plug>(GitGutterNextHunk)
+nmap <silent> [g <plug>(GitGutterPrevHunk)
+nmap <silent><leader>gp <plug>(GitGutterPreviewHunk)
+nmap <silent><leader>gs <plug>(GitGutterStageHunk)
+nmap <silent><leader>gu <plug>(GitGutterUndoHunk)
+
+""""" Theme/syntax highlighting
+colorscheme gruvbox
+if exists('+termguicolors')
+        let &t_8f = "\<esc>[38;2;%lu;%lu;%lum"
+        let &t_8b = "\<esc>[48;2;%lu;%lu;%lum"
+endif
+let g:gruvbox_contrast_dark = 'hard'
+let g:gruvbox_invert_selection = 0
+colorscheme gruvbox
+set background=dark
+let g:html_indent_style1 = "inc"
+let g:htl_all_templates = 1
+
+"""""" Closetag
+let g:closetag_filenames = '*.html,*.xhtml,*.phtml,*.ts,*.tsx,*.js,*.jsx'
+
+""""" CoC
+set nobackup
+set nowritebackup
+set shortmess+=c
+set updatetime=100
+nmap <silent> ]d <plug>(coc-diagnostic-prev)
+nmap <silent> [d <plug>(coc-diagnostic-next)
+inoremap <silent><expr> <tab>
+  \ pumvisible() ? "\<c-n>" :
+  \ <sid>check_back_space() ? "\<tab>" :
+  \ coc#refresh()
+inoremap <expr><s-TAB> pumvisible() ? "\<c-p>" : "\<c-h>"
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+inoremap <silent><expr> <c-space> coc#refresh()
+if exists('*complete_info')
+  inoremap <expr> <cr> complete_info()["selected"] != "-1" ? "\<c-y>" : "\<c-g>u\<cr>"
+else
+  inoremap <expr> <cr> pumvisible() ? "\<c-y>" : "\<c-g>u\<cr>"
+endif
+nmap <silent> <c-]> <plug>(coc-definition)
+nmap <silent> gr <plug>(coc-references)
+nnoremap <silent> K :call <sid>show_documentation()<cr>
+function! s:show_documentation()
+  if (index(['vim','help'], &filetype) >= 0)
+    execute 'h '.expand('<cword>)
+  else
+    call CocAction('doHover')
+  endif
+endfunction
+autocmd CursorHold * silent call CocActionAsync('highlight')
+nmap <leader>qf  <plug>(coc-fix-current)
+command! -nargs=0 Prettier :CocCommand prettier.formatFile
+xmap <leader>= <plug>(coc-format-selected)
+nmap <leader>= <plug>(coc-format-selected)
+nmap <leader>rn <plug>(coc-rename)
+
+"""""" FZF
+set termguicolors
+nmap <leader>p :GFiles<cr>
+nmap <leader>P :Files<cr>
+nmap <leader>b :Buffers<cr>
+nmap <leader>h :History<cr>
+nmap <leader>f :Lines<cr>
+nmap <leader>F :Rg<space>
+let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.9 } }
+let $FZF_DEFAULT_OPTS="--ansi --preview-window 'right:60%' --layout reverse --margin=1,4"
+let $FZF_DEFAULT_OPTS="--ansi --preview-window 'right:60%' --layout reverse --margin=1,4
+    \ --preview 'bat --color=always --style=header,grid --line-range :300 {}'"
+
+""""" Dirvish
+autocmd BufEnter * silent! lcd %:p:h
+let g:loaded_netrwPlugin = 1
+nmap <tab> <plug>(dirvish-toggle)
+nnoremap <silent> <plug>(dirvish-toggle) :<c-u>call <sid>dirvish_toggle()<cr>
+function! s:dirvish_toggle() abort
+  let l:last_buffer = bufnr('$')
+  let l:i = 1
+  let l:dirvish_already_open = 0
+
+  while l:i <= l:last_buffer
+    if bufexists(l:i) && bufloaded(l:i) && getbufvar(l:i, '&filetype') ==? 'dirvish'
+      let l:dirvish_already_open = 1
+      execute ':'.l:i.'bd!'
+    endif
+    let l:i += 1
+  endwhile
+
+  if !l:dirvish_already_open
+    35vsp +Dirvish
+  endif
+endfunction
+function! s:dirvish_open() abort
+  let l:line = getline('.')
+  if l:line =~? '/$'
+    call dirvish#open('edit', 0)
+  else
+    call <sid>dirvish_toggle()
+    execute 'e '.l:line
+  endif
+endfunction
+augroup dirvish_commands
+  autocmd!
+  autocmd FileType dirvish nnoremap <silent> <buffer> <c-r> :<c-u>Dirvish %<cr>
+  autocmd FileType dirvish unmap <silent> <buffer> <cr>
+  autocmd FileType dirvish nnoremap <silent> <buffer> <cr> :<c-u> call <sid>dirvish_open()<cr>
+  autocmd FileType dirvish setlocal nonumber norelativenumber statusline=%F
+  autocmd FileType dirvish nnoremap <silent> <buffer> t :!tree %<cr>
+augroup END
+
+""""" Startify
+nnoremap <silent>~ :Startify <cr>
+let g:startify_list_order = ['bookmarks', 'files']
+let g:startify_bookmarks =  ['~/dotfiles/init.vim',
+                            \'~/src/raasdev/raas-ui',
+                            \ '~/src/raasdev/raas',
+                            \ '~/src/raasdev/raas-docker',
+                            \ '~/src/raasdev/salt',
+                            \ '~/dotfiles']
+
+""""" Airline
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#formatter = 'unique_tail'
+let g:airline#extensions#tabline#ignore_bufadd_pat = '!'

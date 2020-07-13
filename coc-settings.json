@@ -9,7 +9,5 @@
   ],
   "signature.enable": false,
   "prettier.tslintIntegration": true,
-  "tslint.configFile": "tslint.json",
-  "tslint.autoFixOnSave": true,
-  "yank.highlight.duration": 50
+  "yank.highlight.duration": 200
 }
