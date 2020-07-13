@@ -80,6 +80,14 @@ set nobackup
 set nowritebackup
 set shortmess+=c
 set updatetime=100
+let g:coc_global_extensions = [
+    \ 'coc-tsserver',
+    \ 'coc-tslint-plugin',
+    \ 'coc-angular',
+    \ 'coc-prettier',
+    \ 'coc-html',
+    \ 'coc-json',
+    \ 'coc-yank' ]
 nmap <silent> ]d <plug>(coc-diagnostic-prev)
 nmap <silent> [d <plug>(coc-diagnostic-next)
 inoremap <silent><expr> <tab>
