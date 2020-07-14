@@ -75,6 +75,7 @@ set background=dark
 let g:htl_all_templates = 1
 
 """""" Closetag
+let g:closetag_shortcut = '<leader>>'
 let g:closetag_filenames = '*.html,*.xhtml,*.phtml,*.ts,*.tsx,*.js,*.jsx'
 
 """""" matchit
@@ -191,7 +192,7 @@ augroup END
 nnoremap <silent>~ :Startify <cr>
 autocmd FileType startify nnoremap <silent> <esc> :normal q<cr>
 let g:startify_list_order = ['files', 'bookmarks']
-let g:startify_bookmarks =  [{'c': '~/dotfiles/init.vim'},
+let g:startify_bookmarks =  [{'c': '~/dotfiles/nvim/init.vim'},
                             \{'ru': '~/src/raasdev/raas-ui'},
                             \{'rr': '~/src/raasdev/raas'},
                             \{'rd':'~/src/raasdev/raas-docker'},
