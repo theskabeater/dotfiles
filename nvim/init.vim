@@ -7,17 +7,14 @@ Plug 'tpope/vim-surround'
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-rsi'
 Plug 'tpope/vim-sleuth'
-Plug 'airblade/vim-gitgutter'
-Plug 'junegunn/fzf', {'do': { -> fzf#install() }}
-Plug 'junegunn/fzf.vim'
 Plug 'sheerun/vim-polyglot'
 Plug 'jonsmithers/vim-html-template-literals'
 Plug 'alvan/vim-closetag'
-Plug 'justinmk/vim-dirvish'
 Plug 'justinmk/vim-sneak'
-Plug 'kristijanhusak/vim-dirvish-git'
 Plug 'mhinz/vim-startify'
 Plug 'vim-airline/vim-airline'
+Plug 'liuchengxu/vim-clap', {'do': ':Clap install-binary!'}
+Plug 'airblade/vim-rooter'
 call plug#end()
 
 """"" Global
@@ -54,24 +51,10 @@ nnoremap / /\v
 vnoremap / /\v
 nnoremap <silent> <leader>l :set hls! hlsearch?<cr>
 
-""""" Git gutter
-let g:gitgutter_map_keys = 0
-nmap <silent> ]g <plug>(GitGutterNextHunk)
-nmap <silent> [g <plug>(GitGutterPrevHunk)
-nmap <silent><leader>gp <plug>(GitGutterPreviewHunk)
-nmap <silent><leader>gs <plug>(GitGutterStageHunk)
-nmap <silent><leader>gu <plug>(GitGutterUndoHunk)
-
 """"" Theme/syntax highlighting
 colorscheme gruvbox
-if exists('+termguicolors')
-        let &t_8f = "\<esc>[38;2;%lu;%lu;%lum"
-        let &t_8b = "\<esc>[48;2;%lu;%lu;%lum"
-endif
-let g:gruvbox_contrast_dark = 'hard'
 let g:gruvbox_invert_selection = 0
 colorscheme gruvbox
-set background=dark
 let g:htl_all_templates = 1
 
 """""" Closetag
@@ -83,6 +66,12 @@ autocmd FileType typescript let b:match_words  = '<\(\w\w*\):</\1,{:}'
 
 """"" Sneak
 let g:sneak#label = 1
+
+""""" Clap
+nnoremap <leader>b :Clap buffers<cr>
+nnoremap <leader>h :Clap history<cr>
+nnoremap <leader>p :Clap gfiles<cr>
+nnoremap <leader>f :Clap grep<cr>
 
 """"" CoC
 set nobackup
@@ -96,8 +85,8 @@ let g:coc_global_extensions = [
     \ 'coc-html',
     \ 'coc-json',
     \ 'coc-yank' ]
-nmap <silent> ]d <plug>(coc-diagnostic-prev)
-nmap <silent> [d <plug>(coc-diagnostic-next)
+nmap <silent> ]g <plug>(coc-diagnostic-prev)
+nmap <silent> [g <plug>(coc-diagnostic-next)
 inoremap <silent><expr> <tab>
   \ pumvisible() ? "\<c-n>" :
   \ <sid>check_back_space() ? "\<tab>" :
@@ -129,65 +118,6 @@ xmap <leader>= <plug>(coc-format-selected)
 nmap <leader>= <plug>(coc-format-selected)
 nmap <leader>rn <plug>(coc-rename)
 
-"""""" FZF
-let $FZF_DEFAULT_OPTS="--ansi --preview-window 'right:60%' --layout reverse --margin=1,4"
-let $FZF_DEFAULT_COMMAND = 'rg --files --ignore-case --hidden -g "!{.git,node_modules,vendor}/*"'
-command! -bang -nargs=* GGrep
-    \ call fzf#vim#grep(
-    \   'git grep --line-number -- '.shellescape(<q-args>), 0,
-    \   fzf#vim#with_preview({'dir': systemlist('git rev-parse --show-toplevel')[0]}), <bang>0)
-command! -bang -nargs=? -complete=dir Files
-     \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
-set termguicolors
-nmap <leader>p :GFiles<cr>
-nmap <leader>P :Files ~<cr>
-nmap <leader>b :Buffers<cr>
-nmap <leader>h :History<cr>
-nmap <leader>f :Lines<cr>
-nmap <leader>F :GGrep<cr>
-let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.9 } }
-
-""""" Dirvish
-autocmd BufEnter * silent! lcd %:p:h
-let g:loaded_netrwPlugin = 1
-nmap <tab> <plug>(dirvish-toggle)
-nnoremap <silent> <plug>(dirvish-toggle) :<c-u>call <sid>dirvish_toggle()<cr>
-function! s:dirvish_toggle() abort
-  let l:last_buffer = bufnr('$')
-  let l:i = 1
-  let l:dirvish_already_open = 0
-  while l:i <= l:last_buffer
-    if bufexists(l:i) && bufloaded(l:i) && getbufvar(l:i, '&filetype') ==? 'dirvish'
-      let l:dirvish_already_open = 1
-      execute ':'.l:i.'bd!'
-    endif
-    let l:i += 1
-  endwhile
-  if !l:dirvish_already_open
-    35vsp +Dirvish
-  endif
-endfunction
-function! s:dirvish_open() abort
-  let l:line = getline('.')
-  if l:line =~? '/$'
-    call dirvish#open('edit', 0)
-  else
-    call <sid>dirvish_toggle()
-    execute 'e '.l:line
-  endif
-endfunction
-augroup dirvish_commands
-  autocmd!
-  autocmd FileType dirvish nnoremap <silent> <buffer> <c-r> :<c-u>Dirvish %<cr>
-  autocmd FileType dirvish unmap <silent> <buffer> <cr>
-  autocmd FileType dirvish nnoremap <silent> <buffer> <cr> :<c-u> call <sid>dirvish_open()<cr>
-  autocmd FileType dirvish setlocal nonumber norelativenumber statusline=%F
-  autocmd FileType dirvish nnoremap <silent> <buffer> t :!tree %<cr>
-  autocmd FileType dirvish nnoremap <silent> <buffer> <esc> :call <sid>dirvish_toggle()<cr>
-  autocmd FileType dirvish nnoremap <silent> <buffer> <c-c> :call <sid>dirvish_toggle()<cr>
-  autocmd FileType dirvish nnoremap <silent> <buffer> <c-[> :call <sid>dirvish_toggle()<cr>
-augroup END
-
 """"" Startify
 nnoremap <silent>~ :Startify <cr>
 autocmd FileType startify nnoremap <silent> <esc> :normal q<cr>
@@ -200,10 +130,14 @@ let g:startify_bookmarks =  [{'c': '~/dotfiles/nvim/init.vim'},
                             \{'w': '~/src/raasdev'},
                             \{'d': '~/dotfiles'}]
 
-""""" Airline
-let g:airline#extensions#tabline#enabled = 1
-let g:airline#extensions#tabline#formatter = 'unique_tail'
-let g:airline#extensions#tabline#ignore_bufadd_pat = '!'
-
 """"" Format options (autocomment)
 au BufEnter * set fo-=c fo-=r fo-=o`
+
+""""" WSL yank support
+let s:clip = '/mnt/c/Windows/System32/clip.exe'  " change this path according to your mount point
+if executable(s:clip)
+  augroup WSLYank
+    autocmd!
+    autocmd TextYankPost * if v:event.operator ==# 'y' | call system(s:clip, @0) | endif
+  augroup END
+endif

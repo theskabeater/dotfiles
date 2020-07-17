@@ -9,5 +9,7 @@
   ],
   "signature.enable": false,
   "prettier.tslintIntegration": true,
-  "yank.highlight.duration": 200
+  "yank.highlight.duration": 200,
+  "python.jediEnabled": false,
+  "python.linting.pylintArgs": ["--rcfile", ".testing.pylintrc"]
 }
