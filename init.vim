@@ -1,5 +1,5 @@
-call plug#begin('~/.vim/plugged')
-Plug 'morhetz/gruvbox'
+call plug#begin('~/.config/nvim/plugged')
+Plug 'sainnhe/gruvbox-material'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-commentary'
@@ -19,6 +19,7 @@ call plug#end()
 
 """"" Global
 set mouse=a
+set clipboard=unnamed
 let mapleader = ' '
 set tabstop=4 softtabstop=4
 set shiftwidth=4
@@ -52,10 +53,22 @@ vnoremap / /\v
 nnoremap <silent> <leader>l :set hls! hlsearch?<cr>
 
 """"" Theme/syntax highlighting
-colorscheme gruvbox
-let g:gruvbox_invert_selection = 0
-colorscheme gruvbox
+if has('termguicolors')
+  set termguicolors
+endif
+set background=dark
+let g:airline_theme = 'gruvbox_material'
+let g:gruvbox_material_background = 'hard'
 let g:htl_all_templates = 1
+colorscheme gruvbox-material
+
+""""" Git
+nnoremap <leader>gd :Gdiffsplit<cr>
+nnoremap <leader>gb :Gblame<cr>
+nnoremap <leader>gl :Glog<cr>
+nnoremap <leader>gs :Gstatus<cr>
+nnoremap <leader>gg :Git<space>
+autocmd FileType fugitive nnoremap <esc> :normal gq<cr>
 
 """""" Closetag
 let g:closetag_shortcut = '<leader>>'
@@ -68,6 +81,7 @@ autocmd FileType typescript let b:match_words  = '<\(\w\w*\):</\1,{:}'
 let g:sneak#label = 1
 
 """"" Clap
+let g:clap_theme = 'material_design_dark'
 nnoremap <leader>b :Clap buffers<cr>
 nnoremap <leader>h :Clap history<cr>
 nnoremap <leader>p :Clap gfiles<cr>
@@ -122,22 +136,14 @@ nmap <leader>rn <plug>(coc-rename)
 nnoremap <silent>~ :Startify <cr>
 autocmd FileType startify nnoremap <silent> <esc> :normal q<cr>
 let g:startify_list_order = ['files', 'bookmarks']
-let g:startify_bookmarks =  [{'c': '~/dotfiles/nvim/init.vim'},
+let g:startify_bookmarks =  [{'c': '~/src/dotfiles/init.vim'},
                             \{'ru': '~/src/raasdev/raas-ui'},
                             \{'rr': '~/src/raasdev/raas'},
                             \{'rd':'~/src/raasdev/raas-docker'},
                             \{'s': '~/src/raasdev/salt'},
                             \{'w': '~/src/raasdev'},
-                            \{'d': '~/dotfiles'}]
+                            \{'d': '~/src/dotfiles'}]
 
 """"" Format options (autocomment)
 au BufEnter * set fo-=c fo-=r fo-=o`
 
-""""" WSL yank support
-let s:clip = '/mnt/c/Windows/System32/clip.exe'  " change this path according to your mount point
-if executable(s:clip)
-  augroup WSLYank
-    autocmd!
-    autocmd TextYankPost * if v:event.operator ==# 'y' | call system(s:clip, @0) | endif
-  augroup END
-endif
