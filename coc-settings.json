@@ -1,4 +1,6 @@
 {
+  "signature.enable": false,
+  "yank.highlight.duration": 200,
   "coc.preferences.formatOnSaveFiletypes": [
     "typescript",
     "javascript",
@@ -7,9 +9,14 @@
     "css",
     "scss"
   ],
-  "signature.enable": false,
-  "prettier.tslintIntegration": true,
-  "yank.highlight.duration": 200,
-  "python.jediEnabled": false,
-  "python.linting.pylintArgs": ["--rcfile", ".testing.pylintrc"]
+  "eslint.filetypes": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact",
+    "html"
+  ],
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "typescript.suggest.completeFunctionCalls": false,
+  "prettier.eslintIntegration": true
 }

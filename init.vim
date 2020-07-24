@@ -1,149 +1,307 @@
+""""" Plugins
 call plug#begin('~/.config/nvim/plugged')
-Plug 'sainnhe/gruvbox-material'
+Plug 'arcticicestudio/nord-vim'
+Plug 'inkarkat/vim-SyntaxRange'
+Plug 'itchyny/lightline.vim'
+Plug 'justinmk/vim-sneak'
+Plug 'liuchengxu/vim-clap', {'do': ':Clap install-binary!'}
+Plug 'mhinz/vim-startify'
+Plug 'mhinz/vim-signify'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'tpope/vim-fugitive'
+Plug 'sheerun/vim-polyglot'
 Plug 'tpope/vim-commentary'
-Plug 'tpope/vim-surround'
+Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-rsi'
-Plug 'tpope/vim-sleuth'
-Plug 'sheerun/vim-polyglot'
-Plug 'jonsmithers/vim-html-template-literals'
-Plug 'alvan/vim-closetag'
-Plug 'justinmk/vim-sneak'
-Plug 'mhinz/vim-startify'
-Plug 'vim-airline/vim-airline'
-Plug 'liuchengxu/vim-clap', {'do': ':Clap install-binary!'}
-Plug 'airblade/vim-rooter'
+Plug 'tpope/vim-surround'
 call plug#end()
 
-""""" Global
+""""" Vim settings
 set mouse=a
-set clipboard=unnamed
-let mapleader = ' '
 set tabstop=4 softtabstop=4
 set shiftwidth=4
 set expandtab
-set smartindent
-set autoindent
 set cmdheight=2
 set signcolumn=yes
+set autoindent
+set smartindent
 set nowrap
 set nu rnu
-set noswapfile
 set nobackup
+set nowritebackup
+set noswapfile
 set hidden
-set scrolloff=8
 set incsearch
 set noshowmode
 set cursorline
-nmap <silent> ]b :bn<cr>
-nmap <silent> [b :bp<cr>
-fun! TrimWhitespace()
-    let l:save = winsaveview()
-    keeppatterns %s/\s\+$//e
-    call winrestview(l:save)
-endfun
-autocmd BufWritePre * :call TrimWhitespace()
+set updatetime=100
+set nohls
 set diffopt=vertical
 set smartcase
 set ignorecase
+set scrolloff=4
+set shortmess+=c
+
+""""" Non-plugin keybinds
+let mapleader = ' '
+
+" change buffers
+nmap <silent> ]b :bn<cr>
+nmap <silent> [b :bp<cr>
+
+" search in 'mode mode' by default
 nnoremap / /\v
 vnoremap / /\v
 nnoremap <silent> <leader>l :set hls! hlsearch?<cr>
+
+" change directories, Glcd comes from tpope/vim-fugitive
+nnoremap <leader>cc :pwd<cr>
+nnoremap <leader>cd :cd %:h<cr>:pwd<cr>
+nnoremap <leader>cp :Glcd<cr>
+
+""""" Disable arrow keys
+cnoremap <down> <nop>
+cnoremap <left> <nop>
+cnoremap <right> <nop>
+cnoremap <up> <nop>
+inoremap <down> <nop>
+inoremap <left> <nop>
+inoremap <right> <nop>
+inoremap <up> <nop>
+nnoremap <down> <nop>
+nnoremap <left> <nop>
+nnoremap <right> <nop>
+nnoremap <up> <nop>
+vnoremap <down> <nop>
+vnoremap <left> <nop>
+vnoremap <right> <nop>
+vnoremap <up> <nop>
+
+""""" Copy and paste
+set clipboard=unnamedplus
+vmap <c-c> "+y
+vmap <c-x> "+c
+vmap <c-v> c<esc>"+p
+imap <c-v> <esc>"+pa
+
+""""" Format options (autocomment)
+au BufEnter * set fo-=c fo-=r fo-=o
 
 """"" Theme/syntax highlighting
 if has('termguicolors')
   set termguicolors
 endif
-set background=dark
-let g:airline_theme = 'gruvbox_material'
-let g:gruvbox_material_background = 'hard'
-let g:htl_all_templates = 1
-colorscheme gruvbox-material
+colorscheme nord
+hi Normal guibg=NONE ctermbg=NONE
+hi SignColumn guibg=NONE ctermbg=NONE
+let g:nord_cursor_line_number_background = 1
+let g:nord_bold_vertical_split_line = 1
+let g:nord_uniform_diff_background = 1
+let g:nord_underline = 1
+
+" highlight css and html template literals
+" (still needs some work)
+augroup hi-template-literal
+  au!
+  autocmd BufEnter * call SyntaxRange#Include('template: `', '`', 'html', '')
+  autocmd BufEnter * call SyntaxRange#Include('styles: \[\_s\{-}`', '`,', 'css', '')
+augroup END
+
+""""" Statusline
+let g:lightline = {
+      \ 'colorscheme': 'nord',
+      \ 'active': {
+      \   'left': [
+      \     [ 'mode', 'paste' ],
+      \     [ 'fugitive', 'filename' ]
+      \   ]
+      \ },
+      \ 'component_function': {
+      \   'fugitive': 'LightlineFugitive',
+      \   'readonly': 'LightlineReadonly',
+      \   'modified': 'LightlineModified',
+      \   'filename': 'LightlineFilename'
+      \ },
+      \ 'separator': {
+      \   'left': '',
+      \   'right': ''
+      \ },
+      \ 'subseparator': {
+      \   'left': '',
+      \   'right': ''
+      \ }
+    \ }
+
+" show modified buffer
+function! LightlineModified()
+  if &filetype == "help"
+    return ""
+  elseif &modified
+    return "+"
+  elseif &modifiable
+    return ""
+  else
+    return ""
+  endif
+endfunction
+
+" file is readonly
+function! LightlineReadonly()
+  if &filetype == "help"
+    return ""
+  elseif &readonly
+    return ""
+  else
+    return ""
+  endif
+endfunction
+
+" git branch
+function! LightlineFugitive()
+  if exists("*fugitive#head")
+    let branch = fugitive#head()
+    return branch !=# '' ? ' '.branch : ''
+  endif
+  return ''
+endfunction
+
+" nicer filename
+function! LightlineFilename()
+  return ('' != LightlineReadonly() ? LightlineReadonly() . ' ' : '') .
+       \ ('' != expand('%:t') ? expand('%:t') : '[No Name]') .
+       \ ('' != LightlineModified() ? ' ' . LightlineModified() : '')
+endfunction
 
 """"" Git
+au FileType fugitive nnoremap <esc> :normal gq<cr>
 nnoremap <leader>gd :Gdiffsplit<cr>
 nnoremap <leader>gb :Gblame<cr>
 nnoremap <leader>gl :Glog<cr>
 nnoremap <leader>gs :Gstatus<cr>
 nnoremap <leader>gg :Git<space>
-autocmd FileType fugitive nnoremap <esc> :normal gq<cr>
+nnoremap <leader>gp :SignifyHunkDiff<cr>
+nnoremap <leader>gu :SignifyHunkUndo<cr>
 
-"""""" Closetag
-let g:closetag_shortcut = '<leader>>'
-let g:closetag_filenames = '*.html,*.xhtml,*.phtml,*.ts,*.tsx,*.js,*.jsx'
-
-"""""" matchit
-autocmd FileType typescript let b:match_words  = '<\(\w\w*\):</\1,{:}'
+"""""" Matchit settings to match html tags with '%'
+au FileType typescript let b:match_words  = '<\(\w\w*\):</\1,{:}'
 
 """"" Sneak
 let g:sneak#label = 1
 
 """"" Clap
-let g:clap_theme = 'material_design_dark'
-nnoremap <leader>b :Clap buffers<cr>
+let g:clap_theme = 'nord'
+let g:clap_enable_icon = 1
+let g:clap_popup_border = 'rounded'
+let g:clap_search_box_border_style = 'nil'
+nnoremap <leader>d :Clap filer<cr>
 nnoremap <leader>h :Clap history<cr>
+nnoremap <leader>b :Clap buffers<cr>
 nnoremap <leader>p :Clap gfiles<cr>
+nnoremap <leader>h :Clap history<cr>
 nnoremap <leader>f :Clap grep<cr>
+nnoremap <leader>p :Clap gfiles<cr>
 
 """"" CoC
-set nobackup
-set nowritebackup
-set shortmess+=c
 let g:coc_global_extensions = [
     \ 'coc-tsserver',
-    \ 'coc-tslint-plugin',
     \ 'coc-angular',
+    \ 'coc-eslint',
     \ 'coc-prettier',
     \ 'coc-html',
     \ 'coc-json',
     \ 'coc-yank' ]
-nmap <silent> ]g <plug>(coc-diagnostic-prev)
-nmap <silent> [g <plug>(coc-diagnostic-next)
+
+" jump to diagnostics
+nmap <silent> ]d <plug>(coc-diagnostic-prev)
+nmap <silent> [d <plug>(coc-diagnostic-next)
+
+" <tab> through autocomplete list
+inoremap <expr><s-TAB> pumvisible() ? "\<c-p>" : "\<c-h>"
 inoremap <silent><expr> <tab>
   \ pumvisible() ? "\<c-n>" :
   \ <sid>check_back_space() ? "\<tab>" :
   \ coc#refresh()
-inoremap <expr><s-TAB> pumvisible() ? "\<c-p>" : "\<c-h>"
-function! s:check_back_space() abort
+
+fun! s:check_back_space() abort
   let col = col('.') - 1
   return !col || getline('.')[col - 1]  =~# '\s'
-endfunction
+endfun
+
+" trigger autocomplete
 inoremap <silent><expr> <c-space> coc#refresh()
 if exists('*complete_info')
   inoremap <expr> <cr> complete_info()["selected"] != "-1" ? "\<c-y>" : "\<c-g>u\<cr>"
 else
   inoremap <expr> <cr> pumvisible() ? "\<c-y>" : "\<c-g>u\<cr>"
 endif
+
+" jump to code definition
 nmap <silent> <c-]> <plug>(coc-definition)
+
+" show references of word under cursor
 nmap <silent> gr <plug>(coc-references)
+
+" show documentation or type information of word under cursor
 nnoremap <silent> K :call <sid>show_documentation()<cr>
-function! s:show_documentation()
+fun! s:show_documentation()
   if (index(['vim','help'], &filetype) >= 0)
     execute 'h '.expand('<cword>')
   else
     call CocAction('doHover')
   endif
-endfunction
+endfun
+
+" quick fix
 nmap <leader>qf  <plug>(coc-fix-current)
+
+" prettier
 command! -nargs=0 Prettier :CocCommand prettier.formatFile
+nnoremap <leader>j :Prettier<cr>
+
+" format selected
 xmap <leader>= <plug>(coc-format-selected)
 nmap <leader>= <plug>(coc-format-selected)
+
+" rename across project
 nmap <leader>rn <plug>(coc-rename)
+
+" jest keybinds
+command! -nargs=0 JestCurrent :call  CocAction('runCommand', 'jest.fileTest', ['%'])
+command! -nargs=0 Jest :call  CocAction('runCommand', 'jest.projectTest')
+nnoremap <leader>tt :call CocAction('runCommand', 'jest.singleTest')<cr>
+nnoremap <leader>tf :JestCurrent<cr>
+nnoremap <leader>ta :Jest<cr>
+
+""""" Sneak
+let g:sneak#use_ic_scs = 1
 
 """"" Startify
 nnoremap <silent>~ :Startify <cr>
-autocmd FileType startify nnoremap <silent> <esc> :normal q<cr>
+au FileType startify nnoremap <silent> <esc> :normal q<cr>
 let g:startify_list_order = ['files', 'bookmarks']
 let g:startify_bookmarks =  [{'c': '~/src/dotfiles/init.vim'},
                             \{'ru': '~/src/raasdev/raas-ui'},
                             \{'rr': '~/src/raasdev/raas'},
                             \{'rd':'~/src/raasdev/raas-docker'},
-                            \{'s': '~/src/raasdev/salt'},
-                            \{'w': '~/src/raasdev'},
-                            \{'d': '~/src/dotfiles'}]
+                            \{'sa': '~/src/raasdev/salt'},
+                            \{'dev': '~/src/raasdev'},
+                            \{'dot': '~/src/dotfiles'}]
 
-""""" Format options (autocomment)
-au BufEnter * set fo-=c fo-=r fo-=o`
+""""" Utils
+fun! TrimWhitespace()
+    let l:save = winsaveview()
+    keeppatterns %s/\s\+$//e
+    call winrestview(l:save)
+endfun
+au BufWritePre * :call TrimWhitespace()
 
+"vim regex tester
+nnoremap <f5> mryi":let @/ = @"<cr>`r
+
+"get syntax groups under cursor
+fun! SynStack()
+    if !exists("*synstack")
+        return
+    endif
+    echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
+endfunc
