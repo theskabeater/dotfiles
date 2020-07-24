@@ -1,5 +1,6 @@
 """"" Plugins
 call plug#begin('~/.config/nvim/plugged')
+Plug 'AndrewRadev/inline_edit.vim'
 Plug 'arcticicestudio/nord-vim'
 Plug 'inkarkat/vim-SyntaxRange'
 Plug 'itchyny/lightline.vim'
@@ -101,11 +102,34 @@ let g:nord_underline = 1
 
 " highlight css and html template literals
 " (still needs some work)
+fun! HighlightTemplateLiteral()
+    if &ft == 'typescript'
+        call SyntaxRange#Include('template: `', '`,', 'html', '')
+        call SyntaxRange#Include('styles: \[\_s\{-}`', '`,', 'css', '')
+    endif
+endfun
 augroup hi-template-literal
   au!
-  autocmd BufEnter * call SyntaxRange#Include('template: `', '`', 'html', '')
-  autocmd BufEnter * call SyntaxRange#Include('styles: \[\_s\{-}`', '`,', 'css', '')
+  autocmd BufEnter * call HighlightTemplateLiteral()
 augroup END
+
+""""" Inline edit
+nnoremap <leader>e :InlineEdit<cr>
+let g:inline_edit_autowrite = 1
+let g:inline_edit_patterns = [
+    \   {
+    \     'main_filetype': 'typescript',
+    \     'sub_filetype': 'html',
+    \     'start': 'template: `',
+    \     'indent_based': 1,
+    \   },
+    \   {
+    \     'main_filetype': 'typescript',
+    \     'sub_filetype': 'css',
+    \     'start': 'styles: \[\_s\{-}`',
+    \     'indent_based': 2,
+    \   },
+    \ ]
 
 """"" Statusline
 let g:lightline = {

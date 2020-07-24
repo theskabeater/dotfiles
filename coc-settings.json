@@ -16,7 +16,11 @@
     "typescriptreact",
     "html"
   ],
+  "eslint.autoFixOnSave": true,
   "typescript.preferences.importModuleSpecifier": "relative",
   "typescript.suggest.completeFunctionCalls": false,
-  "prettier.eslintIntegration": true
+  "typescript.suggest.enabled": false,
+  "typescript.validate.enable": false,
+  "javascript.suggest.enabled": false,
+  "javascript.validate.enable": false
 }
