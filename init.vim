@@ -1,9 +1,11 @@
 """"" Plugins
 call plug#begin('~/.config/nvim/plugged')
 Plug 'AndrewRadev/inline_edit.vim'
+Plug 'airblade/vim-rooter'
 Plug 'arcticicestudio/nord-vim'
 Plug 'inkarkat/vim-SyntaxRange'
 Plug 'itchyny/lightline.vim'
+Plug 'justinmk/vim-dirvish'
 Plug 'justinmk/vim-sneak'
 Plug 'liuchengxu/vim-clap', {'do': ':Clap install-binary!'}
 Plug 'mhinz/vim-startify'
@@ -182,7 +184,7 @@ endfunction
 
 " git branch
 function! LightlineFugitive()
-  if exists("*fugitive#head")
+  if &ft != 'dirvish' && exists("*fugitive#head")
     let branch = fugitive#head()
     return branch !=# '' ? ' '.branch : ''
   endif
@@ -192,7 +194,7 @@ endfunction
 " nicer filename
 function! LightlineFilename()
   return ('' != LightlineReadonly() ? LightlineReadonly() . ' ' : '') .
-       \ ('' != expand('%:t') ? expand('%:t') : '[No Name]') .
+       \ ('' != expand('%:t') ? expand('%:t') : &ft == 'dirvish' ? expand('%F') : '[No Name]') .
        \ ('' != LightlineModified() ? ' ' . LightlineModified() : '')
 endfunction
 
@@ -209,6 +211,18 @@ nnoremap <leader>gu :SignifyHunkUndo<cr>
 """""" Matchit settings to match html tags with '%'
 au FileType typescript let b:match_words  = '<\(\w\w*\):</\1,{:}'
 
+""""" Dirvish
+nnoremap <silent> <leader>o :Dirvish %<cr>
+let g:dirvish_mode = ':sort ,^\v(.*[\/])|\ze,'
+let g:loaded_netrwPlugin = 1
+let g:dirvish_relative_paths = 1
+command! -nargs=? -complete=dir Explore Dirvish <args>
+command! -nargs=? -complete=dir Sexplore belowright split | silent Dirvish <args>
+command! -nargs=? -complete=dir Vexplore leftabove vsplit | silent Dirvish <args>
+au FileType dirvish nnoremap <silent> <buffer> <esc> :bd! <cr>
+au FileType dirvish nnoremap <silent> <buffer> <c-c> :bd! <cr>
+au FileType dirvish nnoremap <silent> <buffer> <c-[> :bd! <cr>
+
 """"" Sneak
 let g:sneak#label = 1
 
@@ -217,7 +231,7 @@ let g:clap_theme = 'nord'
 let g:clap_enable_icon = 1
 let g:clap_popup_border = 'rounded'
 let g:clap_search_box_border_style = 'nil'
-nnoremap <leader>d :Clap filer<cr>
+nnoremap <leader>d :exec 'Clap filer' expand('%:p:h')<cr>
 nnoremap <leader>h :Clap history<cr>
 nnoremap <leader>b :Clap buffers<cr>
 nnoremap <leader>p :Clap gfiles<cr>
