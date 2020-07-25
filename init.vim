@@ -1,7 +1,6 @@
 """"" Plugins
 call plug#begin('~/.config/nvim/plugged')
 Plug 'AndrewRadev/inline_edit.vim'
-Plug 'airblade/vim-rooter'
 Plug 'arcticicestudio/nord-vim'
 Plug 'inkarkat/vim-SyntaxRange'
 Plug 'itchyny/lightline.vim'
@@ -44,6 +43,7 @@ set smartcase
 set ignorecase
 set scrolloff=4
 set shortmess+=c
+set clipboard=unnamedplus
 
 """"" Non-plugin keybinds
 let mapleader = ' '
@@ -80,15 +80,9 @@ vnoremap <left> <nop>
 vnoremap <right> <nop>
 vnoremap <up> <nop>
 
-""""" Copy and paste
-set clipboard=unnamedplus
-vmap <c-c> "+y
-vmap <c-x> "+c
-vmap <c-v> c<esc>"+p
-imap <c-v> <esc>"+pa
-
 """"" Format options (autocomment)
 au BufEnter * set fo-=c fo-=r fo-=o
+autocmd BufEnter * silent! lcd %:p:h
 
 """"" Theme/syntax highlighting
 if has('termguicolors')
