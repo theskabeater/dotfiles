@@ -1,8 +1,6 @@
 """"" Plugins
 call plug#begin('~/.config/nvim/plugged')
 Plug 'AndrewRadev/inline_edit.vim'
-Plug 'arcticicestudio/nord-vim'
-Plug 'inkarkat/vim-SyntaxRange'
 Plug 'itchyny/lightline.vim'
 Plug 'justinmk/vim-dirvish'
 Plug 'justinmk/vim-sneak'
@@ -10,12 +8,19 @@ Plug 'liuchengxu/vim-clap', {'do': ':Clap install-binary!'}
 Plug 'mhinz/vim-startify'
 Plug 'mhinz/vim-signify'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'sheerun/vim-polyglot'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-rsi'
 Plug 'tpope/vim-surround'
+
+" themes
+Plug 'arcticicestudio/nord-vim'
+
+" syntax highlighting
+Plug 'inkarkat/vim-SyntaxRange'
+Plug 'othree/html5.vim'
+
 call plug#end()
 
 """"" Vim settings
@@ -49,10 +54,10 @@ set clipboard=unnamedplus
 let mapleader = ' '
 
 " change buffers
-nmap <silent> ]b :bn<cr>
-nmap <silent> [b :bp<cr>
+nmap <silent> [b :bn<cr>
+nmap <silent> ]b :bp<cr>
 
-" search in 'mode mode' by default
+" search in 'very magic mode' by default
 nnoremap / /\v
 vnoremap / /\v
 nnoremap <silent> <leader>l :set hls! hlsearch?<cr>
@@ -85,29 +90,45 @@ au BufEnter * set fo-=c fo-=r fo-=o
 autocmd BufEnter * silent! lcd %:p:h
 
 """"" Theme/syntax highlighting
-if has('termguicolors')
-  set termguicolors
-endif
-colorscheme nord
-hi Normal guibg=NONE ctermbg=NONE
-hi SignColumn guibg=NONE ctermbg=NONE
-let g:nord_cursor_line_number_background = 1
-let g:nord_bold_vertical_split_line = 1
-let g:nord_uniform_diff_background = 1
-let g:nord_underline = 1
-
-" highlight css and html template literals
-" (still needs some work)
 fun! HighlightTemplateLiteral()
     if &ft == 'typescript'
         call SyntaxRange#Include('template: `', '`,', 'html', '')
         call SyntaxRange#Include('styles: \[\_s\{-}`', '`,', 'css', '')
+        syntax match htmlArg contained "\[\zs.\{-}\ze\]\|\*\w\+"
     endif
 endfun
 augroup hi-template-literal
   au!
   autocmd BufEnter * call HighlightTemplateLiteral()
 augroup END
+
+" additional nord his
+aug nord-theme-overrides
+  au!
+  au ColorScheme nord hi typescriptTypeAnnotation guifg=#ffffff
+  au ColorScheme nord hi typescriptTypeBrackets guifg=#ffffff
+  au ColorScheme nord hi typescriptAssign guifg=#ffffff
+  au ColorScheme nord hi typescriptBraces guifg=#88c0d0
+  au ColorScheme nord hi typescriptClassBlock guifg=#88c0d0
+  au ColorScheme nord hi typescriptMember guifg=#81a1c1
+  au ColorScheme nord hi typescriptOperator gui=bold guifg=#81a1c1
+  au ColorScheme nord hi typescriptTypeReference guifg=#ebcb8b
+  au ColorScheme nord hi typescriptPredefinedType guifg=#ebcb8b
+  au ColorScheme nord hi typescriptAccessibilityModifier guifg=#b48ead
+  au ColorScheme nord hi typescriptReadonlyModifier guifg=#b48ead
+aug END
+
+if has('termguicolors')
+  set termguicolors
+endif
+colorscheme nord
+
+hi Normal guibg=NONE ctermbg=NONE
+hi SignColumn guibg=NONE ctermbg=NONE
+let g:nord_cursor_line_number_background = 1
+let g:nord_bold_vertical_split_line = 1
+let g:nord_uniform_diff_background = 1
+let g:nord_underline = 1
 
 """"" Inline edit
 nnoremap <leader>e :InlineEdit<cr>
@@ -163,7 +184,7 @@ function! LightlineModified()
   else
     return ""
   endif
-endfunction
+endfunc
 
 " file is readonly
 function! LightlineReadonly()
@@ -174,7 +195,7 @@ function! LightlineReadonly()
   else
     return ""
   endif
-endfunction
+endfunc
 
 " git branch
 function! LightlineFugitive()
@@ -183,14 +204,14 @@ function! LightlineFugitive()
     return branch !=# '' ? ' '.branch : ''
   endif
   return ''
-endfunction
+endfunc
 
 " nicer filename
 function! LightlineFilename()
   return ('' != LightlineReadonly() ? LightlineReadonly() . ' ' : '') .
        \ ('' != expand('%:t') ? expand('%:t') : &ft == 'dirvish' ? expand('%F') : '[No Name]') .
        \ ('' != LightlineModified() ? ' ' . LightlineModified() : '')
-endfunction
+endfunc
 
 """"" Git
 au FileType fugitive nnoremap <esc> :normal gq<cr>
@@ -213,9 +234,9 @@ let g:dirvish_relative_paths = 1
 command! -nargs=? -complete=dir Explore Dirvish <args>
 command! -nargs=? -complete=dir Sexplore belowright split | silent Dirvish <args>
 command! -nargs=? -complete=dir Vexplore leftabove vsplit | silent Dirvish <args>
-au FileType dirvish nnoremap <silent> <buffer> <esc> :bd! <cr>
-au FileType dirvish nnoremap <silent> <buffer> <c-c> :bd! <cr>
-au FileType dirvish nnoremap <silent> <buffer> <c-[> :bd! <cr>
+au FileType dirvish nnoremap <silent> <buffer> <esc> :normal gq<cr>
+au FileType dirvish nnoremap <silent> <buffer> <c-c> :normal gq<cr>
+au FileType dirvish nnoremap <silent> <buffer> <c-[> :normal gq<cr>
 
 """"" Sneak
 let g:sneak#label = 1
@@ -331,9 +352,11 @@ au BufWritePre * :call TrimWhitespace()
 nnoremap <f5> mryi":let @/ = @"<cr>`r
 
 "get syntax groups under cursor
+nnoremap <f6> :call SynStack()<cr>
 fun! SynStack()
     if !exists("*synstack")
         return
     endif
     echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
 endfunc
+
