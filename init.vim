@@ -1,7 +1,7 @@
 """"" Plugins
 call plug#begin('~/.config/nvim/plugged')
-Plug 'AndrewRadev/inline_edit.vim'
 Plug 'itchyny/lightline.vim'
+Plug 'junegunn/goyo.vim'
 Plug 'justinmk/vim-dirvish'
 Plug 'justinmk/vim-sneak'
 Plug 'liuchengxu/vim-clap', {'do': ':Clap install-binary!'}
@@ -15,11 +15,11 @@ Plug 'tpope/vim-rsi'
 Plug 'tpope/vim-surround'
 
 " themes
-Plug 'arcticicestudio/nord-vim'
+Plug 'morhetz/gruvbox'
 
 " syntax highlighting
 Plug 'inkarkat/vim-SyntaxRange'
-Plug 'othree/html5.vim'
+Plug 'sheerun/vim-polyglot'
 
 call plug#end()
 
@@ -40,7 +40,6 @@ set noswapfile
 set hidden
 set incsearch
 set noshowmode
-set cursorline
 set updatetime=100
 set nohls
 set diffopt=vertical
@@ -102,55 +101,22 @@ augroup hi-template-literal
   autocmd BufEnter * call HighlightTemplateLiteral()
 augroup END
 
-" additional nord his
-aug nord-theme-overrides
-  au!
-  au ColorScheme nord hi typescriptTypeAnnotation guifg=#ffffff
-  au ColorScheme nord hi typescriptTypeBrackets guifg=#ffffff
-  au ColorScheme nord hi typescriptAssign guifg=#ffffff
-  au ColorScheme nord hi typescriptBraces guifg=#88c0d0
-  au ColorScheme nord hi typescriptClassBlock guifg=#88c0d0
-  au ColorScheme nord hi typescriptMember guifg=#81a1c1
-  au ColorScheme nord hi typescriptOperator gui=bold guifg=#81a1c1
-  au ColorScheme nord hi typescriptTypeReference guifg=#ebcb8b
-  au ColorScheme nord hi typescriptPredefinedType guifg=#ebcb8b
-  au ColorScheme nord hi typescriptAccessibilityModifier guifg=#b48ead
-  au ColorScheme nord hi typescriptReadonlyModifier guifg=#b48ead
-aug END
-
 if has('termguicolors')
   set termguicolors
 endif
-colorscheme nord
+if exists('+termguicolors')
+    let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+    let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+endif
 
-hi Normal guibg=NONE ctermbg=NONE
-hi SignColumn guibg=NONE ctermbg=NONE
-let g:nord_cursor_line_number_background = 1
-let g:nord_bold_vertical_split_line = 1
-let g:nord_uniform_diff_background = 1
-let g:nord_underline = 1
-
-""""" Inline edit
-nnoremap <leader>e :InlineEdit<cr>
-let g:inline_edit_autowrite = 1
-let g:inline_edit_patterns = [
-    \   {
-    \     'main_filetype': 'typescript',
-    \     'sub_filetype': 'html',
-    \     'start': 'template: `',
-    \     'indent_based': 1,
-    \   },
-    \   {
-    \     'main_filetype': 'typescript',
-    \     'sub_filetype': 'css',
-    \     'start': 'styles: \[\_s\{-}`',
-    \     'indent_based': 2,
-    \   },
-    \ ]
+set background=dark
+let g:gruvbox_contrast_dark = 'hard'
+let g:gruvbox_invert_selection='0'
+colorscheme gruvbox
 
 """"" Statusline
 let g:lightline = {
-      \ 'colorscheme': 'nord',
+      \ 'colorscheme': 'gruvbox',
       \ 'active': {
       \   'left': [
       \     [ 'mode', 'paste' ],
@@ -242,7 +208,23 @@ au FileType dirvish nnoremap <silent> <buffer> <c-[> :normal gq<cr>
 let g:sneak#label = 1
 
 """"" Clap
-let g:clap_theme = 'nord'
+let s:save_cpo = &cpoptions
+set cpoptions&vim
+let s:palette = {}
+let s:bg0 = {'ctermbg': '235', 'guibg': '#282828'}
+let s:palette.display = s:bg0
+let s:palette.input = s:bg0
+let s:palette.preview = s:bg0
+let s:palette.spinner = extend({'ctermfg': '142', 'guifg':'#b8bb26'}, s:bg0)
+let s:palette.search_text = extend({'ctermfg': '229', 'guifg': '#fbf1c7'}, s:bg0)
+let s:palette.selected = {'ctermbg': '241', 'guibg': '#665c54'}
+let s:palette.current_selection = {'ctermbg': '241', 'guibg': '#665c54'}
+let s:palette.selected_sign = {'ctermfg': '66', 'guifg': '#458588', 'cterm': 'bold'}
+let s:palette.current_selection_sign = s:palette.selected_sign
+let g:clap#themes#gruvbox#palette = s:palette
+let &cpoptions = s:save_cpo
+unlet s:save_cpo
+let g:clap_theme = 'gruvbox'
 let g:clap_enable_icon = 1
 let g:clap_popup_border = 'rounded'
 let g:clap_search_box_border_style = 'nil'
@@ -251,7 +233,7 @@ nnoremap <leader>h :Clap history<cr>
 nnoremap <leader>b :Clap buffers<cr>
 nnoremap <leader>p :Clap gfiles<cr>
 nnoremap <leader>h :Clap history<cr>
-nnoremap <leader>f :Clap grep<cr>
+nnoremap <leader>f :Clap grep2<cr>
 nnoremap <leader>p :Clap gfiles<cr>
 
 """"" CoC
