@@ -7,7 +7,7 @@
  */
 static char *font = "FuraCode NF:pixelsize=18:antialias=true:autohint=true";
 static char *font2[] = { "JoyPixels:pixelsize=10:antialias=true:autohint=true" };
-static int borderpx = 6;
+static int borderpx = 2;
 
 /*
  * What program is execed by st depends of these precedence rules:

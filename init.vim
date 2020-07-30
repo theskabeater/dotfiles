@@ -1,13 +1,18 @@
 """"" Plugins
 call plug#begin('~/.config/nvim/plugged')
+Plug 'airblade/vim-rooter'
 Plug 'itchyny/lightline.vim'
 Plug 'junegunn/goyo.vim'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
 Plug 'justinmk/vim-dirvish'
 Plug 'justinmk/vim-sneak'
-Plug 'liuchengxu/vim-clap', {'do': ':Clap install-binary!'}
+Plug 'mileszs/ack.vim'
 Plug 'mhinz/vim-startify'
 Plug 'mhinz/vim-signify'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'romainl/vim-cool'
+Plug 'terryma/vim-multiple-cursors'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-repeat'
@@ -41,13 +46,14 @@ set hidden
 set incsearch
 set noshowmode
 set updatetime=100
-set nohls
 set diffopt=vertical
 set smartcase
 set ignorecase
 set scrolloff=4
 set shortmess+=c
 set clipboard=unnamedplus
+set confirm
+set nows
 
 """"" Non-plugin keybinds
 let mapleader = ' '
@@ -55,11 +61,12 @@ let mapleader = ' '
 " change buffers
 nmap <silent> [b :bn<cr>
 nmap <silent> ]b :bp<cr>
+nmap <silent> bd :bd<cr>
 
 " search in 'very magic mode' by default
 nnoremap / /\v
 vnoremap / /\v
-nnoremap <silent> <leader>l :set hls! hlsearch?<cr>
+let g:CoolTotalMatches = 1
 
 " change directories, Glcd comes from tpope/vim-fugitive
 nnoremap <leader>cc :pwd<cr>
@@ -86,7 +93,6 @@ vnoremap <up> <nop>
 
 """"" Format options (autocomment)
 au BufEnter * set fo-=c fo-=r fo-=o
-autocmd BufEnter * silent! lcd %:p:h
 
 """"" Theme/syntax highlighting
 fun! HighlightTemplateLiteral()
@@ -206,35 +212,60 @@ au FileType dirvish nnoremap <silent> <buffer> <c-[> :normal gq<cr>
 
 """"" Sneak
 let g:sneak#label = 1
+let g:sneak#use_ic_scs = 1
 
-""""" Clap
-let s:save_cpo = &cpoptions
-set cpoptions&vim
-let s:palette = {}
-let s:bg0 = {'ctermbg': '235', 'guibg': '#282828'}
-let s:palette.display = s:bg0
-let s:palette.input = s:bg0
-let s:palette.preview = s:bg0
-let s:palette.spinner = extend({'ctermfg': '142', 'guifg':'#b8bb26'}, s:bg0)
-let s:palette.search_text = extend({'ctermfg': '229', 'guifg': '#fbf1c7'}, s:bg0)
-let s:palette.selected = {'ctermbg': '241', 'guibg': '#665c54'}
-let s:palette.current_selection = {'ctermbg': '241', 'guibg': '#665c54'}
-let s:palette.selected_sign = {'ctermfg': '66', 'guifg': '#458588', 'cterm': 'bold'}
-let s:palette.current_selection_sign = s:palette.selected_sign
-let g:clap#themes#gruvbox#palette = s:palette
-let &cpoptions = s:save_cpo
-unlet s:save_cpo
-let g:clap_theme = 'gruvbox'
-let g:clap_enable_icon = 1
-let g:clap_popup_border = 'rounded'
-let g:clap_search_box_border_style = 'nil'
-nnoremap <leader>d :exec 'Clap filer' expand('%:p:h')<cr>
-nnoremap <leader>h :Clap history<cr>
-nnoremap <leader>b :Clap buffers<cr>
-nnoremap <leader>p :Clap gfiles<cr>
-nnoremap <leader>h :Clap history<cr>
-nnoremap <leader>f :Clap grep2<cr>
-nnoremap <leader>p :Clap gfiles<cr>
+""""" FZF
+let $FZF_DEFAULT_OPTS="--bind ctrl-a:select-all --preview-window 'bottom:60%' --layout reverse --margin=1,4"
+fun! s:build_quickfix_list(lines)
+  call setqflist(map(copy(a:lines), '{ "filename": v:val }'))
+  copen
+  cc
+endfun
+let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.9 } }
+let g:fzf_action = {
+  \ 'ctrl-q': function('s:build_quickfix_list'),
+  \ 'ctrl-t': 'tab split',
+  \ 'ctrl-x': 'split',
+  \ 'ctrl-v': 'vsplit' }
+let g:fzf_colors =
+\ { 'fg':      ['fg', 'Normal'],
+  \ 'bg':      ['bg', 'Normal'],
+  \ 'hl':      ['fg', 'Comment'],
+  \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+  \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
+  \ 'hl+':     ['fg', 'Statement'],
+  \ 'info':    ['fg', 'PreProc'],
+  \ 'border':  ['fg', 'Ignore'],
+  \ 'prompt':  ['fg', 'Conditional'],
+  \ 'pointer': ['fg', 'Exception'],
+  \ 'marker':  ['fg', 'Keyword'],
+  \ 'spinner': ['fg', 'Label'],
+  \ 'header':  ['fg', 'Comment'] }
+command! -bang -nargs=* Ag
+  \ call fzf#vim#ag(<q-args>, fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}), <bang>0)
+command! -bang -nargs=? -complete=dir Buffers
+  \ call fzf#vim#buffers(<q-args>, fzf#vim#with_preview(), <bang>0)
+command! -bang -nargs=* Hist call fzf#vim#history(fzf#vim#with_preview())
+fun! SearchWordWithAg()
+    execute 'Ag' expand('<cword>')
+endfun
+fun! SearchVisualSelectionWithAg() range
+    let old_reg = getreg('"')
+    let old_regtype = getregtype('"')
+    let old_clipboard = &clipboard
+    set clipboard&
+    normal! ""gvy
+    let selection = getreg('"')
+    call setreg('"', old_reg, old_regtype)
+    let &clipboard = old_clipboard
+    execute 'Ag' selection
+endfun
+nnoremap <leader>p :Files<cr>
+nnoremap <leader>f :Ag<cr>
+nnoremap <leader>b :Buffers<cr>
+nnoremap <leader>h :Hist<cr>
+nnoremap <leader>K :call SearchWordWithAg()<cr>
+vnoremap <leader>K :call SearchVisualSelectionWithAg()<cr>
 
 """"" CoC
 let g:coc_global_extensions = [
@@ -251,7 +282,7 @@ nmap <silent> ]d <plug>(coc-diagnostic-prev)
 nmap <silent> [d <plug>(coc-diagnostic-next)
 
 " <tab> through autocomplete list
-inoremap <expr><s-TAB> pumvisible() ? "\<c-p>" : "\<c-h>"
+inoremap <expr><s-tab> pumvisible() ? "\<c-p>" : "\<c-h>"
 inoremap <silent><expr> <tab>
   \ pumvisible() ? "\<c-n>" :
   \ <sid>check_back_space() ? "\<tab>" :
@@ -306,9 +337,6 @@ command! -nargs=0 Jest :call  CocAction('runCommand', 'jest.projectTest')
 nnoremap <leader>tt :call CocAction('runCommand', 'jest.singleTest')<cr>
 nnoremap <leader>tf :JestCurrent<cr>
 nnoremap <leader>ta :Jest<cr>
-
-""""" Sneak
-let g:sneak#use_ic_scs = 1
 
 """"" Startify
 nnoremap <silent>~ :Startify <cr>

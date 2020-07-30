@@ -16,11 +16,15 @@
     "typescriptreact",
     "html"
   ],
+  "eslint.enable": true,
   "eslint.autoFixOnSave": true,
+  // "tslint.autoFixOnSave": true,
+  // "tslint.enable": true,
+  // "prettier.tslintIntegration": true,
+  "javascript.suggest.enabled": false,
+  "javascript.validate.enable": false,
   "typescript.preferences.importModuleSpecifier": "relative",
   "typescript.suggest.completeFunctionCalls": false,
   "typescript.suggest.enabled": false,
-  "typescript.validate.enable": false,
-  "javascript.suggest.enabled": false,
-  "javascript.validate.enable": false
+  "typescript.validate.enable": false
 }
