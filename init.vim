@@ -11,7 +11,6 @@ Plug 'mileszs/ack.vim'
 Plug 'mhinz/vim-startify'
 Plug 'mhinz/vim-signify'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'romainl/vim-cool'
 Plug 'terryma/vim-multiple-cursors'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-fugitive'
@@ -53,20 +52,23 @@ set scrolloff=4
 set shortmess+=c
 set clipboard=unnamedplus
 set confirm
-set nows
+set cursorline
+set nohls
 
 """"" Non-plugin keybinds
 let mapleader = ' '
 
 " change buffers
-nmap <silent> [b :bn<cr>
-nmap <silent> ]b :bp<cr>
+nmap <silent> ]b :bn<cr>
+nmap <silent> [b :bp<cr>
 nmap <silent> bd :bd<cr>
 
 " search in 'very magic mode' by default
 nnoremap / /\v
 vnoremap / /\v
-let g:CoolTotalMatches = 1
+
+" toggle search highlight
+nnoremap <leader>l :set hls!<cr>
 
 " change directories, Glcd comes from tpope/vim-fugitive
 nnoremap <leader>cc :pwd<cr>
@@ -126,14 +128,20 @@ let g:lightline = {
       \ 'active': {
       \   'left': [
       \     [ 'mode', 'paste' ],
-      \     [ 'fugitive', 'filename' ]
+      \     [ 'fugitive', 'filename' ],
+      \     [ 'cocstatus' ]
+      \   ],
+      \    'right': [
+      \     [ 'percent' ],
+      \     [ 'lineinfo' ]
       \   ]
       \ },
       \ 'component_function': {
       \   'fugitive': 'LightlineFugitive',
       \   'readonly': 'LightlineReadonly',
       \   'modified': 'LightlineModified',
-      \   'filename': 'LightlineFilename'
+      \   'filename': 'LightlineFilename',
+      \   'cocstatus': 'coc#status',
       \ },
       \ 'separator': {
       \   'left': '',
@@ -199,7 +207,6 @@ nnoremap <leader>gu :SignifyHunkUndo<cr>
 au FileType typescript let b:match_words  = '<\(\w\w*\):</\1,{:}'
 
 """"" Dirvish
-nnoremap <silent> <leader>o :Dirvish %<cr>
 let g:dirvish_mode = ':sort ,^\v(.*[\/])|\ze,'
 let g:loaded_netrwPlugin = 1
 let g:dirvish_relative_paths = 1
@@ -215,18 +222,8 @@ let g:sneak#label = 1
 let g:sneak#use_ic_scs = 1
 
 """"" FZF
-let $FZF_DEFAULT_OPTS="--bind ctrl-a:select-all --preview-window 'bottom:60%' --layout reverse --margin=1,4"
-fun! s:build_quickfix_list(lines)
-  call setqflist(map(copy(a:lines), '{ "filename": v:val }'))
-  copen
-  cc
-endfun
+let $FZF_DEFAULT_OPTS="--preview-window 'bottom:60%' --layout reverse --margin=1,4"
 let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.9 } }
-let g:fzf_action = {
-  \ 'ctrl-q': function('s:build_quickfix_list'),
-  \ 'ctrl-t': 'tab split',
-  \ 'ctrl-x': 'split',
-  \ 'ctrl-v': 'vsplit' }
 let g:fzf_colors =
 \ { 'fg':      ['fg', 'Normal'],
   \ 'bg':      ['bg', 'Normal'],
@@ -260,6 +257,7 @@ fun! SearchVisualSelectionWithAg() range
     let &clipboard = old_clipboard
     execute 'Ag' selection
 endfun
+nnoremap <leader>i :Commands<cr>
 nnoremap <leader>p :Files<cr>
 nnoremap <leader>f :Ag<cr>
 nnoremap <leader>b :Buffers<cr>
@@ -278,8 +276,8 @@ let g:coc_global_extensions = [
     \ 'coc-yank' ]
 
 " jump to diagnostics
-nmap <silent> ]d <plug>(coc-diagnostic-prev)
-nmap <silent> [d <plug>(coc-diagnostic-next)
+nmap <silent> ]g <plug>(coc-diagnostic-next)
+nmap <silent> [g <plug>(coc-diagnostic-prev)
 
 " <tab> through autocomplete list
 inoremap <expr><s-tab> pumvisible() ? "\<c-p>" : "\<c-h>"
