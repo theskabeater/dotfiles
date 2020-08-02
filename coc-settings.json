@@ -1,6 +1,4 @@
 {
-  "signature.enable": false,
-  "yank.highlight.duration": 200,
   "coc.preferences.formatOnSaveFiletypes": [
     "typescript",
     "javascript",
@@ -18,13 +16,13 @@
   ],
   "eslint.enable": true,
   "eslint.autoFixOnSave": true,
-  // "tslint.autoFixOnSave": true,
-  // "tslint.enable": true,
   "prettier.tslintIntegration": true,
   "javascript.suggest.enabled": false,
   "javascript.validate.enable": false,
+  "signature.enable": false,
   "typescript.preferences.importModuleSpecifier": "relative",
   "typescript.suggest.completeFunctionCalls": false,
   "typescript.suggest.enabled": false,
-  "typescript.validate.enable": true
+  "typescript.validate.enable": true,
+  "yank.highlight.duration": 200
 }

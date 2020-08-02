@@ -11,7 +11,7 @@ Plug 'mileszs/ack.vim'
 Plug 'mhinz/vim-startify'
 Plug 'mhinz/vim-signify'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'terryma/vim-multiple-cursors'
+Plug 'suy/vim-context-commentstring'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-repeat'
@@ -51,29 +51,30 @@ set ignorecase
 set scrolloff=4
 set shortmess+=c
 set clipboard=unnamedplus
-set confirm
-set cursorline
 set nohls
+set foldmethod=indent
+set nofoldenable
 
 """"" Non-plugin keybinds
 let mapleader = ' '
 
-" change buffers
+" change buffers/tabs
 nmap <silent> ]b :bn<cr>
 nmap <silent> [b :bp<cr>
-nmap <silent> bd :bd<cr>
-
-" search in 'very magic mode' by default
-nnoremap / /\v
-vnoremap / /\v
+nmap <silent> ]t :tabn<cr>
+nmap <silent> [t :tabp<cr>
+nmap <silent> <leader>tc :tabc<cr>
+nmap <silent> <leader>bd :bp <bar> bd#<cr>
+nmap <silent> <leader>bb :Buffers<cr>
 
 " toggle search highlight
-nnoremap <leader>l :set hls!<cr>
+nnoremap <silent> <leader>l :set hls!<cr>
 
 " change directories, Glcd comes from tpope/vim-fugitive
-nnoremap <leader>cc :pwd<cr>
-nnoremap <leader>cd :cd %:h<cr>:pwd<cr>
-nnoremap <leader>cp :Glcd<cr>
+nnoremap <silent> <leader>cw :pwd<cr>
+nnoremap <silent> <leader>cc :echo expand('%:p')<cr>
+nnoremap <silent> <leader>cd :cd %:h<cr>:pwd<cr>
+nnoremap <silent> <leader>cp :Glcd<cr>
 
 """"" Disable arrow keys
 cnoremap <down> <nop>
@@ -93,7 +94,7 @@ vnoremap <left> <nop>
 vnoremap <right> <nop>
 vnoremap <up> <nop>
 
-""""" Format options (autocomment)
+""""" Format options (disable autocomment)
 au BufEnter * set fo-=c fo-=r fo-=o
 
 """"" Theme/syntax highlighting
@@ -104,23 +105,40 @@ fun! HighlightTemplateLiteral()
         syntax match htmlArg contained "\[\zs.\{-}\ze\]\|\*\w\+"
     endif
 endfun
-augroup hi-template-literal
+aug hi-template-literal
   au!
   autocmd BufEnter * call HighlightTemplateLiteral()
-augroup END
+aug END
 
 if has('termguicolors')
   set termguicolors
 endif
 if exists('+termguicolors')
-    let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
-    let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+    let &t_8f = "\<esc>[38;2;%lu;%lu;%lum"
+    let &t_8b = "\<esc>[48;2;%lu;%lu;%lum"
 endif
 
 set background=dark
 let g:gruvbox_contrast_dark = 'hard'
 let g:gruvbox_invert_selection='0'
 colorscheme gruvbox
+hi Normal guibg=NONE ctermbg=NONE
+
+"""" Context commentstring
+fun! CommentTemplateLiteral()
+    " context commentstring
+    if !exists('g:context#commentstring#table.typescript')
+        let g:context#commentstring#table.typescript = {
+            \ 'synIncludeHtml': '<!-- %s -->',
+            \ 'synIncludeCss': '/* %s */'
+            \ }
+    endif
+endfun
+
+aug comment-template-literal
+    au!
+    autocmd FileType typescript call CommentTemplateLiteral()
+aug END
 
 """"" Statusline
 let g:lightline = {
@@ -154,7 +172,7 @@ let g:lightline = {
     \ }
 
 " show modified buffer
-function! LightlineModified()
+fun! LightlineModified()
   if &filetype == "help"
     return ""
   elseif &modified
@@ -164,10 +182,10 @@ function! LightlineModified()
   else
     return ""
   endif
-endfunc
+endfun
 
 " file is readonly
-function! LightlineReadonly()
+fun! LightlineReadonly()
   if &filetype == "help"
     return ""
   elseif &readonly
@@ -175,33 +193,33 @@ function! LightlineReadonly()
   else
     return ""
   endif
-endfunc
+endfun
 
 " git branch
-function! LightlineFugitive()
+fun! LightlineFugitive()
   if &ft != 'dirvish' && exists("*fugitive#head")
     let branch = fugitive#head()
     return branch !=# '' ? ' '.branch : ''
   endif
   return ''
-endfunc
+endfun
 
 " nicer filename
-function! LightlineFilename()
+fun! LightlineFilename()
   return ('' != LightlineReadonly() ? LightlineReadonly() . ' ' : '') .
        \ ('' != expand('%:t') ? expand('%:t') : &ft == 'dirvish' ? expand('%F') : '[No Name]') .
        \ ('' != LightlineModified() ? ' ' . LightlineModified() : '')
-endfunc
+endfun
 
 """"" Git
-au FileType fugitive nnoremap <esc> :normal gq<cr>
-nnoremap <leader>gd :Gdiffsplit<cr>
-nnoremap <leader>gb :Gblame<cr>
-nnoremap <leader>gl :Glog<cr>
-nnoremap <leader>gs :Gstatus<cr>
-nnoremap <leader>gg :Git<space>
-nnoremap <leader>gp :SignifyHunkDiff<cr>
-nnoremap <leader>gu :SignifyHunkUndo<cr>
+au FileType fugitive nnoremap <silent> <buffer> <esc> :normal gq<cr>
+nnoremap <silent> <leader>gd :Gdiffsplit<cr>
+nnoremap <silent> <leader>gb :Gblame<cr>
+nnoremap <silent> <leader>gl :Glog<cr>
+nnoremap <silent> <leader>gs :Gstatus<cr>
+nnoremap <silent> <leader>gg :Git<space>
+nnoremap <silent> <leader>gp :SignifyHunkDiff<cr>
+nnoremap <silent> <leader>gu :SignifyHunkUndo<cr>
 
 """""" Matchit settings to match html tags with '%'
 au FileType typescript let b:match_words  = '<\(\w\w*\):</\1,{:}'
@@ -210,9 +228,9 @@ au FileType typescript let b:match_words  = '<\(\w\w*\):</\1,{:}'
 let g:dirvish_mode = ':sort ,^\v(.*[\/])|\ze,'
 let g:loaded_netrwPlugin = 1
 let g:dirvish_relative_paths = 1
-command! -nargs=? -complete=dir Explore Dirvish <args>
-command! -nargs=? -complete=dir Sexplore belowright split | silent Dirvish <args>
-command! -nargs=? -complete=dir Vexplore leftabove vsplit | silent Dirvish <args>
+cm! -nargs=? -complete=dir Explore Dirvish <args>
+com! -nargs=? -complete=dir Sexplore belowright split | silent Dirvish <args>
+com! -nargs=? -complete=dir Vexplore leftabove vsplit | silent Dirvish <args>
 au FileType dirvish nnoremap <silent> <buffer> <esc> :normal gq<cr>
 au FileType dirvish nnoremap <silent> <buffer> <c-c> :normal gq<cr>
 au FileType dirvish nnoremap <silent> <buffer> <c-[> :normal gq<cr>
@@ -238,11 +256,11 @@ let g:fzf_colors =
   \ 'marker':  ['fg', 'Keyword'],
   \ 'spinner': ['fg', 'Label'],
   \ 'header':  ['fg', 'Comment'] }
-command! -bang -nargs=* Ag
+com! -bang -nargs=* Ag
   \ call fzf#vim#ag(<q-args>, fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}), <bang>0)
-command! -bang -nargs=? -complete=dir Buffers
+com! -bang -nargs=? -complete=dir Buffers
   \ call fzf#vim#buffers(<q-args>, fzf#vim#with_preview(), <bang>0)
-command! -bang -nargs=* Hist call fzf#vim#history(fzf#vim#with_preview())
+com! -bang -nargs=* Hist call fzf#vim#history(fzf#vim#with_preview())
 fun! SearchWordWithAg()
     execute 'Ag' expand('<cword>')
 endfun
@@ -257,13 +275,14 @@ fun! SearchVisualSelectionWithAg() range
     let &clipboard = old_clipboard
     execute 'Ag' selection
 endfun
-nnoremap <leader>i :Commands<cr>
-nnoremap <leader>p :Files<cr>
-nnoremap <leader>f :Ag<cr>
-nnoremap <leader>b :Buffers<cr>
-nnoremap <leader>h :Hist<cr>
-nnoremap <leader>K :call SearchWordWithAg()<cr>
-vnoremap <leader>K :call SearchVisualSelectionWithAg()<cr>
+nnoremap <silent> <leader>fp :Files<cr>
+nnoremap <silent> <leader>ff :Ag<cr>
+nnoremap <silent> <leader>fh :Hist<cr>
+nnoremap <silent> <leader>fc :coms<cr>
+nnoremap <silent> <leader>fl :BLines<cr>
+nnoremap <silent> <leader>fb :Lines<cr>
+nnoremap <silent> <leader>fw :call SearchWordWithAg()<cr>
+vnoremap <silent> <leader>fv :call SearchVisualSelectionWithAg()<cr>
 
 """"" CoC
 let g:coc_global_extensions = [
@@ -316,25 +335,25 @@ fun! s:show_documentation()
 endfun
 
 " quick fix
-nmap <leader>qf  <plug>(coc-fix-current)
+nmap <silent> <leader>qf  <plug>(coc-fix-current)
 
 " prettier
-command! -nargs=0 Prettier :CocCommand prettier.formatFile
-nnoremap <leader>j :Prettier<cr>
+com! -nargs=0 Prettier :Coccom prettier.formatFile
+nnoremap <silent> <leader>j :Prettier<cr>
 
 " format selected
-xmap <leader>= <plug>(coc-format-selected)
-nmap <leader>= <plug>(coc-format-selected)
+xmap <silent> <leader>= <plug>(coc-format-selected)
+nmap <silent> <leader>= <plug>(coc-format-selected)
 
 " rename across project
-nmap <leader>rn <plug>(coc-rename)
+nmap <silent> <leader>rn <plug>(coc-rename)
 
 " jest keybinds
-command! -nargs=0 JestCurrent :call  CocAction('runCommand', 'jest.fileTest', ['%'])
-command! -nargs=0 Jest :call  CocAction('runCommand', 'jest.projectTest')
-nnoremap <leader>tt :call CocAction('runCommand', 'jest.singleTest')<cr>
-nnoremap <leader>tf :JestCurrent<cr>
-nnoremap <leader>ta :Jest<cr>
+com! -nargs=0 JestCurrent :call  CocAction('runcom', 'jest.fileTest', ['%'])
+com! -nargs=0 Jest :call  CocAction('runcom', 'jest.projectTest')
+nnoremap <silent> <leader>tt :call CocAction('runcom', 'jest.singleTest')<cr>
+nnoremap <silent> <leader>tf :JestCurrent<cr>
+nnoremap <silent> <leader>ta :Jest<cr>
 
 """"" Startify
 nnoremap <silent>~ :Startify <cr>
@@ -366,5 +385,6 @@ fun! SynStack()
         return
     endif
     echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
-endfunc
+endfun
 
+au VimLeave * set guicursor=a:ver30-iCursor-blinkon0
