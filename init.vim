@@ -65,7 +65,7 @@ nmap <silent> ]t :tabn<cr>
 nmap <silent> [t :tabp<cr>
 nmap <silent> <leader>tc :tabc<cr>
 nmap <silent> <leader>bd :bp <bar> bd#<cr>
-nmap <silent> <leader>bb :Buffers<cr>
+nmap <silent> <leader>ba :%bd <bar> e#<cr>
 
 " toggle search highlight
 nnoremap <silent> <leader>l :set hls!<cr>
@@ -228,7 +228,7 @@ au FileType typescript let b:match_words  = '<\(\w\w*\):</\1,{:}'
 let g:dirvish_mode = ':sort ,^\v(.*[\/])|\ze,'
 let g:loaded_netrwPlugin = 1
 let g:dirvish_relative_paths = 1
-cm! -nargs=? -complete=dir Explore Dirvish <args>
+com! -nargs=? -complete=dir Explore Dirvish <args>
 com! -nargs=? -complete=dir Sexplore belowright split | silent Dirvish <args>
 com! -nargs=? -complete=dir Vexplore leftabove vsplit | silent Dirvish <args>
 au FileType dirvish nnoremap <silent> <buffer> <esc> :normal gq<cr>
@@ -279,8 +279,9 @@ nnoremap <silent> <leader>fp :Files<cr>
 nnoremap <silent> <leader>ff :Ag<cr>
 nnoremap <silent> <leader>fh :Hist<cr>
 nnoremap <silent> <leader>fc :coms<cr>
-nnoremap <silent> <leader>fl :BLines<cr>
-nnoremap <silent> <leader>fb :Lines<cr>
+nnoremap <silent> <leader>fo :BLines<cr>
+nnoremap <silent> <leader>fl :Lines<cr>
+nnoremap <silent> <leader>fb :Buffers<cr>
 nnoremap <silent> <leader>fw :call SearchWordWithAg()<cr>
 vnoremap <silent> <leader>fv :call SearchVisualSelectionWithAg()<cr>
 

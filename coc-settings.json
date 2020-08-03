@@ -7,6 +7,7 @@
     "css",
     "scss"
   ],
+  "diagnostic.messageTarget": "echo",
   "eslint.filetypes": [
     "javascript",
     "javascriptreact",
@@ -20,6 +21,7 @@
   "javascript.suggest.enabled": false,
   "javascript.validate.enable": false,
   "signature.enable": false,
+  "signature.target": "echo",
   "typescript.preferences.importModuleSpecifier": "relative",
   "typescript.suggest.completeFunctionCalls": false,
   "typescript.suggest.enabled": false,
