@@ -1,13 +1,10 @@
-""""" Plugins
+"""""Plugins
 call plug#begin('~/.config/nvim/plugged')
 Plug 'airblade/vim-rooter'
-Plug 'itchyny/lightline.vim'
-Plug 'junegunn/goyo.vim'
+Plug 'bluz71/vim-moonfly-statusline'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'justinmk/vim-dirvish'
-Plug 'justinmk/vim-sneak'
-Plug 'mileszs/ack.vim'
 Plug 'mhinz/vim-startify'
 Plug 'mhinz/vim-signify'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
@@ -16,6 +13,7 @@ Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-rsi'
+Plug 'tpope/vim-sleuth'
 Plug 'tpope/vim-surround'
 
 " themes
@@ -36,6 +34,7 @@ set cmdheight=2
 set signcolumn=yes
 set autoindent
 set smartindent
+set signcolumn=yes
 set nowrap
 set nu rnu
 set nobackup
@@ -43,17 +42,19 @@ set nowritebackup
 set noswapfile
 set hidden
 set incsearch
+set inccommand=nosplit
 set noshowmode
 set updatetime=100
 set diffopt=vertical
 set smartcase
 set ignorecase
-set scrolloff=4
 set shortmess+=c
+set scrolloff=4
 set clipboard=unnamedplus
 set nohls
 set foldmethod=indent
 set nofoldenable
+set cursorline
 
 """"" Non-plugin keybinds
 let mapleader = ' '
@@ -65,7 +66,7 @@ nmap <silent> ]t :tabn<cr>
 nmap <silent> [t :tabp<cr>
 nmap <silent> <leader>tc :tabc<cr>
 nmap <silent> <leader>bd :bp <bar> bd#<cr>
-nmap <silent> <leader>ba :%bd <bar> e#<cr>
+nmap <silent> <leader>ba :%bd\|e#\|bd#<cr>\|'"
 
 " toggle search highlight
 nnoremap <silent> <leader>l :set hls!<cr>
@@ -74,25 +75,19 @@ nnoremap <silent> <leader>l :set hls!<cr>
 nnoremap <silent> <leader>cw :pwd<cr>
 nnoremap <silent> <leader>cc :echo expand('%:p')<cr>
 nnoremap <silent> <leader>cd :cd %:h<cr>:pwd<cr>
-nnoremap <silent> <leader>cp :Glcd<cr>
+nnoremap <silent> <leader>cp :Glcd <bar>:pwd<cr>
 
-""""" Disable arrow keys
-cnoremap <down> <nop>
-cnoremap <left> <nop>
-cnoremap <right> <nop>
-cnoremap <up> <nop>
-inoremap <down> <nop>
-inoremap <left> <nop>
-inoremap <right> <nop>
-inoremap <up> <nop>
-nnoremap <down> <nop>
-nnoremap <left> <nop>
-nnoremap <right> <nop>
-nnoremap <up> <nop>
-vnoremap <down> <nop>
-vnoremap <left> <nop>
-vnoremap <right> <nop>
-vnoremap <up> <nop>
+" when using `dd` in the quickfix list, remove the item from the quickfix list
+function! RemoveQFItem()
+  let curqfidx = line('.') - 1
+  let qfall = getqflist()
+  call remove(qfall, curqfidx)
+  call setqflist(qfall, 'r')
+  execute curqfidx + 1 . "cfirst"
+  :copen
+endfunction
+:command! RemoveQFItem :call RemoveQFItem()
+autocmd FileType qf map <buffer> dd :RemoveQFItem<cr>
 
 """"" Format options (disable autocomment)
 au BufEnter * set fo-=c fo-=r fo-=o
@@ -101,7 +96,7 @@ au BufEnter * set fo-=c fo-=r fo-=o
 fun! HighlightTemplateLiteral()
     if &ft == 'typescript'
         call SyntaxRange#Include('template: `', '`,', 'html', '')
-        call SyntaxRange#Include('styles: \[\_s\{-}`', '`,', 'css', '')
+        call SyntaxRange#Include('styles: \[\_s\{-}`', '`,\_s\{-}\]', 'css', '')
         syntax match htmlArg contained "\[\zs.\{-}\ze\]\|\*\w\+"
     endif
 endfun
@@ -110,24 +105,30 @@ aug hi-template-literal
   autocmd BufEnter * call HighlightTemplateLiteral()
 aug END
 
-if has('termguicolors')
-  set termguicolors
-endif
 if exists('+termguicolors')
-    let &t_8f = "\<esc>[38;2;%lu;%lu;%lum"
-    let &t_8b = "\<esc>[48;2;%lu;%lu;%lum"
+  let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+  let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+  set termguicolors
 endif
 
 set background=dark
+set t_Co=256
 let g:gruvbox_contrast_dark = 'hard'
-let g:gruvbox_invert_selection='0'
 colorscheme gruvbox
-hi Normal guibg=NONE ctermbg=NONE
+
+let g:moonflyIgnoreDefaultColors = 1
+highlight! link User1 DiffText
+highlight! link User2 DiffAdd
+highlight! link User3 Search
+highlight! link User4 IncSearch
+highlight! link User5 StatusLine
+highlight! link User6 StatusLine
+highlight! link User7 StatusLine
 
 """" Context commentstring
 fun! CommentTemplateLiteral()
     " context commentstring
-    if !exists('g:context#commentstring#table.typescript')
+    if exists('g:context#commentstring#table') && !exists('g:context#commentstring#table.typescript')
         let g:context#commentstring#table.typescript = {
             \ 'synIncludeHtml': '<!-- %s -->',
             \ 'synIncludeCss': '/* %s */'
@@ -140,77 +141,6 @@ aug comment-template-literal
     autocmd FileType typescript call CommentTemplateLiteral()
 aug END
 
-""""" Statusline
-let g:lightline = {
-      \ 'colorscheme': 'gruvbox',
-      \ 'active': {
-      \   'left': [
-      \     [ 'mode', 'paste' ],
-      \     [ 'fugitive', 'filename' ],
-      \     [ 'cocstatus' ]
-      \   ],
-      \    'right': [
-      \     [ 'percent' ],
-      \     [ 'lineinfo' ]
-      \   ]
-      \ },
-      \ 'component_function': {
-      \   'fugitive': 'LightlineFugitive',
-      \   'readonly': 'LightlineReadonly',
-      \   'modified': 'LightlineModified',
-      \   'filename': 'LightlineFilename',
-      \   'cocstatus': 'coc#status',
-      \ },
-      \ 'separator': {
-      \   'left': '',
-      \   'right': ''
-      \ },
-      \ 'subseparator': {
-      \   'left': '',
-      \   'right': ''
-      \ }
-    \ }
-
-" show modified buffer
-fun! LightlineModified()
-  if &filetype == "help"
-    return ""
-  elseif &modified
-    return "+"
-  elseif &modifiable
-    return ""
-  else
-    return ""
-  endif
-endfun
-
-" file is readonly
-fun! LightlineReadonly()
-  if &filetype == "help"
-    return ""
-  elseif &readonly
-    return ""
-  else
-    return ""
-  endif
-endfun
-
-" git branch
-fun! LightlineFugitive()
-  if &ft != 'dirvish' && exists("*fugitive#head")
-    let branch = fugitive#head()
-    return branch !=# '' ? ' '.branch : ''
-  endif
-  return ''
-endfun
-
-" nicer filename
-fun! LightlineFilename()
-  return ('' != LightlineReadonly() ? LightlineReadonly() . ' ' : '') .
-       \ ('' != expand('%:t') ? expand('%:t') : &ft == 'dirvish' ? expand('%F') : '[No Name]') .
-       \ ('' != LightlineModified() ? ' ' . LightlineModified() : '')
-endfun
-
 """"" Git
 au FileType fugitive nnoremap <silent> <buffer> <esc> :normal gq<cr>
 nnoremap <silent> <leader>gd :Gdiffsplit<cr>
@@ -220,6 +150,8 @@ nnoremap <silent> <leader>gs :Gstatus<cr>
 nnoremap <silent> <leader>gg :Git<space>
 nnoremap <silent> <leader>gp :SignifyHunkDiff<cr>
 nnoremap <silent> <leader>gu :SignifyHunkUndo<cr>
+nnoremap <silent> <leader>ff :diffget //2<cr>
+nnoremap <silent> <leader>jj :diffget //3<cr>
 
 """""" Matchit settings to match html tags with '%'
 au FileType typescript let b:match_words  = '<\(\w\w*\):</\1,{:}'
@@ -234,10 +166,6 @@ com! -nargs=? -complete=dir Vexplore leftabove vsplit | silent Dirvish <args>
 au FileType dirvish nnoremap <silent> <buffer> <esc> :normal gq<cr>
 au FileType dirvish nnoremap <silent> <buffer> <c-c> :normal gq<cr>
 au FileType dirvish nnoremap <silent> <buffer> <c-[> :normal gq<cr>
-
-""""" Sneak
-let g:sneak#label = 1
-let g:sneak#use_ic_scs = 1
 
 """"" FZF
 let $FZF_DEFAULT_OPTS="--preview-window 'bottom:60%' --layout reverse --margin=1,4"
@@ -278,7 +206,7 @@ endfun
 nnoremap <silent> <leader>fp :Files<cr>
 nnoremap <silent> <leader>ff :Ag<cr>
 nnoremap <silent> <leader>fh :Hist<cr>
-nnoremap <silent> <leader>fc :coms<cr>
+nnoremap <silent> <leader>fc :Commands<cr>
 nnoremap <silent> <leader>fo :BLines<cr>
 nnoremap <silent> <leader>fl :Lines<cr>
 nnoremap <silent> <leader>fb :Buffers<cr>
@@ -296,8 +224,8 @@ let g:coc_global_extensions = [
     \ 'coc-yank' ]
 
 " jump to diagnostics
-nmap <silent> ]g <plug>(coc-diagnostic-next)
-nmap <silent> [g <plug>(coc-diagnostic-prev)
+nmap <silent> ]d <plug>(coc-diagnostic-next)
+nmap <silent> [d <plug>(coc-diagnostic-prev)
 
 " <tab> through autocomplete list
 inoremap <expr><s-tab> pumvisible() ? "\<c-p>" : "\<c-h>"
@@ -323,7 +251,7 @@ endif
 nmap <silent> <c-]> <plug>(coc-definition)
 
 " show references of word under cursor
-nmap <silent> gr <plug>(coc-references)
+nmap <silent> rr <plug>(coc-references)
 
 " show documentation or type information of word under cursor
 nnoremap <silent> K :call <sid>show_documentation()<cr>
@@ -339,7 +267,7 @@ endfun
 nmap <silent> <leader>qf  <plug>(coc-fix-current)
 
 " prettier
-com! -nargs=0 Prettier :Coccom prettier.formatFile
+com! -nargs=0 Prettier :CocCommand prettier.formatFile
 nnoremap <silent> <leader>j :Prettier<cr>
 
 " format selected
@@ -350,9 +278,9 @@ nmap <silent> <leader>= <plug>(coc-format-selected)
 nmap <silent> <leader>rn <plug>(coc-rename)
 
 " jest keybinds
-com! -nargs=0 JestCurrent :call  CocAction('runcom', 'jest.fileTest', ['%'])
-com! -nargs=0 Jest :call  CocAction('runcom', 'jest.projectTest')
-nnoremap <silent> <leader>tt :call CocAction('runcom', 'jest.singleTest')<cr>
+com! -nargs=0 JestCurrent :call  CocAction('runCommand', 'jest.fileTest', ['%'])
+com! -nargs=0 Jest :call  CocAction('runCommand', 'jest.projectTest')
+nnoremap <silent> <leader>tt :call CocAction('runCommand', 'jest.singleTest')<cr>
 nnoremap <silent> <leader>tf :JestCurrent<cr>
 nnoremap <silent> <leader>ta :Jest<cr>
 
