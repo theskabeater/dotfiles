@@ -15,6 +15,7 @@ Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-rsi'
 Plug 'tpope/vim-sleuth'
 Plug 'tpope/vim-surround'
+Plug 'unblevable/quick-scope'
 
 " themes
 Plug 'morhetz/gruvbox'
@@ -158,11 +159,6 @@ au FileType typescript let b:match_words  = '<\(\w\w*\):</\1,{:}'
 
 """"" Dirvish
 let g:dirvish_mode = ':sort ,^\v(.*[\/])|\ze,'
-let g:loaded_netrwPlugin = 1
-let g:dirvish_relative_paths = 1
-com! -nargs=? -complete=dir Explore Dirvish <args>
-com! -nargs=? -complete=dir Sexplore belowright split | silent Dirvish <args>
-com! -nargs=? -complete=dir Vexplore leftabove vsplit | silent Dirvish <args>
 au FileType dirvish nnoremap <silent> <buffer> <esc> :normal gq<cr>
 au FileType dirvish nnoremap <silent> <buffer> <c-c> :normal gq<cr>
 au FileType dirvish nnoremap <silent> <buffer> <c-[> :normal gq<cr>
@@ -212,6 +208,9 @@ nnoremap <silent> <leader>fl :Lines<cr>
 nnoremap <silent> <leader>fb :Buffers<cr>
 nnoremap <silent> <leader>fw :call SearchWordWithAg()<cr>
 vnoremap <silent> <leader>fv :call SearchVisualSelectionWithAg()<cr>
+
+""""" Quickscope
+let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
 
 """"" CoC
 let g:coc_global_extensions = [
@@ -293,7 +292,7 @@ let g:startify_bookmarks =  [{'c': '~/src/dotfiles/init.vim'},
                             \{'rr': '~/src/raasdev/raas'},
                             \{'rd':'~/src/raasdev/raas-docker'},
                             \{'sa': '~/src/raasdev/salt'},
-                            \{'dev': '~/src/raasdev'},
+                            \{'dev': '~/src'},
                             \{'dot': '~/src/dotfiles'}]
 
 """"" Utils

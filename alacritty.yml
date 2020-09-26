@@ -6,6 +6,9 @@ window:
 cursor:
   style: Beam
 
+selection:
+  save_to_clipboard: true
+
 font:
   size: 10
   normal:
@@ -33,12 +36,6 @@ colors:
     magenta: '#d3869b'
     cyan:    '#8ec07c'
     white:   '#ebdbb2'
-shell:
-  program: /bin/bash
-  args:
-    - -l
-    - -c
-    - "tmux attach || tmux"
 scroll:
   - { key: PageUp,   mods: Shift,   action: ScrollPageUp }
   - { key: PageDown, mods: Shift,   action: ScrollPageDown }
