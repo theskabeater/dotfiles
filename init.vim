@@ -287,13 +287,15 @@ nnoremap <silent> <leader>ta :Jest<cr>
 nnoremap <silent>~ :Startify <cr>
 au FileType startify nnoremap <silent> <esc> :normal q<cr>
 let g:startify_list_order = ['files', 'bookmarks']
-let g:startify_bookmarks =  [{'c': '~/src/dotfiles/init.vim'},
-                            \{'ru': '~/src/raasdev/raas-ui'},
+let g:startify_bookmarks =  [{'ru': '~/src/raasdev/raas-ui'},
                             \{'rr': '~/src/raasdev/raas'},
                             \{'rd':'~/src/raasdev/raas-docker'},
                             \{'sa': '~/src/raasdev/salt'},
+                            \{'con': '~/.config'},
                             \{'dev': '~/src'},
-                            \{'dot': '~/src/dotfiles'}]
+                            \{'dot': '~/src/dotfiles'},
+                            \{'envs': '~/src/raasdev/envs'},
+                            \{'raasdev': '~/src/raasdev'}]
 
 """"" Utils
 fun! TrimWhitespace()

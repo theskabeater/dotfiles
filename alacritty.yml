@@ -3,6 +3,8 @@ window:
     x: 4
     y: 4
 
+# background_opacity: 0.8
+
 cursor:
   style: Beam
 
@@ -12,7 +14,7 @@ selection:
 font:
   size: 10
   normal:
-    family: FiraMono Nerd Font
+    family: Fira Mono
 
 colors:
   primary:
@@ -36,6 +38,8 @@ colors:
     magenta: '#d3869b'
     cyan:    '#8ec07c'
     white:   '#ebdbb2'
+
 scroll:
   - { key: PageUp,   mods: Shift,   action: ScrollPageUp }
   - { key: PageDown, mods: Shift,   action: ScrollPageDown }
+
