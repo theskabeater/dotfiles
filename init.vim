@@ -37,7 +37,6 @@ set autoindent
 set smartindent
 set signcolumn=yes
 set nowrap
-set nu rnu
 set nobackup
 set nowritebackup
 set noswapfile
