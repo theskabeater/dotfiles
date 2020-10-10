@@ -19,18 +19,7 @@
   "eslint.autoFixOnSave": true,
   "javascript.suggest.enabled": false,
   "javascript.validate.enable": false,
-  "languageserver": {
-    "elmLS": {
-      "command": "elm-language-server",
-      "filetypes": ["elm"],
-      "rootPatterns": ["elm.json"],
-      "initializationOptions": {
-        "elmAnalyseTrigger": "change"
-      }
-    }
-  },
   "signature.enable": false,
-  "signature.target": "echo",
   "tsserver.maxTsServerMemory": 4096,
   "typescript.preferences.importModuleSpecifier": "relative",
   "typescript.suggest.completeFunctionCalls": false,

@@ -1,13 +1,15 @@
-"""""Plugins
+"""""""""""""""""""""""""""""""""""""""
+" Plugins
+"""""""""""""""""""""""""""""""""""""""
+
 call plug#begin('~/.config/nvim/plugged')
 Plug 'airblade/vim-rooter'
-Plug 'bluz71/vim-moonfly-statusline'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'justinmk/vim-dirvish'
 Plug 'mhinz/vim-startify'
-Plug 'mhinz/vim-signify'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'mhinz/vim-signify'
 Plug 'suy/vim-context-commentstring'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-fugitive'
@@ -26,7 +28,12 @@ Plug 'sheerun/vim-polyglot'
 
 call plug#end()
 
-""""" Vim settings
+
+
+"""""""""""""""""""""""""""""""""""""""
+" Global settings
+"""""""""""""""""""""""""""""""""""""""
+
 set mouse=a
 set tabstop=4 softtabstop=4
 set shiftwidth=4
@@ -43,7 +50,6 @@ set noswapfile
 set hidden
 set incsearch
 set inccommand=nosplit
-set noshowmode
 set updatetime=100
 set diffopt=vertical
 set smartcase
@@ -55,27 +61,36 @@ set nohls
 set foldmethod=indent
 set nofoldenable
 set cursorline
+set number relativenumber
 
-""""" Non-plugin keybinds
+" reset terminal cursor upon exiting
+au VimLeave * set guicursor=a:ver30-iCursor-blinkon0
+
+
+
+"""""""""""""""""""""""""""""""""""""""
+" Global keybindings
+"""""""""""""""""""""""""""""""""""""""
+
 let mapleader = ' '
 
 " change buffers/tabs
-nmap <silent> ]b :bn<cr>
-nmap <silent> [b :bp<cr>
-nmap <silent> ]t :tabn<cr>
-nmap <silent> [t :tabp<cr>
-nmap <silent> <leader>tc :tabc<cr>
-nmap <silent> <leader>bd :bp <bar> bd#<cr>
-nmap <silent> <leader>ba :%bd\|e#\|bd#<cr>\|'"
+nmap ]b :bn<cr>
+nmap [b :bp<cr>
+nmap ]t :tabn<cr>
+nmap [t :tabp<cr>
+nmap <leader>tc :tabc<cr>
+nmap <leader>bd :bp <bar> bd#<cr>
+nmap <leader>ba :%bd\|e#\|bd#<cr>\|'"
 
 " toggle search highlight
-nnoremap <silent> <leader>l :set hls!<cr>
+nnoremap <leader>l :set hls!<cr>
 
 " change directories, Glcd comes from tpope/vim-fugitive
-nnoremap <silent> <leader>cw :pwd<cr>
-nnoremap <silent> <leader>cc :echo expand('%:p')<cr>
-nnoremap <silent> <leader>cd :cd %:h<cr>:pwd<cr>
-nnoremap <silent> <leader>cp :Glcd <bar>:pwd<cr>
+nnoremap <leader>cw :pwd<cr>
+nnoremap <leader>cc :echo expand('%:p')<cr>
+nnoremap <leader>cd :cd %:h<cr>:pwd<cr>
+nnoremap <leader>cp :Glcd <bar>:pwd<cr>
 
 " when using `dd` in the quickfix list, remove the item from the quickfix list
 function! RemoveQFItem()
@@ -89,10 +104,21 @@ endfunction
 :command! RemoveQFItem :call RemoveQFItem()
 autocmd FileType qf map <buffer> dd :RemoveQFItem<cr>
 
-""""" Format options (disable autocomment)
+
+
+"""""""""""""""""""""""""""""""""""""""
+" Formatting
+"""""""""""""""""""""""""""""""""""""""
+
+" disable auto comments in comment block
 au BufEnter * set fo-=c fo-=r fo-=o
 
-""""" Theme/syntax highlighting
+
+
+"""""""""""""""""""""""""""""""""""""""
+" Appearance
+"""""""""""""""""""""""""""""""""""""""
+
 fun! HighlightTemplateLiteral()
     if &ft == 'typescript'
         call SyntaxRange#Include('template: `', '`,', 'html', '')
@@ -116,16 +142,22 @@ set t_Co=256
 let g:gruvbox_contrast_dark = 'hard'
 colorscheme gruvbox
 
-let g:moonflyIgnoreDefaultColors = 1
-highlight! link User1 DiffText
-highlight! link User2 DiffAdd
-highlight! link User3 Search
-highlight! link User4 IncSearch
-highlight! link User5 StatusLine
-highlight! link User6 StatusLine
-highlight! link User7 StatusLine
+hi default link User1 Error
+set statusline =
+set statusline +=[%n]
+set statusline +=\ %F
+set statusline +=\ %1*%m%0*
+set statusline +=\ %{coc#status()}%{get(b:,'coc_current_function','')}
+set statusline +=\ %h
+set statusline +=%r
+set statusline +=%w
+set statusline +=%=\ %(%l,%c%V%)\/\%-5L
 
-"""" Context commentstring
+
+"""""""""""""""""""""""""""""""""""""""
+" Context commentstring
+"""""""""""""""""""""""""""""""""""""""
+
 fun! CommentTemplateLiteral()
     " context commentstring
     if exists('g:context#commentstring#table') && !exists('g:context#commentstring#table.typescript')
@@ -141,28 +173,53 @@ aug comment-template-literal
     autocmd FileType typescript call CommentTemplateLiteral()
 aug END
 
-""""" Git
-au FileType fugitive nnoremap <silent> <buffer> <esc> :normal gq<cr>
-nnoremap <silent> <leader>gd :Gdiffsplit<cr>
-nnoremap <silent> <leader>gb :Gblame<cr>
-nnoremap <silent> <leader>gl :Glog<cr>
-nnoremap <silent> <leader>gs :Gstatus<cr>
-nnoremap <silent> <leader>gg :Git<space>
-nnoremap <silent> <leader>gp :SignifyHunkDiff<cr>
-nnoremap <silent> <leader>gu :SignifyHunkUndo<cr>
-nnoremap <silent> <leader>ff :diffget //2<cr>
-nnoremap <silent> <leader>jj :diffget //3<cr>
 
-"""""" Matchit settings to match html tags with '%'
+
+"""""""""""""""""""""""""""""""""""""""
+" GIT
+"""""""""""""""""""""""""""""""""""""""
+
+" keybindings
+au FileType fugitive nnoremap <buffer> <esc> :normal gq<cr>
+nnoremap <leader>gd :Gdiffsplit<cr>
+nnoremap <leader>gb :Gblame<cr>
+nnoremap <leader>gl :Glog<cr>
+nnoremap <leader>gs :Gstatus<cr>
+nnoremap <leader>gg :Git<space>
+nnoremap <leader>gp :SignifyHunkDiff<cr>
+nnoremap <leader>gu :SignifyHunkUndo<cr>
+nnoremap <leader>g :diffget //2<cr>
+nnoremap <leader>h :diffget //3<cr>
+
+
+
+"""""""""""""""""""""""""""""""""""""""
+" Matchit
+"""""""""""""""""""""""""""""""""""""""
+
+" match html tags in ts files
 au FileType typescript let b:match_words  = '<\(\w\w*\):</\1,{:}'
 
-""""" Dirvish
-let g:dirvish_mode = ':sort ,^\v(.*[\/])|\ze,'
-au FileType dirvish nnoremap <silent> <buffer> <esc> :normal gq<cr>
-au FileType dirvish nnoremap <silent> <buffer> <c-c> :normal gq<cr>
-au FileType dirvish nnoremap <silent> <buffer> <c-[> :normal gq<cr>
 
-""""" FZF
+
+"""""""""""""""""""""""""""""""""""""""
+" Dirvish
+"""""""""""""""""""""""""""""""""""""""
+
+" default sorting
+let g:dirvish_mode = ':sort ,^\v(.*[\/])|\ze,'
+
+" keybindings
+au FileType dirvish nnoremap <buffer> <esc> :normal gq<cr>
+au FileType dirvish nnoremap <buffer> <c-c> :normal gq<cr>
+au FileType dirvish nnoremap <buffer> <c-[> :normal gq<cr>
+
+
+
+"""""""""""""""""""""""""""""""""""""""
+" FZF
+"""""""""""""""""""""""""""""""""""""""
+
 let $FZF_DEFAULT_OPTS="--preview-window 'bottom:60%' --layout reverse --margin=1,4"
 let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.9 } }
 let g:fzf_colors =
@@ -179,14 +236,20 @@ let g:fzf_colors =
   \ 'marker':  ['fg', 'Keyword'],
   \ 'spinner': ['fg', 'Label'],
   \ 'header':  ['fg', 'Comment'] }
+
+" Ag settings
 com! -bang -nargs=* Ag
   \ call fzf#vim#ag(<q-args>, fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}), <bang>0)
+
 com! -bang -nargs=? -complete=dir Buffers
   \ call fzf#vim#buffers(<q-args>, fzf#vim#with_preview(), <bang>0)
+
 com! -bang -nargs=* Hist call fzf#vim#history(fzf#vim#with_preview())
+
 fun! SearchWordWithAg()
     execute 'Ag' expand('<cword>')
 endfun
+
 fun! SearchVisualSelectionWithAg() range
     let old_reg = getreg('"')
     let old_regtype = getregtype('"')
@@ -198,36 +261,50 @@ fun! SearchVisualSelectionWithAg() range
     let &clipboard = old_clipboard
     execute 'Ag' selection
 endfun
-nnoremap <silent> <leader>fp :Files<cr>
-nnoremap <silent> <leader>ff :Ag<cr>
-nnoremap <silent> <leader>fh :Hist<cr>
-nnoremap <silent> <leader>fc :Commands<cr>
-nnoremap <silent> <leader>fo :BLines<cr>
-nnoremap <silent> <leader>fl :Lines<cr>
-nnoremap <silent> <leader>fb :Buffers<cr>
-nnoremap <silent> <leader>fw :call SearchWordWithAg()<cr>
-vnoremap <silent> <leader>fv :call SearchVisualSelectionWithAg()<cr>
 
-""""" Quickscope
+" keybindings
+nnoremap <leader>fp :Files<cr>
+nnoremap <leader>ff :Ag<cr>
+nnoremap <leader>fh :Hist<cr>
+nnoremap <leader>fc :Commands<cr>
+nnoremap <leader>fo :BLines<cr>
+nnoremap <leader>fl :Lines<cr>
+nnoremap <leader>fb :Buffers<cr>
+nnoremap <leader>fw :call SearchWordWithAg()<cr>
+vnoremap <leader>fv :call SearchVisualSelectionWithAg()<cr>
+
+
+
+"""""""""""""""""""""""""""""""""""""""
+" Quickscope
+"""""""""""""""""""""""""""""""""""""""
+
 let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
 
-""""" CoC
+
+
+"""""""""""""""""""""""""""""""""""""""
+" CoC
+"""""""""""""""""""""""""""""""""""""""
+
 let g:coc_global_extensions = [
-    \ 'coc-tsserver',
     \ 'coc-angular',
     \ 'coc-eslint',
-    \ 'coc-prettier',
     \ 'coc-html',
+    \ 'coc-jest',
     \ 'coc-json',
+    \ 'coc-prettier',
+    \ 'coc-tsserver',
     \ 'coc-yank' ]
 
-" jump to diagnostics
-nmap <silent> ]d <plug>(coc-diagnostic-next)
-nmap <silent> [d <plug>(coc-diagnostic-prev)
+" diagnostics
+nmap <leader>d :CocDiagnostics<cr>
+nmap ]d <plug>(coc-diagnostic-next)
+nmap [d <plug>(coc-diagnostic-prev)
 
 " <tab> through autocomplete list
 inoremap <expr><s-tab> pumvisible() ? "\<c-p>" : "\<c-h>"
-inoremap <silent><expr> <tab>
+inoremap <expr> <tab>
   \ pumvisible() ? "\<c-n>" :
   \ <sid>check_back_space() ? "\<tab>" :
   \ coc#refresh()
@@ -238,7 +315,7 @@ fun! s:check_back_space() abort
 endfun
 
 " trigger autocomplete
-inoremap <silent><expr> <c-space> coc#refresh()
+inoremap <expr> <c-space> coc#refresh()
 if exists('*complete_info')
   inoremap <expr> <cr> complete_info()["selected"] != "-1" ? "\<c-y>" : "\<c-g>u\<cr>"
 else
@@ -246,13 +323,13 @@ else
 endif
 
 " jump to code definition
-nmap <silent> <c-]> <plug>(coc-definition)
+nmap <c-]> <plug>(coc-definition)
 
 " show references of word under cursor
-nmap <silent> rr <plug>(coc-references)
+nmap <leader>rr <plug>(coc-references)
 
 " show documentation or type information of word under cursor
-nnoremap <silent> K :call <sid>show_documentation()<cr>
+nnoremap K :call <sid>show_documentation()<cr>
 fun! s:show_documentation()
   if (index(['vim','help'], &filetype) >= 0)
     execute 'h '.expand('<cword>')
@@ -262,29 +339,38 @@ fun! s:show_documentation()
 endfun
 
 " quick fix
-nmap <silent> <leader>qf  <plug>(coc-fix-current)
+nmap <leader>qf <plug>(coc-fix-current)
 
 " prettier
 com! -nargs=0 Prettier :CocCommand prettier.formatFile
-nnoremap <silent> <leader>j :Prettier<cr>
+nnoremap <leader>j :Prettier<cr>
 
 " format selected
-xmap <silent> <leader>= <plug>(coc-format-selected)
-nmap <silent> <leader>= <plug>(coc-format-selected)
+xmap <leader>= <plug>(coc-format-selected)
+nmap <leader>= <plug>(coc-format-selected)
 
 " rename across project
-nmap <silent> <leader>rn <plug>(coc-rename)
+nmap <leader>rn <plug>(coc-rename)
 
 " jest keybinds
 com! -nargs=0 JestCurrent :call  CocAction('runCommand', 'jest.fileTest', ['%'])
 com! -nargs=0 Jest :call  CocAction('runCommand', 'jest.projectTest')
-nnoremap <silent> <leader>tt :call CocAction('runCommand', 'jest.singleTest')<cr>
-nnoremap <silent> <leader>tf :JestCurrent<cr>
-nnoremap <silent> <leader>ta :Jest<cr>
+nnoremap <leader>tt :call CocAction('runCommand', 'jest.singleTest')<cr>
+nnoremap <leader>tf :JestCurrent<cr>
+nnoremap <leader>ta :Jest<cr>
 
-""""" Startify
-nnoremap <silent>~ :Startify <cr>
-au FileType startify nnoremap <silent> <esc> :normal q<cr>
+" code actions
+nmap <leader>a <plug>(coc-codeaction)
+
+
+
+"""""""""""""""""""""""""""""""""""""""
+" Startify
+"""""""""""""""""""""""""""""""""""""""
+
+" keybindings
+nnoremap ~ :Startify <cr>
+au FileType startify nnoremap <esc> :normal q<cr>
 let g:startify_list_order = ['files', 'bookmarks']
 let g:startify_bookmarks =  [{'ru': '~/src/raasdev/raas-ui'},
                             \{'rr': '~/src/raasdev/raas'},
@@ -296,7 +382,13 @@ let g:startify_bookmarks =  [{'ru': '~/src/raasdev/raas-ui'},
                             \{'envs': '~/src/raasdev/envs'},
                             \{'raasdev': '~/src/raasdev'}]
 
-""""" Utils
+
+
+"""""""""""""""""""""""""""""""""""""""
+" Utils
+"""""""""""""""""""""""""""""""""""""""
+
+" trim whitespace on save
 fun! TrimWhitespace()
     let l:save = winsaveview()
     keeppatterns %s/\s\+$//e
@@ -304,10 +396,10 @@ fun! TrimWhitespace()
 endfun
 au BufWritePre * :call TrimWhitespace()
 
-"vim regex tester
+" vim regex tester
 nnoremap <f5> mryi":let @/ = @"<cr>`r
 
-"get syntax groups under cursor
+" get syntax groups under cursor
 nnoremap <f6> :call SynStack()<cr>
 fun! SynStack()
     if !exists("*synstack")
@@ -315,5 +407,3 @@ fun! SynStack()
     endif
     echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
 endfun
-
-au VimLeave * set guicursor=a:ver30-iCursor-blinkon0
