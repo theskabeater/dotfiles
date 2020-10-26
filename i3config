@@ -12,8 +12,9 @@ bindsym $mod+t exec alacritty
 bindsym $mod+b exec "/usr/bin/chromium"
 
 # screenshots
-bindsym --release Print exec scrot 'screenshot_%Y%m%d_%H%M%S.png' -e 'mkdir -p ~/Pictures/screenshots && mv $f ~/Pictures/screenshots && xclip -selection clipboard -t image/png -i ~/Pictures/screenshots/`ls -1 -t ~/Pictures/screenshots | head -1`' # All screens
-bindsym --release Shift+Print exec scrot -s 'screenshot_%Y%m%d_%H%M%S.png' -e 'mkdir -p ~/Pictures/screenshots && mv $f ~/Pictures/screenshots && xclip -selection clipboard -t image/png -i ~/Pictures/screenshots/`ls -1 -t ~/Pictures/screenshots | head -1`' # Area selection
+bindsym --release Print exec maim ~/Pictures/screenshots/$(date +%s).png
+bindsym --release Shift+Print exec maim -s | xclip -selection clipboard -t image/png
+bindsym --release $mod+Shift+Print exec maim -st 9999999 | convert - \( +clone -background black -shadow 80x3+5+5 \) +swap -background none -layers merge +repage ~/Pictures/screenshots/$(date +%s).png
 
 # kill focused window
 bindsym $mod+q kill

@@ -3,11 +3,11 @@
 """""""""""""""""""""""""""""""""""""""
 
 call plug#begin('~/.config/nvim/plugged')
+
 Plug 'airblade/vim-rooter'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'justinmk/vim-dirvish'
-Plug 'mhinz/vim-startify'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'mhinz/vim-signify'
 Plug 'suy/vim-context-commentstring'
@@ -64,7 +64,10 @@ set cursorline
 set number relativenumber
 
 " reset terminal cursor upon exiting
-au VimLeave * set guicursor=a:ver30-iCursor-blinkon0
+aug reset-cursor
+  au!
+  au VimLeave * set guicursor=a:ver30-iCursor-blinkon0
+aug END
 
 
 
@@ -81,7 +84,7 @@ nmap ]t :tabn<cr>
 nmap [t :tabp<cr>
 nmap <leader>tc :tabc<cr>
 nmap <leader>bd :bp <bar> bd#<cr>
-nmap <leader>ba :%bd\|e#\|bd#<cr>\|'"
+nmap <leader>bo :%bd\|e#\|bd#<cr>\|'"
 
 " toggle search highlight
 nnoremap <leader>l :set hls!<cr>
@@ -93,16 +96,20 @@ nnoremap <leader>cd :cd %:h<cr>:pwd<cr>
 nnoremap <leader>cp :Glcd <bar>:pwd<cr>
 
 " when using `dd` in the quickfix list, remove the item from the quickfix list
-function! RemoveQFItem()
+fun! RemoveQFItem()
   let curqfidx = line('.') - 1
   let qfall = getqflist()
   call remove(qfall, curqfidx)
   call setqflist(qfall, 'r')
   execute curqfidx + 1 . "cfirst"
   :copen
-endfunction
-:command! RemoveQFItem :call RemoveQFItem()
-autocmd FileType qf map <buffer> dd :RemoveQFItem<cr>
+endfun
+:com! RemoveQFItem :call RemoveQFItem()
+
+aug remove-quick-fix-item
+    au!
+    au FileType qf map <buffer> dd :RemoveQFItem<cr>
+aug END
 
 
 
@@ -111,7 +118,10 @@ autocmd FileType qf map <buffer> dd :RemoveQFItem<cr>
 """""""""""""""""""""""""""""""""""""""
 
 " disable auto comments in comment block
-au BufEnter * set fo-=c fo-=r fo-=o
+aug disable-auto-commenting
+    au!
+    au BufEnter * set fo-=c fo-=r fo-=o
+aug END
 
 
 
@@ -126,9 +136,10 @@ fun! HighlightTemplateLiteral()
         syntax match htmlArg contained "\[\zs.\{-}\ze\]\|\*\w\+"
     endif
 endfun
+
 aug hi-template-literal
   au!
-  autocmd BufEnter * call HighlightTemplateLiteral()
+  au BufEnter * call HighlightTemplateLiteral()
 aug END
 
 if exists('+termguicolors')
@@ -142,6 +153,7 @@ set t_Co=256
 let g:gruvbox_contrast_dark = 'hard'
 colorscheme gruvbox
 
+" statusline
 hi default link User1 Error
 set statusline =
 set statusline +=[%n]
@@ -170,7 +182,7 @@ endfun
 
 aug comment-template-literal
     au!
-    autocmd FileType typescript call CommentTemplateLiteral()
+    au FileType typescript call CommentTemplateLiteral()
 aug END
 
 
@@ -180,7 +192,6 @@ aug END
 """""""""""""""""""""""""""""""""""""""
 
 " keybindings
-au FileType fugitive nnoremap <buffer> <esc> :normal gq<cr>
 nnoremap <leader>gd :Gdiffsplit<cr>
 nnoremap <leader>gb :Gblame<cr>
 nnoremap <leader>gl :Glog<cr>
@@ -188,8 +199,17 @@ nnoremap <leader>gs :Gstatus<cr>
 nnoremap <leader>gg :Git<space>
 nnoremap <leader>gp :SignifyHunkDiff<cr>
 nnoremap <leader>gu :SignifyHunkUndo<cr>
-nnoremap <leader>g :diffget //2<cr>
-nnoremap <leader>h :diffget //3<cr>
+
+fun! GitBindings()
+    nnoremap <leader>g :diffget //2<cr>
+    nnoremap <leader>h :diffget //3<cr>
+    nnoremap <buffer> <esc> :normal gq<cr>
+endfun
+
+aug git-bindings
+    au!
+    au FileType fugitive call GitBindings()
+aug END
 
 
 
@@ -198,7 +218,10 @@ nnoremap <leader>h :diffget //3<cr>
 """""""""""""""""""""""""""""""""""""""
 
 " match html tags in ts files
-au FileType typescript let b:match_words  = '<\(\w\w*\):</\1,{:}'
+aug matchit-html-tags
+    au!
+    au FileType typescript let b:match_words  = '<\(\w\w*\):</\1,{:}'
+aug END
 
 
 
@@ -210,9 +233,16 @@ au FileType typescript let b:match_words  = '<\(\w\w*\):</\1,{:}'
 let g:dirvish_mode = ':sort ,^\v(.*[\/])|\ze,'
 
 " keybindings
-au FileType dirvish nnoremap <buffer> <esc> :normal gq<cr>
-au FileType dirvish nnoremap <buffer> <c-c> :normal gq<cr>
-au FileType dirvish nnoremap <buffer> <c-[> :normal gq<cr>
+fun! DirvishBindings()
+    nnoremap <buffer> <esc> :normal gq<cr>
+    nnoremap <buffer> <c-c> :normal gq<cr>
+    nnoremap <buffer> <c-[> :normal gq<cr>
+endfun
+
+aug dirvish-bindings
+    au!
+    au FileType dirvish call DirvishBindings()
+aug END
 
 
 
@@ -271,7 +301,9 @@ nnoremap <leader>fo :BLines<cr>
 nnoremap <leader>fl :Lines<cr>
 nnoremap <leader>fb :Buffers<cr>
 nnoremap <leader>fw :call SearchWordWithAg()<cr>
+nnoremap <leader>fm :Marks<cr>
 vnoremap <leader>fv :call SearchVisualSelectionWithAg()<cr>
+nnoremap <leader>ft :Colors<cr>
 
 
 
@@ -297,18 +329,6 @@ let g:coc_global_extensions = [
     \ 'coc-tsserver',
     \ 'coc-yank' ]
 
-" diagnostics
-nmap <leader>d :CocDiagnostics<cr>
-nmap ]d <plug>(coc-diagnostic-next)
-nmap [d <plug>(coc-diagnostic-prev)
-
-" <tab> through autocomplete list
-inoremap <expr><s-tab> pumvisible() ? "\<c-p>" : "\<c-h>"
-inoremap <expr> <tab>
-  \ pumvisible() ? "\<c-n>" :
-  \ <sid>check_back_space() ? "\<tab>" :
-  \ coc#refresh()
-
 fun! s:check_back_space() abort
   let col = col('.') - 1
   return !col || getline('.')[col - 1]  =~# '\s'
@@ -322,12 +342,6 @@ else
   inoremap <expr> <cr> pumvisible() ? "\<c-y>" : "\<c-g>u\<cr>"
 endif
 
-" jump to code definition
-nmap <c-]> <plug>(coc-definition)
-
-" show references of word under cursor
-nmap <leader>rr <plug>(coc-references)
-
 " show documentation or type information of word under cursor
 nnoremap K :call <sid>show_documentation()<cr>
 fun! s:show_documentation()
@@ -338,49 +352,28 @@ fun! s:show_documentation()
   endif
 endfun
 
-" quick fix
-nmap <leader>qf <plug>(coc-fix-current)
-
-" prettier
+" commands
 com! -nargs=0 Prettier :CocCommand prettier.formatFile
-nnoremap <leader>j :Prettier<cr>
-
-" format selected
-xmap <leader>= <plug>(coc-format-selected)
-nmap <leader>= <plug>(coc-format-selected)
-
-" rename across project
-nmap <leader>rn <plug>(coc-rename)
-
-" jest keybinds
 com! -nargs=0 JestCurrent :call  CocAction('runCommand', 'jest.fileTest', ['%'])
 com! -nargs=0 Jest :call  CocAction('runCommand', 'jest.projectTest')
+
+" keybinds
+nnoremap <leader>rw :CocSearch <C-R>=expand("<cword>")<cr><cr>
 nnoremap <leader>tt :call CocAction('runCommand', 'jest.singleTest')<cr>
 nnoremap <leader>tf :JestCurrent<cr>
 nnoremap <leader>ta :Jest<cr>
-
-" code actions
+nnoremap <leader>j :Prettier<cr>
+inoremap <expr><s-tab> pumvisible() ? "\<c-p>" : "\<c-h>"
+inoremap <expr> <tab> pumvisible() ? "\<c-n>" : <sid>check_back_space() ? "\<tab>" : coc#refresh()
+nmap ]d <plug>(coc-diagnostic-next)
+nmap [d <plug>(coc-diagnostic-prev)
+nmap <c-]> <plug>(coc-definition)
 nmap <leader>a <plug>(coc-codeaction)
-
-
-
-"""""""""""""""""""""""""""""""""""""""
-" Startify
-"""""""""""""""""""""""""""""""""""""""
-
-" keybindings
-nnoremap ~ :Startify <cr>
-au FileType startify nnoremap <esc> :normal q<cr>
-let g:startify_list_order = ['files', 'bookmarks']
-let g:startify_bookmarks =  [{'ru': '~/src/raasdev/raas-ui'},
-                            \{'rr': '~/src/raasdev/raas'},
-                            \{'rd':'~/src/raasdev/raas-docker'},
-                            \{'sa': '~/src/raasdev/salt'},
-                            \{'con': '~/.config'},
-                            \{'dev': '~/src'},
-                            \{'dot': '~/src/dotfiles'},
-                            \{'envs': '~/src/raasdev/envs'},
-                            \{'raasdev': '~/src/raasdev'}]
+nmap <leader>d :CocDiagnostics<cr>
+nmap <leader>= <plug>(coc-format-selected)
+nmap <leader>rn <plug>(coc-rename)
+nmap <leader>rr <plug>(coc-references)
+nmap <leader>qf <plug>(coc-fix-current)
 
 
 
