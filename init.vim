@@ -5,22 +5,23 @@
 call plug#begin('~/.config/nvim/plugged')
 
 Plug 'airblade/vim-rooter'
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf', {'do': {-> fzf#install()}}
 Plug 'junegunn/fzf.vim'
 Plug 'justinmk/vim-dirvish'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'nvim-treesitter/nvim-treesitter'
+Plug 'nvim-treesitter/nvim-treesitter-angular'
 Plug 'mhinz/vim-signify'
 Plug 'suy/vim-context-commentstring'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-rsi'
-Plug 'tpope/vim-sleuth'
 Plug 'tpope/vim-surround'
 Plug 'unblevable/quick-scope'
 
 " themes
-Plug 'morhetz/gruvbox'
+Plug 'sainnhe/gruvbox-material'
 
 " syntax highlighting
 Plug 'inkarkat/vim-SyntaxRange'
@@ -95,22 +96,6 @@ nnoremap <leader>cc :echo expand('%:p')<cr>
 nnoremap <leader>cd :cd %:h<cr>:pwd<cr>
 nnoremap <leader>cp :Glcd <bar>:pwd<cr>
 
-" when using `dd` in the quickfix list, remove the item from the quickfix list
-fun! RemoveQFItem()
-  let curqfidx = line('.') - 1
-  let qfall = getqflist()
-  call remove(qfall, curqfidx)
-  call setqflist(qfall, 'r')
-  execute curqfidx + 1 . "cfirst"
-  :copen
-endfun
-:com! RemoveQFItem :call RemoveQFItem()
-
-aug remove-quick-fix-item
-    au!
-    au FileType qf map <buffer> dd :RemoveQFItem<cr>
-aug END
-
 
 
 """""""""""""""""""""""""""""""""""""""
@@ -129,19 +114,6 @@ aug END
 " Appearance
 """""""""""""""""""""""""""""""""""""""
 
-fun! HighlightTemplateLiteral()
-    if &ft == 'typescript'
-        call SyntaxRange#Include('template: `', '`,', 'html', '')
-        call SyntaxRange#Include('styles: \[\_s\{-}`', '`,\_s\{-}\]', 'css', '')
-        syntax match htmlArg contained "\[\zs.\{-}\ze\]\|\*\w\+"
-    endif
-endfun
-
-aug hi-template-literal
-  au!
-  au BufEnter * call HighlightTemplateLiteral()
-aug END
-
 if exists('+termguicolors')
   let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
   let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
@@ -150,8 +122,8 @@ endif
 
 set background=dark
 set t_Co=256
-let g:gruvbox_contrast_dark = 'hard'
-colorscheme gruvbox
+let g:gruvbox_material_background = 'hard'
+colorscheme gruvbox-material
 
 " statusline
 hi default link User1 Error
@@ -166,24 +138,27 @@ set statusline +=%w
 set statusline +=%=\ %(%l,%c%V%)\/\%-5L
 
 
+
 """""""""""""""""""""""""""""""""""""""
-" Context commentstring
+" Treesitter
 """""""""""""""""""""""""""""""""""""""
 
-fun! CommentTemplateLiteral()
-    " context commentstring
-    if exists('g:context#commentstring#table') && !exists('g:context#commentstring#table.typescript')
-        let g:context#commentstring#table.typescript = {
-            \ 'synIncludeHtml': '<!-- %s -->',
-            \ 'synIncludeCss': '/* %s */'
-            \ }
-    endif
-endfun
-
-aug comment-template-literal
-    au!
-    au FileType typescript call CommentTemplateLiteral()
-aug END
+lua <<EOF
+require'nvim-treesitter.configs'.setup {
+    ensure_installed = {
+        "typescript",
+        "javascript",
+        "html",
+        "css",
+    },
+    highlight = {
+        enable = true,
+    },
+    indent = {
+        enable = true,
+    }
+}
+EOF
 
 
 
@@ -250,7 +225,7 @@ aug END
 " FZF
 """""""""""""""""""""""""""""""""""""""
 
-let $FZF_DEFAULT_OPTS="--preview-window 'bottom:60%' --layout reverse --margin=1,4"
+let $FZF_DEFAULT_OPTS="--preview 'bat' --preview-window 'bottom:60%' --layout reverse --margin=1,4"
 let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.9 } }
 let g:fzf_colors =
 \ { 'fg':      ['fg', 'Normal'],
@@ -312,7 +287,6 @@ nnoremap <leader>ft :Colors<cr>
 """""""""""""""""""""""""""""""""""""""
 
 let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
-
 
 
 """""""""""""""""""""""""""""""""""""""
