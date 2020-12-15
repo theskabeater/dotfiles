@@ -9,14 +9,16 @@ Plug 'junegunn/fzf', {'do': {-> fzf#install()}}
 Plug 'junegunn/fzf.vim'
 Plug 'justinmk/vim-dirvish'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'nvim-treesitter/nvim-treesitter'
-Plug 'nvim-treesitter/nvim-treesitter-angular'
+" Plug 'nvim-treesitter/nvim-treesitter-angular'
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'mhinz/vim-signify'
+" Plug 'steelsojka/tree-sitter-angular'
 Plug 'suy/vim-context-commentstring'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-rsi'
+Plug 'tpope/vim-sleuth'
 Plug 'tpope/vim-surround'
 Plug 'unblevable/quick-scope'
 
@@ -63,12 +65,6 @@ set foldmethod=indent
 set nofoldenable
 set cursorline
 set number relativenumber
-
-" reset terminal cursor upon exiting
-aug reset-cursor
-  au!
-  au VimLeave * set guicursor=a:ver30-iCursor-blinkon0
-aug END
 
 
 
@@ -148,11 +144,13 @@ require'nvim-treesitter.configs'.setup {
     ensure_installed = {
         "typescript",
         "javascript",
+        "jsdoc",
         "html",
         "css",
     },
     highlight = {
         enable = true,
+        --use_languagetree = true,
     },
     indent = {
         enable = true,

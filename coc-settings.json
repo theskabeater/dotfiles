@@ -8,15 +8,7 @@
     "scss"
   ],
   "diagnostic.messageTarget": "echo",
-  "eslint.filetypes": [
-    "javascript",
-    "javascriptreact",
-    "typescript",
-    "typescriptreact",
-    "html"
-  ],
   "eslint.enable": true,
-  "eslint.autoFixOnSave": true,
   "javascript.suggest.enabled": false,
   "javascript.validate.enable": false,
   "signature.enable": false,
@@ -24,6 +16,6 @@
   "typescript.preferences.importModuleSpecifier": "relative",
   "typescript.suggest.completeFunctionCalls": false,
   "typescript.suggest.enabled": false,
-  "typescript.validate.enable": true,
+  "typescript.validate.enable": false,
   "yank.highlight.duration": 200
 }
