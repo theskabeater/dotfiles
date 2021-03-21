@@ -22,6 +22,7 @@ set clipboard=unnamedplus
 set nohls
 set cursorline
 set number relativenumber
+set iskeyword+=@-@
 
 let mapleader = ' '
 
@@ -59,3 +60,4 @@ nnoremap <leader>cw :pwd<cr>
 nnoremap <leader>cc :echo expand('%:p')<cr>
 nnoremap <leader>cd :cd %:h<cr>:pwd<cr>
 nnoremap <leader>cp :Glcd <bar>:pwd<cr>
+
