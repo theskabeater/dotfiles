@@ -42,7 +42,10 @@ return packer.startup(function()
 	-- Treesitter
 	use 'nvim-treesitter/nvim-treesitter'
 	use 'nvim-treesitter/nvim-treesitter-angular'
+	use 'nvim-treesitter/playground'
 
 	-- Status line
+	use 'itchyny/lightline.vim'
+	use 'mike-hearn/base16-vim-lightline'
 	use 'romgrk/barbar.nvim'
 end)

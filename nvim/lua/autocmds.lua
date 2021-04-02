@@ -1,6 +1,6 @@
 require 'nvim_utils'
 
-local autocmds = {
+nvim_create_augroups({
 	disable_automatic_comment_insertion = {
 		{'BufEnter', '*', 'setlocal formatoptions-=c formatoptions-=r formatoptions-=o'},
 	},
@@ -10,6 +10,4 @@ local autocmds = {
 	trim_white_space_on_save = {
 		{'BufWritePre', '*', [[:%s/\s\+$//e]]},
 	},
-}
-
-nvim_create_augroups(autocmds)
+})

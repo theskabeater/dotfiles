@@ -8,9 +8,10 @@ vim.lsp.handlers['textDocument/publishDiagnostics'] = vim.lsp.with(
 )
 
 -- Language servers
-require 'conf-lsp.tsserver'
-require 'conf-lsp.angularls'
-require 'conf-lsp.efm'
+require 'conf-nvim-lspconfig.tsserver'
+require 'conf-nvim-lspconfig.angularls'
+require 'conf-nvim-lspconfig.pyls'
+require 'conf-nvim-lspconfig.efm'
 
 -- Highlights
-require 'conf-lsp.highlights'
+require 'conf-nvim-lspconfig.highlights'

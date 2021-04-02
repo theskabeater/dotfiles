@@ -37,6 +37,7 @@ vim.api.nvim_set_keymap('n', '<leader>pd', [[<Cmd> lua require'lspsaga.provider'
 vim.api.nvim_set_keymap('n', '<leader>rn', [[<Cmd> lua require'lspsaga.rename'.rename()<CR>]], {silent = true, noremap = true})
 vim.api.nvim_set_keymap('n', '[d', [[<Cmd> lua require'lspsaga.diagnostic'.lsp_jump_diagnostic_prev()<CR>]], {silent = true, noremap = true})
 vim.api.nvim_set_keymap('n', ']d', [[<Cmd> lua require'lspsaga.diagnostic'.lsp_jump_diagnostic_next()<CR>]], {silent = true, noremap = true})
-vim.api.nvim_set_keymap('n', '<leader>ca', [[<Cmd> lua require('lspsaga.codeaction').code_action()<CR>]], {silent = true, noremap = true})
+vim.api.nvim_set_keymap('n', '<leader>dd', [[<Cmd> lua require'lspsaga.diagnostic'.show_line_diagnostics()<CR>]], {silent = true, noremap = true})
+vim.api.nvim_set_keymap('n', '<leader>ca', [[<Cmd> lua require'lspsaga.codeaction'.code_action()<CR>]], {silent = true, noremap = true})
 vim.api.nvim_set_keymap('v', '<leader>ca', [[<Cmd> '<,'>lua require('lspsaga.codeaction').range_code_action()<CR>]], {silent = true, noremap = true})
 

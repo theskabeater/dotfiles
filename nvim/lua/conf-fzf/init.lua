@@ -3,13 +3,13 @@ vim.env.FZF_DEFAULT_COMMAND = [[ag -g '']]
 vim.env.FZF_DEFAULT_OPTS = [[--preview 'bat --theme=base16' --bind ctrl-d:preview-down --bind ctrl-u:preview-up]]
 
 -- Options
-vim.g.fzf_layout = { 
-    window = { 
-	width = 1.0, 
-	height = 0.4, 
-	yoffset = 1.0, 
+vim.g.fzf_layout = {
+    window = {
+	width = 1.0,
+	height = 0.4,
+	yoffset = 1.0,
 	border = 'horizontal',
-    }, 
+    },
 }
 
 vim.g.fzf_colors = {
@@ -43,6 +43,12 @@ com! -bang -nargs=* Hist call fzf#vim#history(fzf#vim#with_preview())
 " Line command
 com! -bang -nargs=* Line call fzf#vim#lines({'options': '--no-preview'})
 
+" BLine command
+com! -bang -nargs=* BLines call fzf#vim#lines({'options': '--no-preview'})
+
+" Color command
+com! -bang -nargs=* Color call fzf#vim#colors({'options': '--no-preview'})
+
 fun! SearchWordWithAg()
     execute 'Ag' expand('<cword>')
 endfun
@@ -61,14 +67,14 @@ endfun
 ]], false)
 
 -- Keybinds
-vim.api.nvim_set_keymap('n', '<leader>fp', ':Ag<CR>', {silent = true, noremap = true})
-vim.api.nvim_set_keymap('n', '<leader>fo', ':Blines<CR>', {silent = true, noremap = true})
+vim.api.nvim_set_keymap('n', '<leader>ff', ':Ag<CR>', {silent = true, noremap = true})
+vim.api.nvim_set_keymap('n', '<leader>fo', ':BLine<CR>', {silent = true, noremap = true})
 vim.api.nvim_set_keymap('n', '<leader>fb', ':Buffers<CR>', {silent = true, noremap = true})
-vim.api.nvim_set_keymap('n', '<leader>ft', ':Colors<CR>', {silent = true, noremap = true})
+vim.api.nvim_set_keymap('n', '<leader>ft', ':Color<CR>', {silent = true, noremap = true})
 vim.api.nvim_set_keymap('n', '<leader>fc', ':Commands<CR>', {silent = true, noremap = true})
 vim.api.nvim_set_keymap('n', '<leader>fp', ':Files<CR>', {silent = true, noremap = true})
 vim.api.nvim_set_keymap('n', '<leader>fh', ':Hist<CR>', {silent = true, noremap = true})
 vim.api.nvim_set_keymap('n', '<leader>fl', ':Line<CR>', {silent = true, noremap = true})
 vim.api.nvim_set_keymap('n', '<leader>fm', ':Marks<CR>', {silent = true, noremap = true})
 vim.api.nvim_set_keymap('n', '<leader>fw', ':call SearchWordWithAg()<CR>', {silent = true, noremap = true})
-vim.api.nvim_set_keymap('n', '<leader>fs', ':call SearchVisualSelectionWithAg()<CR>', {silent = true, noremap = true})
+vim.api.nvim_set_keymap('v', '<leader>fw', ':call SearchVisualSelectionWithAg()<CR>', {silent = true, noremap = true})

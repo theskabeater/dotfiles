@@ -1,5 +1,10 @@
 local lsp = require 'lspconfig'
 
+local prettier = {
+  formatCommand = 'prettier --stdin-filepath ${INPUT}',
+  formatStdin = true,
+}
+
 lsp.efm.setup {
   root_markers = {'.git/'},
   on_attach = function(client, bufnr)
@@ -12,10 +17,7 @@ lsp.efm.setup {
   settings = {
     languages = {
       typescript = {
-        {
-          formatCommand = 'prettier --stdin-filepath ${INPUT}',
-          formatStdin = true
-        },
+        prettier,
         {
           lintCommand = 'eslint_d -f unix --stdin --stdin-filename ${INPUT}',
           lintStdin = true,
@@ -25,9 +27,25 @@ lsp.efm.setup {
           formatStdin = true
         },
       },
+      scss = {
+        prettier,
+      },
+      css = {
+        prettier,
+      },
+      sass = {
+        prettier,
+      },
+      html = {
+        prettier,
+      },
     },
   },
   filetypes = {
     'typescript',
+    'scss',
+    'sass',
+    'css',
+    'html',
   },
 }
