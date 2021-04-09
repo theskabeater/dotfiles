@@ -48,5 +48,8 @@ yabai -m rule --add app="Calculator" sticky=on layer=above manage=off
 yabai -m rule --add app="Dictionary" sticky=on layer=above manage=off
 yabai -m rule --add app="Preview" sticky=on layer=above manage=off
 yabai -m rule --add app="ColorSync Utility" sticky=on layer=above manage=off
+yabai -m rule --add app="Photos" sticky=on layer=above manage=off
+yabai -m rule --add app="Photo Booth" sticky=on layer=above manage=off
+yabai -m rule --add app="Logi Options" sticky=on layer=above manage=off
 
 echo "yabai configuration loaded.."

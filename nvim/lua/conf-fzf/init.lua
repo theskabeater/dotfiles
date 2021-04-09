@@ -1,6 +1,6 @@
 -- Environment
 vim.env.FZF_DEFAULT_COMMAND = [[ag -g '']]
-vim.env.FZF_DEFAULT_OPTS = [[--preview 'bat --theme=base16' --bind ctrl-d:preview-down --bind ctrl-u:preview-up]]
+vim.env.FZF_DEFAULT_OPTS = [[--preview 'bat --theme=base16' --bind ctrl-d:preview-down --bind ctrl-u:preview-up --layout=reverse]]
 
 -- Options
 vim.g.fzf_layout = {

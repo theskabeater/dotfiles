@@ -20,6 +20,10 @@ vim.o.writebackup = false
 
 -- Buffer options
 vim.bo.expandtab = true
+vim.bo.tabstop = 4
+vim.bo.shiftwidth = 4
+vim.bo.smartindent = true
+vim.bo.autoindent = true
 
 -- Window options
 vim.wo.cursorline = true
