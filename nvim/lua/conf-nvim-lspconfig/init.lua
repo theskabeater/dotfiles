@@ -7,6 +7,22 @@ vim.lsp.handlers['textDocument/publishDiagnostics'] = vim.lsp.with(
   }
 )
 
+-- Global utils
+_G.ska.document_highlight = function()
+  if not _G.ska.buf_highlight then
+    _G.ska.buf_highlight = {}
+  end
+
+  bufnr = vim.api.nvim_buf_get_number('%')
+  _G.ska.buf_highlight[bufnr] = not _G.ska.buf_highlight[bufnr]
+
+  if _G.ska.buf_highlight[bufnr] then
+    vim.lsp.buf.document_highlight()
+  else
+    vim.lsp.buf.clear_references()
+  end
+end
+
 -- Language servers
 require 'conf-nvim-lspconfig.tsserver'
 require 'conf-nvim-lspconfig.angularls'

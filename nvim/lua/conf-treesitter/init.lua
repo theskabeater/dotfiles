@@ -5,7 +5,7 @@ configs.setup {
 	highlight = {
 		enable = true,
 	},
-	 incremental_selection = {
+	incremental_selection = {
 		 enable = true,
 		 keymaps = {
 			 init_selection = "gnn",
@@ -14,4 +14,7 @@ configs.setup {
 			 node_decremental = "grm",
 		 },
 	 },
+	 indent = {
+		 enable = false,
+	 }
  }

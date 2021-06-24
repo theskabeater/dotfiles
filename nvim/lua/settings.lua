@@ -4,7 +4,6 @@ vim.g.mapleader = ' '
 -- Global options
 vim.o.backup = false
 vim.o.clipboard = 'unnamedplus'
-vim.o.completeopt= 'menuone,noselect'
 vim.o.diffopt = 'vertical'
 vim.o.hidden = true
 vim.o.ignorecase = true
@@ -18,13 +17,6 @@ vim.o.smartcase = true
 vim.o.updatetime = 100
 vim.o.writebackup = false
 
--- Buffer options
-vim.bo.expandtab = true
-vim.bo.tabstop = 4
-vim.bo.shiftwidth = 4
-vim.bo.smartindent = true
-vim.bo.autoindent = true
-
 -- Window options
 vim.wo.cursorline = true
 vim.wo.number = true
@@ -34,3 +26,12 @@ vim.wo.signcolumn = 'yes'
 -- Cmds
 vim.cmd('set nohls')
 vim.cmd('set noswapfile')
+
+-- Dev stuff
+_G.ska.dev = function()
+  os.execute(': > /Users/emoncada/log')
+  local clients = vim.lsp.get_active_clients()
+  vim.lsp.stop_client(clients)
+  vim.cmd('edit')
+end
+vim.api.nvim_set_keymap('n', '<leader>ww', [[<Cmd> lua _G.ska.dev()<CR>]], {silent = true, noremap = true})

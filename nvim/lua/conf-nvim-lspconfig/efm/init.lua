@@ -1,7 +1,7 @@
 local lsp = require 'lspconfig'
 
 local prettier = {
-  formatCommand = 'prettier --stdin-filepath ${INPUT}',
+  formatCommand = 'prettierd --stdin-filepath ${INPUT}',
   formatStdin = true,
 }
 
@@ -24,7 +24,7 @@ lsp.efm.setup {
           lintFormats = {'%f:%l:%c: %m'},
           lintIgnoreExitCode = true,
           formatCommand = 'eslint_d --fix-to-stdout --stdin --stdin-filename=${INPUT}',
-          formatStdin = true
+          formatStdin = true,
         },
       },
       scss = {
@@ -39,6 +39,19 @@ lsp.efm.setup {
       html = {
         prettier,
       },
+      json = {
+        prettier,
+      },
+      python = {
+        {
+          formatCommand = 'isort --quiet -',
+          formatStdin = true,
+        },
+        {
+          formatCommand = 'black --quiet -',
+          formatStdin = true,
+        },
+      }
     },
   },
   filetypes = {
@@ -47,5 +60,7 @@ lsp.efm.setup {
     'sass',
     'css',
     'html',
+    'json',
+    'python',
   },
 }

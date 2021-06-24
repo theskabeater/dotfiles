@@ -4,7 +4,6 @@ return packer.startup(function()
 	-- General
 	use 'airblade/vim-rooter'
 	use 'norcalli/nvim_utils'
-	use 'nvim-lua/plenary.nvim'
 	use 'tpope/vim-commentary'
 	use 'tpope/vim-sleuth'
 	use 'tpope/vim-repeat'
@@ -27,9 +26,11 @@ return packer.startup(function()
 	use 'neovim/nvim-lspconfig'
 
 	-- Fuzzy finder
-	use {'junegunn/fzf', run = ':call fzf#install()'}
-	use 'junegunn/fzf.vim'
-	use 'ojroques/nvim-lspfuzzy'
+	use {
+		'nvim-telescope/telescope.nvim',
+		requires = {{'nvim-lua/popup.nvim'}, {'nvim-lua/plenary.nvim'}}
+	}
+	use 'nvim-telescope/telescope-fzy-native.nvim'
 
 	-- File explorer
 	use 'justinmk/vim-dirvish'

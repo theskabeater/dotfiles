@@ -1,5 +1,7 @@
 local compe = require 'compe'
 
+vim.o.completeopt= 'menuone,noselect'
+
 -- Options
 compe.setup {
   enabled = true;

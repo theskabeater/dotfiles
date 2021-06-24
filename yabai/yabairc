@@ -51,5 +51,7 @@ yabai -m rule --add app="ColorSync Utility" sticky=on layer=above manage=off
 yabai -m rule --add app="Photos" sticky=on layer=above manage=off
 yabai -m rule --add app="Photo Booth" sticky=on layer=above manage=off
 yabai -m rule --add app="Logi Options" sticky=on layer=above manage=off
+yabai -m rule --add app="Calendar" sticky=on layer=above manage=off
+yabai -m rule --add app="PyCharm" sticky=on layer=above manage=off
 
 echo "yabai configuration loaded.."
