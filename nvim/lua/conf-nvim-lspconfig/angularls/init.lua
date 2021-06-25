@@ -1,7 +1,7 @@
 local lsp = require 'lspconfig'
 
-local ng_projects = '/Users/emoncada/src/raasdev/raas-ui'
-local ng_language_server = '/Users/emoncada/.nvm/versions/node/v12.13.1/lib/node_modules/@angular/language-server/index.js'
+local ng_projects = os.getenv('HOME') .. '/src/raasdev/raas-ui'
+local ng_language_server = os.getenv('HOME') .. '/.nvm/versions/node/v12.13.1/lib/node_modules/@angular/language-server/index.js'
 local cmd = {'node', ng_language_server, '--stdio', '--tsProbeLocations', ng_projects, '--ngProbeLocations', ng_projects}
 
 lsp.angularls.setup {

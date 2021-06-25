@@ -1,6 +1,6 @@
 local lsp = require 'lspconfig'
 
-local cmd = {'/Users/emoncada/.virtualenvs/pyls-pop/bin/pylsp', '--verbose', '--log-file', '/Users/emoncada/src/dev/log'}
+local cmd = { os.getenv('HOME') .. '/.virtualenvs/pyls-pop/bin/pylsp', '--verbose', '--log-file', os.getenv('HOME') .. '/src/dev/log'}
 
 lsp.pyls.setup {
     cmd = cmd,

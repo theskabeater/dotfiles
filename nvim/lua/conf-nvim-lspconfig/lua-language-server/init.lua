@@ -10,7 +10,7 @@ else
     print('Unsupported system for sumneko')
 end
 
-local sumneko_root_path = '/Users/emoncada/src/lua-language-server'
+local sumneko_root_path = os.getenv('HOME') .. '/src/lua-language-server'
 local sumneko_binary = sumneko_root_path .. '/bin/' .. system_name .. '/lua-language-server'
 local cmd = {sumneko_binary, '-E', sumneko_root_path .. '/main.lua'}
 
