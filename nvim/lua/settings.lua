@@ -29,9 +29,9 @@ vim.cmd('set noswapfile')
 
 -- Dev stuff
 _G.ska.dev = function()
-  os.execute(': > /Users/emoncada/log')
-  local clients = vim.lsp.get_active_clients()
-  vim.lsp.stop_client(clients)
-  vim.cmd('edit')
+    os.execute(': > /Users/emoncada/log')
+    local clients = vim.lsp.get_active_clients()
+    vim.lsp.stop_client(clients)
+    vim.cmd('edit')
 end
 vim.api.nvim_set_keymap('n', '<leader>ww', [[<Cmd> lua _G.ska.dev()<CR>]], {silent = true, noremap = true})

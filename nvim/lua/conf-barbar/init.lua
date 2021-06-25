@@ -6,7 +6,6 @@ bufferline.icon_separator_active = '│'
 bufferline.icon_separator_inactive = '│'
 vim.g.bufferline = bufferline
 
-
 -- Keybinds
 vim.api.nvim_set_keymap('n', '[b', ':BufferPrevious<CR>', {silent = true, noremap = true})
 vim.api.nvim_set_keymap('n', ']b', ':BufferNext<CR>', {silent = true, noremap = true})

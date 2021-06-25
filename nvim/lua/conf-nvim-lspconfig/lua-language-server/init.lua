@@ -1,9 +1,32 @@
 local lsp = require 'lspconfig'
+local system_name
+if vim.fn.has('mac') == 1 then
+    system_name = 'macOS'
+elseif vim.fn.has('unix') == 1 then
+    system_name = 'Linux'
+elseif vim.fn.has('win32') == 1 then
+    system_name = 'Windows'
+else
+    print('Unsupported system for sumneko')
+end
 
-local cmd = {'/Users/emoncada/.virtualenvs/pyls-pop/bin/pylsp', '--verbose', '--log-file', '/Users/emoncada/src/dev/log'}
+local sumneko_root_path = '/Users/emoncada/src/lua-language-server'
+local sumneko_binary = sumneko_root_path .. '/bin/' .. system_name .. '/lua-language-server'
+local cmd = {sumneko_binary, '-E', sumneko_root_path .. '/main.lua'}
 
-lsp.pyls.setup {
+local runtime_path = vim.split(package.path, ';')
+table.insert(runtime_path, 'lua/?.lua')
+table.insert(runtime_path, 'lua/?/init.lua')
+
+lsp.sumneko_lua.setup {
     cmd = cmd,
+    settings = {
+        Lua = {
+            runtime = {version = 'LuaJIT', path = runtime_path},
+            diagnostics = {globals = {'vim'}},
+            workspace = {library = vim.api.nvim_get_runtime_file('', true)}
+        }
+    },
     on_attach = function(client, bufnr)
         if client.config.flags then client.config.flags.allow_incremental_sync = true end
         client.resolved_capabilities.document_formatting = false
