@@ -1,9 +1,12 @@
+shell:
+  program: /bin/zsh
+  args:
+    - --login
+
 window:
   padding:
     x: 4
     y: 4
-
-background_opacity: 0.8
 
 cursor:
   style: Beam
@@ -12,9 +15,18 @@ selection:
   save_to_clipboard: true
 
 font:
-  size: 10
+  size: 12
   normal:
-    family: Fira Mono
+    family: FiraCode Nerd Font
+    style: Regular
+
+  bold:
+    family: FiraCode Nerd Font
+    style: Bold
+
+  italic:
+    family: FiraCode Nerd Font
+    style: Italic
 
 colors:
   primary:

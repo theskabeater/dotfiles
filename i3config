@@ -201,3 +201,7 @@ exec --no-startup-id blueberry-tray
 
 # autotile
 exec_always --no-startup-id i3-auto-layout
+
+# screen layout
+exec_always --no-startup-id ~/.screenlayout/autoxrandr.sh
+
