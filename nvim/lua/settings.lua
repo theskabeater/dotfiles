@@ -29,8 +29,7 @@ vim.cmd('set noswapfile')
 
 -- Dev stuff
 _G.ska.dev = function()
-
-    os.execute(': > ' .. os.getenv('HOME') .. '/log')
+    os.execute(': > ' .. os.getenv('HOME') .. '/src/dev/log')
     local clients = vim.lsp.get_active_clients()
     vim.lsp.stop_client(clients)
     vim.cmd('edit')
