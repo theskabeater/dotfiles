@@ -2,8 +2,9 @@
 local bufferline = vim.g.bufferline or {}
 bufferline.icons = false
 bufferline.animation = false
-bufferline.icon_separator_active = '│'
-bufferline.icon_separator_inactive = '│'
+bufferline.maximum_padding = 2
+bufferline.add_in_buffer_number_order = true
+bufferline.maximum_length = 50
 vim.g.bufferline = bufferline
 
 -- Keybinds

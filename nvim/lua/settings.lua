@@ -18,20 +18,8 @@ vim.o.updatetime = 100
 vim.o.writebackup = false
 
 -- Window options
-vim.wo.cursorline = true
-vim.wo.number = true
-vim.wo.relativenumber = true
 vim.wo.signcolumn = 'yes'
 
 -- Cmds
 vim.cmd('set nohls')
 vim.cmd('set noswapfile')
-
--- Dev stuff
-_G.ska.dev = function()
-    os.execute(': > ' .. os.getenv('HOME') .. '/src/dev/log')
-    local clients = vim.lsp.get_active_clients()
-    vim.lsp.stop_client(clients)
-    vim.cmd('edit')
-end
-vim.api.nvim_set_keymap('n', '<leader>ww', [[<Cmd> lua _G.ska.dev()<CR>]], {silent = true, noremap = true})

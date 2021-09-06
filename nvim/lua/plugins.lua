@@ -12,12 +12,6 @@ return packer.startup(function()
     use 'unblevable/quick-scope'
     use 'wbthomason/packer.nvim'
 
-    -- Snippets
-    use 'capaj/vscode-standardjs-snippets'
-    use 'hrsh7th/vim-vsnip'
-    use 'hrsh7th/vim-vsnip-integ'
-    use 'johnpapa/vscode-angular-snippets'
-
     -- Color scheme
     use 'chriskempson/base16-vim'
 
@@ -25,26 +19,29 @@ return packer.startup(function()
     use 'glepnir/lspsaga.nvim'
     use 'hrsh7th/nvim-compe'
     use 'neovim/nvim-lspconfig'
+    use 'nvim-lua/lsp-status.nvim'
 
     -- Fuzzy finder
     use {'nvim-telescope/telescope.nvim', requires = {{'nvim-lua/popup.nvim'}, {'nvim-lua/plenary.nvim'}}}
-    use 'nvim-telescope/telescope-fzy-native.nvim'
+    use {'nvim-telescope/telescope-fzf-native.nvim', run = 'make'}
+
+    -- Search and replace
+    use {'windwp/nvim-spectre', requires = {{'nvim-lua/popup.nvim'}, {'nvim-lua/plenary.nvim'}}}
 
     -- File explorer
     use 'justinmk/vim-dirvish'
     use 'roginfarrer/vim-dirvish-dovish'
 
     -- Git
-    use 'lewis6991/gitsigns.nvim'
+    use {'lewis6991/gitsigns.nvim', requires = {'nvim-lua/plenary.nvim'}}
     use 'tpope/vim-fugitive'
 
     -- Treesitter
+    use 'JoosepAlviste/nvim-ts-context-commentstring'
     use 'nvim-treesitter/nvim-treesitter'
     use 'nvim-treesitter/nvim-treesitter-angular'
-    use 'nvim-treesitter/playground'
 
     -- Status line
-    use 'itchyny/lightline.vim'
-    use 'mike-hearn/base16-vim-lightline'
     use 'romgrk/barbar.nvim'
+    use 'hoob3rt/lualine.nvim'
 end)

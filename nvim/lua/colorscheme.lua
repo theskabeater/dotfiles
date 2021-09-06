@@ -1,3 +1,3 @@
 vim.o.termguicolors = true
 vim.g.base16colorspace = 256
-vim.cmd('colorscheme base16-gruvbox-dark-hard')
+vim.cmd('colorscheme base16-gruvbox-dark-pale')

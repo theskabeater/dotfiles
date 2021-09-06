@@ -2,10 +2,13 @@ local configs = require 'nvim-treesitter.configs'
 
 configs.setup {
     ensure_installed = 'maintained',
+    ignore_install = {'comment', 'jsdoc', 'JSON with comments'},
     highlight = {enable = true},
     incremental_selection = {
         enable = true,
         keymaps = {init_selection = 'gnn', node_incremental = 'grn', scope_incremental = 'grc', node_decremental = 'grm'}
     },
-    indent = {enable = true}
+    indent = {enable = false},
+    autotag = {enable = true, filetypes = {'html', 'xml', 'typescript'}},
+    context_commentstring = {enable = true}
 }
