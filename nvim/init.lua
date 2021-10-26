@@ -120,7 +120,9 @@ cmp.setup({
         ['<C-Space>'] = cmp.mapping.complete(),
         ['<C-e>'] = cmp.mapping.close(),
         ['<C-y>'] = cmp.config.disable, -- If you want to remove the default `<C-y>` mapping, You can specify `cmp.config.disable` value.
-        ['<CR>'] = cmp.mapping.confirm({select = true})
+        ['<CR>'] = cmp.mapping.confirm({select = true}),
+        ['<Tab>'] = cmp.mapping(cmp.mapping.select_next_item(), { 'i', 's' }),
+        ['<S-Tab>'] = cmp.mapping(cmp.mapping.select_prev_item(), { 'i', 's' })
     },
     sources = cmp.config.sources({
         {name = 'nvim_lsp'}
