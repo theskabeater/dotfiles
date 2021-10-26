@@ -54,6 +54,8 @@ yabai -m rule --add app="Logi Options" sticky=on layer=above manage=off
 yabai -m rule --add app="Calendar" sticky=on layer=above manage=off
 yabai -m rule --add app="PyCharm" sticky=on layer=above manage=off
 yabai -m rule --add app="QuickTime Player" sticky=on layer=above manage=off
+yabai -m rule --add app="VirtualBox VM" sticky=on layer=above manage=off
+yabai -m rule --add app="VirtualBox" sticky=on layer=above manage=off
 
 # add the following to the end of your yabairc to have it launch automatically when yabai starts.
 # make sure the limelight binary is added somewhere in your $PATH
