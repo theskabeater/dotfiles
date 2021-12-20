@@ -8,17 +8,19 @@ local packer = require('packer')
 local use = packer.use
 packer.startup(function()
     use 'airblade/vim-rooter'
-    use 'Darazaki/indent-o-matic'
     use 'norcalli/nvim_utils'
     use 'tpope/vim-commentary'
     use 'tpope/vim-repeat'
     use 'tpope/vim-surround'
+    use 'tpope/vim-sleuth'
     use 'unblevable/quick-scope'
     use 'wbthomason/packer.nvim'
     use 'chriskempson/base16-vim'
     use 'hrsh7th/cmp-nvim-lsp'
     use 'hrsh7th/cmp-buffer'
     use 'hrsh7th/nvim-cmp'
+    use 'hrsh7th/cmp-vsnip'
+    use 'hrsh7th/vim-vsnip'
     use 'neovim/nvim-lspconfig'
     use {'nvim-telescope/telescope.nvim', requires = {{'nvim-lua/popup.nvim'}, {'nvim-lua/plenary.nvim'}}}
     use {'nvim-telescope/telescope-fzf-native.nvim', run = 'make'}
@@ -28,7 +30,7 @@ packer.startup(function()
     use 'JoosepAlviste/nvim-ts-context-commentstring'
     use 'nvim-treesitter/nvim-treesitter'
     use 'nvim-treesitter/nvim-treesitter-angular'
-    use 'kazhala/close-buffers.nvim'
+    use 'moll/vim-bbye'
     use {'lewis6991/gitsigns.nvim', requires = {'nvim-lua/plenary.nvim'}}
 end)
 
@@ -52,11 +54,8 @@ vim.o.cpoptions = vim.o.cpoptions .. 'x'
 vim.wo.signcolumn = 'yes'
 vim.wo.number = true
 vim.wo.relativenumber = true
-vim.wo.cursorline = true
-vim.wo.colorcolumn = '110'
 vim.cmd('set nohls')
 vim.cmd('set noswapfile')
-vim.cmd('set lazyredraw')
 nvim_create_augroups({
     disable_automatic_comment_insertion = {{'BufEnter', '*', 'setlocal formatoptions-=c formatoptions-=r formatoptions-=o'}},
     highlight_yank = {{'TextYankPost', '*', 'silent! lua vim.highlight.on_yank {higroup="IncSearch", timeout=300}'}},
@@ -69,17 +68,13 @@ vim.g.base16colorspace = 256
 vim.cmd('colorscheme base16-gruvbox-dark-pale')
 
 -- CLOSE BUFFERS
-require('close_buffers').setup({
-    preserve_window_layout = {'other'},
-    next_buffer_cmd = function(windows)
-        require('bufferline').cycle(1)
-        local bufnr = vim.api.nvim_get_current_buf()
-
-        for _, window in ipairs(windows) do vim.api.nvim_win_set_buf(window, bufnr) end
-    end
-})
-vim.api.nvim_set_keymap('n', '<leader>bo', [[<CMD>lua require('close_buffers').delete({type = 'other'})<CR>]], {noremap = true, silent = true})
-vim.api.nvim_set_keymap('n', '<leader>bd', [[<CMD>lua require('close_buffers').delete({type = 'this'})<CR>]], {noremap = true, silent = true})
+_G.ska.close_all_but_current = function()
+    local current = nvim.get_current_buf()
+    local buffers = nvim.list_bufs()
+    for _, number in ipairs(buffers) do if number ~= current then vim.cmd('Bdelete ' .. number) end end
+end
+vim.api.nvim_set_keymap('n', '<leader>bo', '<CMD>lua _G.ska.close_all_but_current()<CR>', {noremap = true, silent = true})
+vim.api.nvim_set_keymap('n', '<leader>bd', '<CMD>Bdelete<CR>', {noremap = true, silent = true})
 vim.api.nvim_set_keymap('n', '[b', '<CMD>bp<CR>', {noremap = true, silent = true})
 vim.api.nvim_set_keymap('n', ']b', '<CMD>bn<CR>', {noremap = true, silent = true})
 
@@ -108,10 +103,7 @@ local cmp = require 'cmp'
 cmp.setup({
     snippet = {
         expand = function(args)
-            vim.fn['vsnip#anonymous'](args.body) -- For `vsnip` users.
-            -- require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
-            -- vim.fn["UltiSnips#Anon"](args.body) -- For `ultisnips` users.
-            -- require'snippy'.expand_snippet(args.body) -- For `snippy` users.
+            vim.fn['vsnip#anonymous'](args.body)
         end
     },
     mapping = {
@@ -119,15 +111,12 @@ cmp.setup({
         ['<C-f>'] = cmp.mapping.scroll_docs(4),
         ['<C-Space>'] = cmp.mapping.complete(),
         ['<C-e>'] = cmp.mapping.close(),
-        ['<C-y>'] = cmp.config.disable, -- If you want to remove the default `<C-y>` mapping, You can specify `cmp.config.disable` value.
+        ['<C-y>'] = cmp.config.disable,
         ['<CR>'] = cmp.mapping.confirm({select = true}),
-        ['<Tab>'] = cmp.mapping(cmp.mapping.select_next_item(), { 'i', 's' }),
-        ['<S-Tab>'] = cmp.mapping(cmp.mapping.select_prev_item(), { 'i', 's' })
+        ['<Tab>'] = cmp.mapping(cmp.mapping.select_next_item(), {'i', 's'}),
+        ['<S-Tab>'] = cmp.mapping(cmp.mapping.select_prev_item(), {'i', 's'})
     },
-    sources = cmp.config.sources({
-        {name = 'nvim_lsp'}
-        -- { name = 'vsnip' }, -- For vsnip users.
-    }, {{name = 'buffer'}})
+    sources = cmp.config.sources({{name = 'nvim_lsp'}}, {{name = 'buffer'}})
 })
 local lsp = require 'lspconfig'
 local angularls_config = {
@@ -150,7 +139,7 @@ local efmls_config = {
     get_config = function(on_attach)
         local prettier = {formatCommand = 'prettierd ${INPUT}', formatStdin = true}
         return {
-            root_markers = {'.git/'},
+            root_markers = {'.git', 'packge-lock.json', 'package.json'},
             on_attach = function(client, bufnr)
                 on_attach(client, bufnr)
                 client.resolved_capabilities.document_formatting = true
@@ -435,5 +424,4 @@ gitsigns.setup {
 -- STATUSLINE
 vim.cmd([[
 set statusline=%<%f\ %h%m%r%{get(b:,'gitsigns_head','')}%=%-14.(%l,%c%V%)\ %P
-set statusline+=%{get(b:,'gitsigns_status','')}
 ]])
