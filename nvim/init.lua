@@ -7,38 +7,38 @@ _G.ska = {}
 local packer = require('packer')
 local use = packer.use
 packer.startup(function()
-    use 'airblade/vim-rooter'
-    use 'norcalli/nvim_utils'
-    use 'tpope/vim-commentary'
-    use 'tpope/vim-repeat'
-    use 'tpope/vim-surround'
-    use 'tpope/vim-sleuth'
-    use 'unblevable/quick-scope'
-    use 'wbthomason/packer.nvim'
-    use 'chriskempson/base16-vim'
-    use 'hrsh7th/cmp-nvim-lsp'
-    use 'hrsh7th/cmp-buffer'
-    use 'hrsh7th/nvim-cmp'
-    use 'hrsh7th/cmp-vsnip'
-    use 'hrsh7th/vim-vsnip'
-    use 'neovim/nvim-lspconfig'
-    use {'nvim-telescope/telescope.nvim', requires = {{'nvim-lua/popup.nvim'}, {'nvim-lua/plenary.nvim'}}}
-    use {'nvim-telescope/telescope-fzf-native.nvim', run = 'make'}
-    use 'justinmk/vim-dirvish'
-    use 'roginfarrer/vim-dirvish-dovish'
-    use 'tpope/vim-fugitive'
     use 'JoosepAlviste/nvim-ts-context-commentstring'
+    use 'airblade/vim-rooter'
+    use 'chriskempson/base16-vim'
+    use 'hrsh7th/cmp-buffer'
+    use 'hrsh7th/cmp-nvim-lsp'
+    use 'hrsh7th/cmp-vsnip'
+    use 'hrsh7th/nvim-cmp'
+    use 'hrsh7th/vim-vsnip'
+    use 'justinmk/vim-dirvish'
+    use 'moll/vim-bbye'
+    use 'neovim/nvim-lspconfig'
+    use 'norcalli/nvim_utils'
     use 'nvim-treesitter/nvim-treesitter'
     use 'nvim-treesitter/nvim-treesitter-angular'
-    use 'moll/vim-bbye'
+    use 'nvim-treesitter/playground'
+    use 'roginfarrer/vim-dirvish-dovish'
+    use 'tpope/vim-commentary'
+    use 'tpope/vim-fugitive'
+    use 'tpope/vim-repeat'
+    use 'tpope/vim-sleuth'
+    use 'tpope/vim-surround'
+    use 'unblevable/quick-scope'
+    use 'wbthomason/packer.nvim'
     use {'lewis6991/gitsigns.nvim', requires = {'nvim-lua/plenary.nvim'}}
+    use {'nvim-telescope/telescope-fzf-native.nvim', run = 'make'}
+    use {'nvim-telescope/telescope.nvim', requires = {{'nvim-lua/popup.nvim'}, {'nvim-lua/plenary.nvim'}}}
 end)
 
 -- SETTINGS
 vim.g.mapleader = ' '
 vim.o.backup = false
 vim.o.clipboard = 'unnamedplus'
-vim.o.diffopt = 'vertical'
 vim.o.hidden = true
 vim.o.ignorecase = true
 vim.o.inccommand = 'nosplit'
@@ -50,16 +50,17 @@ vim.o.showmode = false
 vim.o.smartcase = true
 vim.o.updatetime = 100
 vim.o.writebackup = false
-vim.o.cpoptions = vim.o.cpoptions .. 'x'
-vim.wo.signcolumn = 'yes'
+vim.wo.cursorline = true
 vim.wo.number = true
 vim.wo.relativenumber = true
+vim.wo.signcolumn = 'yes'
 vim.cmd('set nohls')
 vim.cmd('set noswapfile')
 nvim_create_augroups({
     disable_automatic_comment_insertion = {{'BufEnter', '*', 'setlocal formatoptions-=c formatoptions-=r formatoptions-=o'}},
     highlight_yank = {{'TextYankPost', '*', 'silent! lua vim.highlight.on_yank {higroup="IncSearch", timeout=300}'}},
-    trim_white_space_on_save = {{'BufWritePre', '*', [[:%s/\s\+$//e]]}}
+    trim_white_space_on_save = {{'BufWritePre', '*', [[:%s/\s\+$//e]]}},
+    cleanup_langservers = {{'VimLeave', '*', '!pkill eslint_d prettierd'}}
 })
 
 -- COLORSCHEME
@@ -122,24 +123,30 @@ local lsp = require 'lspconfig'
 local angularls_config = {
     ls = 'angularls',
     get_config = function(on_attach)
-        local ng_projects = os.getenv('ru')
-        local ng_language_server = os.getenv('HOME') .. '/.nvm/versions/node/v12.13.1/lib/node_modules/@angular/language-server/index.js'
-        local cmd = {'node', ng_language_server, '--stdio', '--tsProbeLocations', ng_projects, '--ngProbeLocations', ng_projects}
-        return {
-            on_attach = on_attach,
-            cmd = cmd,
-            on_new_config = function(new_config, new_root_dir)
-                new_config.cmd = cmd
-            end
-        }
+        return {on_attach = on_attach}
     end
 }
 local efmls_config = {
     ls = 'efm',
     get_config = function(on_attach)
         local prettier = {formatCommand = 'prettierd ${INPUT}', formatStdin = true}
+        local eslint_d = {
+            lintCommand = 'eslint_d -f visualstudio --stdin --stdin-filename ${INPUT}',
+            lintStdin = true,
+            lintFormats = {'%f(%l,%c): %rror %m'},
+            lintIgnoreExitCode = true,
+            formatCommand = 'eslint_d --fix-to-stdout --stdin --stdin-filename=${INPUT}',
+            formatStdin = true
+        }
+        local lua_format = {
+            formatCommand = 'lua-format -i --no-keep-simple-function-one-line --no-break-after-operator --column-limit=150 --break-after-table-lb --double-quote-to-single-quote',
+            formatStdin = true
+        }
+        local isort = {formatCommand = 'isort --quiet -', formatStdin = true}
+        local black = {formatCommand = 'black --quiet -', formatStdin = true}
+
         return {
-            root_markers = {'.git', 'packge-lock.json', 'package.json'},
+            cmd = {'efm-langserver', '-q'},
             on_attach = function(client, bufnr)
                 on_attach(client, bufnr)
                 client.resolved_capabilities.document_formatting = true
@@ -147,32 +154,20 @@ local efmls_config = {
                 vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>j', '<Cmd>lua vim.lsp.buf.formatting()<CR>', opts)
             end,
             init_options = {documentFormatting = true},
-            filetypes = {'python', 'typescript', 'scss', 'sass', 'css', 'html', 'json', 'lua'},
+            filetypes = {'python', 'typescript', 'typescriptreact', 'scss', 'sass', 'css', 'html', 'json', 'lua'},
             settings = {
+                root_markers = {'.git', 'packge-lock.json', 'package.json'},
                 languages = {
-                    typescript = {
-                        prettier, {
-                            lintCommand = 'eslint_d -f unix --stdin --stdin-filename ${INPUT}',
-                            lintStdin = true,
-                            lintFormats = {'%f:%l:%c: %m'},
-                            lintIgnoreExitCode = true,
-                            formatCommand = 'eslint_d --fix-to-stdout --stdin --stdin-filename=${INPUT}',
-                            formatStdin = true
-                        }
-                    },
-                    ['javascript'] = {prettier},
+                    typescript = {prettier, eslint_d},
+                    typescriptreact = {prettier},
+                    javascript = {prettier},
                     scss = {prettier},
                     css = {prettier},
                     sass = {prettier},
                     html = {prettier},
                     json = {prettier},
-                    lua = {
-                        {
-                            formatCommand = 'lua-format -i --no-keep-simple-function-one-line --no-break-after-operator --column-limit=150 --break-after-table-lb --double-quote-to-single-quote',
-                            formatStdin = true
-                        }
-                    },
-                    python = {{formatCommand = 'isort --quiet -', formatStdin = true}, {formatCommand = 'black --quiet -', formatStdin = true}}
+                    lua = {lua_format},
+                    python = {isort, black}
                 }
             }
         }
@@ -224,11 +219,8 @@ local tsserver_config = {
             on_attach = function(client, bufnr)
                 on_attach(client, bufnr)
             end,
-            init_options = {
-                preferences = {importModuleSpecifierPreference = 'relative'},
-                formatOptions = {insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces = false}
-            },
-            filetypes = {'typescript'}
+            init_options = {preferences = {importModuleSpecifierPreference = 'relative'}},
+            filetypes = {'typescript', 'typescriptreact'}
         }
     end
 }
@@ -259,9 +251,9 @@ for i, lsp_config in ipairs(ls_configs) do
         vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>rh', '<Cmd>lua _G.ska.document_highlight()<CR>', opts)
         vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>rr', '<Cmd>lua vim.lsp.buf.references()<CR>', opts)
         vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>rn', '<Cmd>lua vim.lsp.buf.rename()<CR>', opts)
-        vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>dd', '<Cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
-        vim.api.nvim_buf_set_keymap(bufnr, 'n', '[d', '<Cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
-        vim.api.nvim_buf_set_keymap(bufnr, 'n', ']d', '<Cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>dd', '<Cmd>lua vim.diagnostic.open_float()<CR>', opts)
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', '[d', '<Cmd>lua vim.diagnostic.goto_prev()<CR>', opts)
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', ']d', '<Cmd>lua vim.diagnostic.goto_next()<CR>', opts)
     end
     local config = lsp_config.get_config(on_attach)
     config['capabilites'] = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
@@ -302,10 +294,16 @@ telescope.setup {
         layout_config = {horizontal = {mirror = false}, vertical = {mirror = false}},
         buffer_previewer_maker = previewers.buffer_previewer_maker,
         mappings = {
-            i = {['<C-w>'] = actions.send_selected_to_qflist + actions.open_qflist},
+            i = {
+                ['<C-w>'] = actions.send_selected_to_qflist + actions.open_qflist,
+                ['<Down>'] = actions.cycle_history_next,
+                ['<Up>'] = actions.cycle_history_prev
+            },
             n = {['<C-w>'] = actions.send_selected_to_qflist + actions.open_qflist}
+
         },
-        fzf = {fuzzy = true, override_generic_sorter = false, override_file_sorter = true, case_mode = 'smart_case'}
+        fzf = {fuzzy = true, override_generic_sorter = false, override_file_sorter = true, case_mode = 'smart_case'},
+        wrap_results = true
     }
 }
 telescope.load_extension('fzf')
@@ -338,25 +336,10 @@ vim.api.nvim_set_keymap('n', '<leader>fa', [[<Cmd> lua require'telescope.builtin
 vim.api.nvim_set_keymap('n', '<leader>ft', [[<Cmd> lua require'telescope.builtin'.colorscheme(require('telescope.themes').get_ivy())<CR>]],
                         {silent = true, noremap = true})
 
--- TREESITTER
-local configs = require 'nvim-treesitter.configs'
-configs.setup {
-    ensure_installed = 'maintained',
-    ignore_install = {'comment', 'jsdoc', 'JSON with comments'},
-    highlight = {enable = true},
-    incremental_selection = {
-        enable = true,
-        keymaps = {init_selection = 'gnn', node_incremental = 'grn', scope_incremental = 'grc', node_decremental = 'grm'}
-    },
-    indent = {enable = true},
-    autotag = {enable = true, filetypes = {'html', 'xml', 'typescript'}},
-    context_commentstring = {enable = true}
-}
-
 -- FUGITIVE
 vim.api.nvim_set_keymap('n', '<leader>gs', ':Git<CR>', {silent = true, noremap = true})
 _G.ska.set_vim_fugitive_keybinds = function()
-    vim.api.nvim_buf_set_keymap(0, '', '<Esc>', ':normal gq<CR>', {silent = true, noremap = true})
+    -- vim.api.nvim_buf_set_keymap(0, '', '<Esc>', ':normal gq<CR>', {silent = true, noremap = true})
     vim.api.nvim_buf_set_keymap(0, '', '<C-c>', ':normal gq<CR>', {silent = true, noremap = true})
     vim.api.nvim_buf_set_keymap(0, '', '<C-[>', ':normal gq<CR>', {silent = true, noremap = true})
 end
@@ -417,7 +400,7 @@ gitsigns.setup {
         ['n <leader>gr'] = '<cmd>lua require"gitsigns".reset_hunk()<CR>',
         ['v <leader>gr'] = '<cmd>lua require"gitsigns".reset_hunk({vim.fn.line("."), vim.fn.line("v")})<CR>',
         ['n <leader>gp'] = '<cmd>lua require"gitsigns".preview_hunk()<CR>',
-        ['n <leader>gb'] = '<cmd>lua require"gitsigns".blame_line(true)<CR>'
+        ['n <leader>gb'] = '<cmd>Git blame<CR>'
     }
 }
 
@@ -425,3 +408,18 @@ gitsigns.setup {
 vim.cmd([[
 set statusline=%<%f\ %h%m%r%{get(b:,'gitsigns_head','')}%=%-14.(%l,%c%V%)\ %P
 ]])
+
+-- TREESITTER
+local configs = require 'nvim-treesitter.configs'
+configs.setup {
+    ensure_installed = 'all',
+    ignore_install = {'comment', 'jsdoc', 'JSON with comments'},
+    highlight = {enable = true},
+    incremental_selection = {
+        enable = true,
+        keymaps = {init_selection = 'gnn', node_incremental = 'grn', scope_incremental = 'grc', node_decremental = 'grm'}
+    },
+    indent = {enable = false},
+    context_commentstring = {enable = true}
+}
+
