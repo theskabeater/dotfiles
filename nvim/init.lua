@@ -7,39 +7,42 @@ _G.ska = {}
 local packer = require('packer')
 local use = packer.use
 packer.startup(function()
-    use 'JoosepAlviste/nvim-ts-context-commentstring'
-    use 'airblade/vim-rooter'
-    use 'chriskempson/base16-vim'
-    use 'hrsh7th/cmp-buffer'
-    use 'hrsh7th/cmp-nvim-lsp'
-    use 'hrsh7th/cmp-vsnip'
-    use 'hrsh7th/nvim-cmp'
-    use 'hrsh7th/vim-vsnip'
-    use 'justinmk/vim-dirvish'
-    use 'moll/vim-bbye'
-    use 'neovim/nvim-lspconfig'
-    use 'norcalli/nvim_utils'
-    use 'nvim-treesitter/nvim-treesitter'
-    use 'nvim-treesitter/nvim-treesitter-angular'
-    use 'nvim-treesitter/playground'
-    use 'roginfarrer/vim-dirvish-dovish'
-    use 'tpope/vim-commentary'
-    use 'tpope/vim-fugitive'
-    use 'tpope/vim-repeat'
-    use 'tpope/vim-sleuth'
-    use 'tpope/vim-surround'
-    use 'unblevable/quick-scope'
-    use 'wbthomason/packer.nvim'
+    use {'JoosepAlviste/nvim-ts-context-commentstring'}
+    use {'airblade/vim-rooter'}
+    use {'elgiano/nvim-treesitter-angular', commit = '024f5fbcc6fab26aa5699cd632e02d0ae98c2314'}
+    use {'ellisonleao/gruvbox.nvim'}
+    use {'hrsh7th/cmp-buffer'}
+    use {'hrsh7th/cmp-nvim-lsp'}
+    use {'hrsh7th/cmp-vsnip'}
+    use {'hrsh7th/nvim-cmp'}
+    use {'hrsh7th/vim-vsnip'}
+    use {'j-hui/fidget.nvim'}
+    use {'junegunn/goyo.vim'}
+    use {'justinmk/vim-dirvish'}
     use {'lewis6991/gitsigns.nvim', requires = {'nvim-lua/plenary.nvim'}}
+    use {'moll/vim-bbye'}
+    use {'neovim/nvim-lspconfig'}
+    use {'norcalli/nvim-colorizer.lua'}
+    use {'norcalli/nvim_utils'}
     use {'nvim-telescope/telescope-fzf-native.nvim', run = 'make'}
     use {'nvim-telescope/telescope.nvim', requires = {{'nvim-lua/popup.nvim'}, {'nvim-lua/plenary.nvim'}}}
+    use {'nvim-treesitter/nvim-treesitter', run = ':TSUpdate'}
+    use {'nvim-treesitter/playground', run = ':TSUpdate'}
+    use {'roginfarrer/vim-dirvish-dovish'}
+    use {'tpope/vim-commentary'}
+    use {'tpope/vim-fugitive'}
+    use {'tpope/vim-repeat'}
+    use {'tpope/vim-sleuth'}
+    use {'tpope/vim-surround'}
+    use {'wbthomason/packer.nvim'}
 end)
 
 -- SETTINGS
 vim.g.mapleader = ' '
 vim.o.backup = false
 vim.o.clipboard = 'unnamedplus'
-vim.o.hidden = true
+vim.o.expandtab = true;
+vim.o.diffopt = 'vertical'
 vim.o.ignorecase = true
 vim.o.inccommand = 'nosplit'
 vim.o.incsearch = true
@@ -47,15 +50,16 @@ vim.o.iskeyword = vim.o.iskeyword .. ',@-@,$'
 vim.o.mouse = 'a'
 vim.o.shortmess = vim.o.shortmess .. 'c'
 vim.o.showmode = false
+vim.o.shiftwidth = 2;
 vim.o.smartcase = true
+vim.o.softtabstop = 2;
+vim.o.tabstop = 2;
 vim.o.updatetime = 100
 vim.o.writebackup = false
 vim.wo.cursorline = true
 vim.wo.number = true
 vim.wo.relativenumber = true
 vim.wo.signcolumn = 'yes'
-vim.cmd('set nohls')
-vim.cmd('set noswapfile')
 nvim_create_augroups({
     disable_automatic_comment_insertion = {{'BufEnter', '*', 'setlocal formatoptions-=c formatoptions-=r formatoptions-=o'}},
     highlight_yank = {{'TextYankPost', '*', 'silent! lua vim.highlight.on_yank {higroup="IncSearch", timeout=300}'}},
@@ -63,10 +67,14 @@ nvim_create_augroups({
     cleanup_langservers = {{'VimLeave', '*', '!pkill eslint_d prettierd'}}
 })
 
+-- SEARCH
+vim.api.nvim_set_keymap('n', '<C-l>', ':noh<CR>', {noremap = true, silent = true})
+
 -- COLORSCHEME
 vim.o.termguicolors = true
-vim.g.base16colorspace = 256
-vim.cmd('colorscheme base16-gruvbox-dark-pale')
+vim.o.background = 'dark'
+require('gruvbox').setup({contrast = 'hard'})
+vim.cmd('colorscheme gruvbox')
 
 -- CLOSE BUFFERS
 _G.ska.close_all_but_current = function()
@@ -88,10 +96,7 @@ com! -nargs=? -complete=dir Sexplore belowright split | silent Dirvish <args>
 com! -nargs=? -complete=dir Vexplore leftabove vsplit | silent Dirvish <args>
 ]], false)
 _G.ska.set_dirvish_settings = function()
-    vim.cmd('setlocal bufhidden=wipe')
     vim.api.nvim_buf_del_keymap(0, '', 'p')
-    vim.api.nvim_buf_set_keymap(0, '', 'p', '<Plug>(dovish_copy)', {silent = true, noremap = true})
-    vim.api.nvim_buf_set_keymap(0, '', 'P', '<Plug>(dovish_move)', {silent = true, noremap = true})
     vim.api.nvim_buf_set_keymap(0, '', '<Esc>', ':normal gq<CR>', {silent = true, noremap = true})
     vim.api.nvim_buf_set_keymap(0, '', '<C-c>', ':normal gq<CR>', {silent = true, noremap = true})
     vim.api.nvim_buf_set_keymap(0, '', '<C-[>', ':normal gq<CR>', {silent = true, noremap = true})
@@ -115,7 +120,11 @@ cmp.setup({
         ['<C-y>'] = cmp.config.disable,
         ['<CR>'] = cmp.mapping.confirm({select = true}),
         ['<Tab>'] = cmp.mapping(cmp.mapping.select_next_item(), {'i', 's'}),
-        ['<S-Tab>'] = cmp.mapping(cmp.mapping.select_prev_item(), {'i', 's'})
+        ['<S-Tab>'] = cmp.mapping(cmp.mapping.select_prev_item(), {'i', 's'}),
+        ['<Down>'] = cmp.mapping(cmp.mapping.select_next_item(), {'i', 's'}),
+        ['<Up>'] = cmp.mapping(cmp.mapping.select_prev_item(), {'i', 's'}),
+        ['<C-n>'] = cmp.mapping(cmp.mapping.select_next_item(), {'i', 's'}),
+        ['<C-p>'] = cmp.mapping(cmp.mapping.select_prev_item(), {'i', 's'})
     },
     sources = cmp.config.sources({{name = 'nvim_lsp'}}, {{name = 'buffer'}})
 })
@@ -129,7 +138,11 @@ local angularls_config = {
 local efmls_config = {
     ls = 'efm',
     get_config = function(on_attach)
-        local prettier = {formatCommand = 'prettierd ${INPUT}', formatStdin = true}
+        local prettier = {
+            formatCommand = 'prettierd ${INPUT}',
+            formatStdin = true,
+            env = {string.format('PRETTIERD_DEFAULT_CONFIG=%s', vim.fn.expand('~/.config/nvim/utils/linter-config/.prettierrc.json'))}
+        }
         local eslint_d = {
             lintCommand = 'eslint_d -f visualstudio --stdin --stdin-filename ${INPUT}',
             lintStdin = true,
@@ -149,18 +162,17 @@ local efmls_config = {
             cmd = {'efm-langserver', '-q'},
             on_attach = function(client, bufnr)
                 on_attach(client, bufnr)
-                client.resolved_capabilities.document_formatting = true
+                client.server_capabilities.documentFormattingProvider = true
                 local opts = {noremap = true, silent = true}
-                vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>j', '<Cmd>lua vim.lsp.buf.formatting()<CR>', opts)
+                vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>j', '<Cmd>lua vim.lsp.buf.format({async = true})<CR>', opts)
             end,
             init_options = {documentFormatting = true},
-            filetypes = {'python', 'typescript', 'typescriptreact', 'scss', 'sass', 'css', 'html', 'json', 'lua'},
+            filetypes = {'typescript', 'javascript', 'scss', 'sass', 'css', 'html', 'json', 'lua'},
             settings = {
                 root_markers = {'.git', 'packge-lock.json', 'package.json'},
                 languages = {
                     typescript = {prettier, eslint_d},
-                    typescriptreact = {prettier},
-                    javascript = {prettier},
+                    javascript = {prettier, eslint_d},
                     scss = {prettier},
                     css = {prettier},
                     sass = {prettier},
@@ -208,7 +220,7 @@ local luals_config = {
 local pyls_config = {
     ls = 'pylsp',
     get_config = function(on_attach)
-        local cmd = {os.getenv('HOME') .. '/.virtualenvs/pyls-pop/bin/pylsp', '--verbose', '--log-file', os.getenv('HOME') .. '/src/dev/log'}
+        local cmd = {os.getenv('HOME') .. '/.pyenv/shims/pylsp'}
         return {cmd = cmd, on_attach = on_attach, filetypes = {'python'}}
     end
 }
@@ -227,41 +239,24 @@ local tsserver_config = {
 local ls_configs = {angularls_config, efmls_config, luals_config, pyls_config, tsserver_config}
 vim.lsp.handlers['textDocument/publishDiagnostics'] = vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics,
                                                                    {virtual_text = false, update_in_insert = false, underline = false})
-_G.ska.document_highlight = function()
-    if not _G.ska.buf_highlight then _G.ska.buf_highlight = {} end
-    local bufnr = vim.api.nvim_buf_get_number('%')
-    _G.ska.buf_highlight[bufnr] = not _G.ska.buf_highlight[bufnr]
-    if _G.ska.buf_highlight[bufnr] then
-        vim.lsp.buf.document_highlight()
-    else
-        vim.lsp.buf.clear_references()
-    end
-end
+
 for i, lsp_config in ipairs(ls_configs) do
     local function on_attach(client, bufnr)
         if client.config.flags then client.config.flags.allow_incremental_sync = true end
-        client.resolved_capabilities.document_formatting = false
+        client.server_capabilities.documentFormattingProvider = false
         local opts = {noremap = true, silent = true}
         vim.api.nvim_buf_set_keymap(bufnr, 'n', 'K', '<Cmd>lua vim.lsp.buf.hover()<CR>', opts)
         vim.api.nvim_buf_set_keymap(bufnr, 'n', '<C-]>', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
         vim.api.nvim_buf_set_keymap(bufnr, 'n', '<C-k>', '<Cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
-        vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>ss', '<Cmd>lua vim.lsp.buf.document_symbol()<CR>', opts)
-        vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>ii', '<Cmd>lua vim.lsp.buf.incoming_calls()<CR>', opts)
-        vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>oo', '<Cmd>lua vim.lsp.buf.outgoing_calls()<CR>', opts)
-        vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>rh', '<Cmd>lua _G.ska.document_highlight()<CR>', opts)
-        vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>rr', '<Cmd>lua vim.lsp.buf.references()<CR>', opts)
         vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>rn', '<Cmd>lua vim.lsp.buf.rename()<CR>', opts)
         vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>dd', '<Cmd>lua vim.diagnostic.open_float()<CR>', opts)
         vim.api.nvim_buf_set_keymap(bufnr, 'n', '[d', '<Cmd>lua vim.diagnostic.goto_prev()<CR>', opts)
         vim.api.nvim_buf_set_keymap(bufnr, 'n', ']d', '<Cmd>lua vim.diagnostic.goto_next()<CR>', opts)
     end
     local config = lsp_config.get_config(on_attach)
-    config['capabilites'] = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+    config['capabilites'] = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
     lsp[lsp_config.ls].setup(config)
 end
-
--- QUICKSCOPE
-vim.g.qs_highlight_on_keys = {'f', 'F', 't', 'T'}
 
 -- TELESCOPE
 local telescope = require 'telescope'
@@ -291,7 +286,7 @@ telescope.setup {
         grep_previewer = previewers.vim_buffer_vimgrep.new,
         qflist_previewer = previewers.vim_buffer_qflist.new,
         layout_strategy = 'horizontal',
-        layout_config = {horizontal = {mirror = false}, vertical = {mirror = false}},
+        layout_config = {horizontal = {mirror = false, prompt_position = 'top'}, vertical = {mirror = false, prompt_position = 'top'}},
         buffer_previewer_maker = previewers.buffer_previewer_maker,
         mappings = {
             i = {
@@ -300,7 +295,6 @@ telescope.setup {
                 ['<Up>'] = actions.cycle_history_prev
             },
             n = {['<C-w>'] = actions.send_selected_to_qflist + actions.open_qflist}
-
         },
         fzf = {fuzzy = true, override_generic_sorter = false, override_file_sorter = true, case_mode = 'smart_case'},
         wrap_results = true
@@ -324,71 +318,20 @@ vim.api.nvim_set_keymap('n', '<leader>fc', [[<Cmd> lua require'telescope.builtin
 vim.api.nvim_set_keymap('n', '<leader>fh', [[<Cmd> lua require'telescope.builtin'.oldfiles(require('telescope.themes').get_ivy())<CR>]],
                         {silent = true, noremap = true})
 vim.api.nvim_set_keymap('n', '<leader>fw', [[<Cmd> lua _G.ska.grep_string()<CR>]], {silent = true, noremap = true})
-vim.api.nvim_set_keymap('n', '<leader>fr', [[<Cmd> lua require'telescope.builtin'.lsp_references(require('telescope.themes').get_ivy())<CR>]],
+vim.api.nvim_set_keymap('n', '<leader>rr', [[<Cmd> lua require'telescope.builtin'.lsp_references(require('telescope.themes').get_ivy())<CR>]],
                         {silent = true, noremap = true})
-vim.api.nvim_set_keymap('n', '<leader>fd',
-                        [[<Cmd> lua require'telescope.builtin'.lsp_document_diagnostics(require('telescope.themes').get_ivy())<CR>]],
+vim.api.nvim_set_keymap('n', '<leader>fd', [[<Cmd> lua require'telescope.builtin'.diagnostics(require('telescope.themes').get_ivy())<CR>]],
                         {silent = true, noremap = true})
 vim.api.nvim_set_keymap('n', '<leader>fs', [[<Cmd> lua require'telescope.builtin'.lsp_document_symbols(require('telescope.themes').get_ivy())<CR>]],
-                        {silent = true, noremap = true})
-vim.api.nvim_set_keymap('n', '<leader>fa', [[<Cmd> lua require'telescope.builtin'.lsp_code_actions(require('telescope.themes').get_ivy())<CR>]],
                         {silent = true, noremap = true})
 vim.api.nvim_set_keymap('n', '<leader>ft', [[<Cmd> lua require'telescope.builtin'.colorscheme(require('telescope.themes').get_ivy())<CR>]],
                         {silent = true, noremap = true})
 
 -- FUGITIVE
 vim.api.nvim_set_keymap('n', '<leader>gs', ':Git<CR>', {silent = true, noremap = true})
-_G.ska.set_vim_fugitive_keybinds = function()
-    -- vim.api.nvim_buf_set_keymap(0, '', '<Esc>', ':normal gq<CR>', {silent = true, noremap = true})
-    vim.api.nvim_buf_set_keymap(0, '', '<C-c>', ':normal gq<CR>', {silent = true, noremap = true})
-    vim.api.nvim_buf_set_keymap(0, '', '<C-[>', ':normal gq<CR>', {silent = true, noremap = true})
-end
-nvim_create_augroups({vim_fugitive_keybinds = {{'FileType', 'fugitive', 'silent! lua _G.ska.set_vim_fugitive_keybinds()'}}})
 
 -- ROOTER
 vim.g.rooter_patterns = {'.git', 'packge-lock.json', 'package.json'}
-
--- HIGHLIGHTS
-_G.ska.set_base16_lsp_diagnostics = function()
-    if not _G.ska.base16_lsp_diagnostics_set then
-        _G.ska.set_base16_lsp_diagnostics_set = true
-        local base16_cterm01 = vim.g.base16_cterm01
-        local base16_cterm03 = vim.g.base16_cterm03
-        local base16_cterm05 = vim.g.base16_cterm05
-        local base16_cterm08 = vim.g.base16_cterm08
-        local base16_cterm09 = vim.g.base16_cterm09
-        local base16_cterm0A = vim.g.base16_cterm0A
-        local base16_gui01 = vim.g.base16_gui01
-        local base16_gui03 = vim.g.base16_gui03
-        local base16_gui05 = vim.g.base16_gui05
-        local base16_gui08 = vim.g.base16_gui08
-        local base16_gui09 = vim.g.base16_gui09
-        local base16_gui0A = vim.g.base16_gui0A
-        vim.fn.Base16hi('LspDiagnosticsDefaultError', base16_gui08, '', base16_cterm08, '', '', '')
-        vim.fn.Base16hi('DiagnosticError', base16_gui08, '', base16_cterm08, '', '', '')
-        vim.fn.Base16hi('LspDiagnosticsDefaultWarning', base16_gui09, '', base16_cterm09, '', '', '')
-        vim.fn.Base16hi('DiagnosticWarn', base16_gui09, '', base16_cterm09, '', '', '')
-        vim.fn.Base16hi('LspDiagnosticsDefaultInformation', base16_gui05, '', base16_cterm05, '', '', '')
-        vim.fn.Base16hi('DiagnosticInfo', base16_gui05, '', base16_cterm05, '', '', '')
-        vim.fn.Base16hi('LspDiagnosticsDefaultHint', base16_gui03, '', base16_cterm03, '', '', '')
-        vim.fn.Base16hi('DiagnosticHint', base16_gui03, '', base16_cterm03, '', '', '')
-        vim.fn.Base16hi('LspDiagnosticsSignError', base16_gui08, base16_gui01, base16_cterm08, '', '', '')
-        vim.fn.Base16hi('DiagnosticSignError', base16_gui08, base16_gui01, base16_cterm08, '', '', '')
-        vim.fn.Base16hi('LspDiagnosticsSignWarning', base16_gui09, base16_gui01, base16_cterm09, '', '', '')
-        vim.fn.Base16hi('DiagnosticSignWarn', base16_gui09, base16_gui01, base16_cterm09, '', '', '')
-        vim.fn.Base16hi('LspDiagnosticsSignInformation', base16_gui05, base16_gui01, base16_cterm05, '', '', '')
-        vim.fn.Base16hi('DiagnosticSignInfo', base16_gui05, base16_gui01, base16_cterm05, '', '', '')
-        vim.fn.Base16hi('LspDiagnosticsSignHint', base16_gui03, base16_gui01, base16_cterm03, '', '', '')
-        vim.fn.Base16hi('DiagnosticSignHint', base16_gui03, base16_gui01, base16_cterm03, '', '', '')
-        vim.fn.Base16hi('LspReferenceText', base16_gui01, base16_gui0A, base16_cterm01, base16_cterm0A, '', '')
-        vim.fn.Base16hi('ReferenceText', base16_gui01, base16_gui0A, base16_cterm01, base16_cterm0A, '', '')
-        vim.fn.Base16hi('LspReferenceRead', base16_gui01, base16_gui0A, base16_cterm01, base16_cterm0A, '', '')
-        vim.fn.Base16hi('ReferenceRead', base16_gui01, base16_gui0A, base16_cterm01, base16_cterm0A, '', '')
-        vim.fn.Base16hi('LspReferenceWrite', base16_gui01, base16_gui0A, base16_cterm01, base16_cterm0A, '', '')
-        vim.fn.Base16hi('ReferenceWrite', base16_gui01, base16_gui0A, base16_cterm01, base16_cterm0A, '', '')
-    end
-end
-nvim_create_augroups({set_base16_lsp_diagnostics = {{'Syntax', '*', 'silent! lua _G.ska.set_base16_lsp_diagnostics()'}}})
 
 -- GITSIGNS
 local gitsigns = require 'gitsigns'
@@ -409,17 +352,42 @@ vim.cmd([[
 set statusline=%<%f\ %h%m%r%{get(b:,'gitsigns_head','')}%=%-14.(%l,%c%V%)\ %P
 ]])
 
+-- LSP Status
+require'fidget'.setup {}
+
 -- TREESITTER
 local configs = require 'nvim-treesitter.configs'
 configs.setup {
-    ensure_installed = 'all',
-    ignore_install = {'comment', 'jsdoc', 'JSON with comments'},
-    highlight = {enable = true},
-    incremental_selection = {
-        enable = true,
-        keymaps = {init_selection = 'gnn', node_incremental = 'grn', scope_incremental = 'grc', node_decremental = 'grm'}
+    ensure_installed = {
+        'typescript', 'lua', 'python', 'json', 'scss', 'css', 'html', 'ruby', 'go', 'rust', 'javascript', 'markdown', 'yaml', 'bash', 'query'
     },
+    highlight = {enable = true},
     indent = {enable = false},
     context_commentstring = {enable = true}
 }
+require'nvim-treesitter.configs'.setup {
+    playground = {
+        enable = true,
+        disable = {},
+        updatetime = 25, -- Debounced time for highlighting nodes in the playground from source code
+        persist_queries = false, -- Whether the query persists across vim sessions
+        keybindings = {
+            toggle_query_editor = 'o',
+            toggle_hl_groups = 'i',
+            toggle_injected_languages = 't',
+            toggle_anonymous_nodes = 'a',
+            toggle_language_display = 'I',
+            focus_language = 'f',
+            unfocus_language = 'F',
+            update = 'R',
+            goto_node = '<cr>',
+            show_help = '?'
+        }
+    }
+}
 
+-- COLORIZER
+vim.api.nvim_set_keymap('n', '<leader>hh', '<CMD>ColorizerToggle<CR>', {noremap = true, silent = true})
+
+-- Goyo
+vim.api.nvim_set_keymap('n', '<leader>gg', '<CMD>Goyo<CR>', {noremap = true, silent = true})
