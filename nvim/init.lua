@@ -9,13 +9,14 @@ local use = packer.use
 packer.startup(function()
     use {'JoosepAlviste/nvim-ts-context-commentstring'}
     use {'airblade/vim-rooter'}
-    use {'elgiano/nvim-treesitter-angular', commit = '024f5fbcc6fab26aa5699cd632e02d0ae98c2314'}
+    use {'elgiano/nvim-treesitter-angular', branch = 'topic/jsx-fix'}
     use {'ellisonleao/gruvbox.nvim'}
     use {'hrsh7th/cmp-buffer'}
     use {'hrsh7th/cmp-nvim-lsp'}
     use {'hrsh7th/cmp-vsnip'}
     use {'hrsh7th/nvim-cmp'}
     use {'hrsh7th/vim-vsnip'}
+    use({'iamcco/markdown-preview.nvim'})
     use {'j-hui/fidget.nvim'}
     use {'junegunn/goyo.vim'}
     use {'justinmk/vim-dirvish'}
@@ -60,6 +61,8 @@ vim.wo.cursorline = true
 vim.wo.number = true
 vim.wo.relativenumber = true
 vim.wo.signcolumn = 'yes'
+
+-- MISC
 nvim_create_augroups({
     disable_automatic_comment_insertion = {{'BufEnter', '*', 'setlocal formatoptions-=c formatoptions-=r formatoptions-=o'}},
     highlight_yank = {{'TextYankPost', '*', 'silent! lua vim.highlight.on_yank {higroup="IncSearch", timeout=300}'}},
@@ -67,7 +70,7 @@ nvim_create_augroups({
     cleanup_langservers = {{'VimLeave', '*', '!pkill eslint_d prettierd'}}
 })
 
--- SEARCH
+-- TOGGLE SEARCH HIGHLIGHT
 vim.api.nvim_set_keymap('n', '<C-l>', ':noh<CR>', {noremap = true, silent = true})
 
 -- COLORSCHEME
@@ -76,7 +79,7 @@ vim.o.background = 'dark'
 require('gruvbox').setup({contrast = 'hard'})
 vim.cmd('colorscheme gruvbox')
 
--- CLOSE BUFFERS
+-- BUFFER MANAGEMENT
 _G.ska.close_all_but_current = function()
     local current = nvim.get_current_buf()
     local buffers = nvim.list_bufs()
@@ -236,11 +239,9 @@ local tsserver_config = {
         }
     end
 }
-local ls_configs = {angularls_config, efmls_config, luals_config, pyls_config, tsserver_config}
 vim.lsp.handlers['textDocument/publishDiagnostics'] = vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics,
-                                                                   {virtual_text = false, update_in_insert = false, underline = false})
-
-for i, lsp_config in ipairs(ls_configs) do
+                                                                   {virtual_text = false, underline = false})
+for i, lsp_config in ipairs({angularls_config, efmls_config, luals_config, pyls_config, tsserver_config}) do
     local function on_attach(client, bufnr)
         if client.config.flags then client.config.flags.allow_incremental_sync = true end
         client.server_capabilities.documentFormattingProvider = false
@@ -249,6 +250,7 @@ for i, lsp_config in ipairs(ls_configs) do
         vim.api.nvim_buf_set_keymap(bufnr, 'n', '<C-]>', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
         vim.api.nvim_buf_set_keymap(bufnr, 'n', '<C-k>', '<Cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
         vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>rn', '<Cmd>lua vim.lsp.buf.rename()<CR>', opts)
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>ca', '<Cmd>lua vim.lsp.buf.cod_action()<CR>', opts)
         vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>dd', '<Cmd>lua vim.diagnostic.open_float()<CR>', opts)
         vim.api.nvim_buf_set_keymap(bufnr, 'n', '[d', '<Cmd>lua vim.diagnostic.goto_prev()<CR>', opts)
         vim.api.nvim_buf_set_keymap(bufnr, 'n', ']d', '<Cmd>lua vim.diagnostic.goto_next()<CR>', opts)
