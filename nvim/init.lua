@@ -22,7 +22,6 @@ vim.wo.relativenumber = true
 vim.o.termguicolors = true
 vim.o.background = 'dark'
 vim.wo.signcolumn = 'yes'
-
 vim.api.nvim_set_keymap('n', '<C-l>', [[<CMD>noh<CR>]], { noremap = true })
 vim.api.nvim_create_autocmd('BufEnter', {
   pattern = "*",
@@ -39,17 +38,16 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 vim.api.nvim_create_autocmd('BufWritePre', {
   pattern = "*",
   callback = function()
-    vim.cmd('!pkill eslint_d')
+    vim.cmd([[:%s/\s\+$//e]])
   end,
 })
 vim.api.nvim_create_autocmd('VimLeave', {
   pattern = "*",
   callback = function()
-    vim.cmd([[:%s/\s\+$//e]])
+    vim.cmd('!pkill eslint_d')
   end,
 })
 vim.cmd([[set statusline=%<%f\ %h%m%r%{get(b:,'gitsigns_head','')}%=%-14.(%l,%c%V%)\ %P]])
-
 local ensure_packer = function()
   local fn = vim.fn
   local install_path = fn.stdpath('data') .. '/site/pack/packer/start/packer.nvim'
@@ -60,9 +58,7 @@ local ensure_packer = function()
   end
   return false
 end
-
 local packer_bootstrap = ensure_packer()
-
 return require('packer').startup(function(use)
   use {
     'airblade/vim-rooter',
@@ -97,15 +93,15 @@ return require('packer').startup(function(use)
   use {
     'junegunn/goyo.vim',
     config = function()
-      vim.api.nvim_set_keymap('n', '<leader>gg', '<CMD>Goyo<CR>', {noremap = true})
+      vim.api.nvim_set_keymap('n', '<leader>gg', '<CMD>Goyo<CR>', { noremap = true })
     end,
   }
+  vim.g.loaded_netrw = 1
+  vim.g.loaded_netrwPlugin = 1
   use {
     'justinmk/vim-dirvish',
     requires = { { 'roginfarrer/vim-dirvish-dovish' } },
     config = function()
-      vim.g.loaded_netrw = 1
-      vim.g.loaded_netrwPlugin = 1
       vim.g.dirvish_mode = [[:sort ,^\v(.*[\/])|\ze,]]
       vim.api.nvim_exec([[com! -nargs=? -complete=dir Explore Dirvish <args>]], false)
       vim.api.nvim_exec([[com! -nargs=? -complete=dir Sexplore belowright split | silent Dirvish <args>]], false)
@@ -170,11 +166,7 @@ return require('packer').startup(function(use)
       vim.api.nvim_set_keymap('n', 'K', [[<CMD>lua vim.lsp.buf.hover()<CR>]], { noremap = true })
       vim.api.nvim_set_keymap('n', '[d', [[<CMD>lua vim.diagnostic.goto_prev()<CR>]], { noremap = true })
       vim.api.nvim_set_keymap('n', ']d', [[<CMD>lua vim.diagnostic.goto_next()<CR>]], { noremap = true })
-
       vim.diagnostic.config({ virtual_text = false })
-      vim.o.updatetime = 250
-      vim.cmd [[autocmd CursorHold,CursorHoldI * lua vim.diagnostic.open_float(nil, {focus=false})]]
-
       local coq = require('coq')
       local lspconfig = require('lspconfig')
       local servers = { 'angularls', 'lua_ls', 'tsserver' }
@@ -202,11 +194,17 @@ return require('packer').startup(function(use)
       vim.api.nvim_set_keymap('n', '<leader>hh', '<CMD>ColorizerToggle<CR>', { noremap = true })
     end,
   }
-  use { 'nvim-telescope/telescope-fzf-native.nvim', run = 'make' }
   use {
     'nvim-telescope/telescope.nvim',
-    requires = { { 'nvim-lua/popup.nvim' }, { 'nvim-lua/plenary.nvim' } },
+    requires = {
+      { 'nvim-lua/popup.nvim' },
+      { 'nvim-lua/plenary.nvim' },
+      { 'nvim-telescope/telescope-fzf-native.nvim', run = 'make' },
+    },
     config = function()
+      local telescope = require('telescope')
+      telescope.setup()
+      telescope.load_extension('fzf')
       vim.api.nvim_set_keymap('n', '<leader>fb', [[<CMD>lua require'telescope.builtin'.buffers()<CR>]],
         { noremap = true })
       vim.api.nvim_set_keymap('n', '<leader>fc', [[<CMD>lua require'telescope.builtin'.command_history()<CR>]],
@@ -225,6 +223,8 @@ return require('packer').startup(function(use)
         { noremap = true })
       vim.api.nvim_set_keymap('n', '<leader>ft', [[<CMD>lua require'telescope.builtin'.colorscheme()<CR>]],
         { noremap = true })
+      vim.api.nvim_set_keymap('n', '<leader>fw',
+        [[<CMD>lua require'telescope.builtin'.grep_string({default_text = vim.fn.expand('<cword>')})<CR>]], { noremap = true })
     end,
   }
   use {
@@ -266,7 +266,6 @@ return require('packer').startup(function(use)
   use { 'tpope/vim-sleuth' }
   use { 'tpope/vim-surround' }
   use { 'wbthomason/packer.nvim' }
-
   if packer_bootstrap then
     require('packer').sync()
   end
