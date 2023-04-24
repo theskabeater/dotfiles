@@ -39,6 +39,12 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 vim.api.nvim_create_autocmd('BufWritePre', {
   pattern = "*",
   callback = function()
+    vim.cmd('!pkill eslint_d')
+  end,
+})
+vim.api.nvim_create_autocmd('VimLeave', {
+  pattern = "*",
+  callback = function()
     vim.cmd([[:%s/\s\+$//e]])
   end,
 })
@@ -81,12 +87,18 @@ return require('packer').startup(function(use)
       local null_ls = require('null-ls')
       null_ls.setup({
         sources = {
-          null_ls.builtins.code_actions.eslint,
-          null_ls.builtins.diagnostics.eslint,
-          null_ls.builtins.formatting.eslint,
+          null_ls.builtins.code_actions.eslint_d,
+          null_ls.builtins.diagnostics.eslint_d,
+          null_ls.builtins.formatting.eslint_d,
         },
       })
     end
+  }
+  use {
+    'junegunn/goyo.vim',
+    config = function()
+      vim.api.nvim_set_keymap('n', '<leader>gg', '<CMD>Goyo<CR>', {noremap = true})
+    end,
   }
   use {
     'justinmk/vim-dirvish',
@@ -182,6 +194,12 @@ return require('packer').startup(function(use)
         end
         lspconfig[lsp].setup(coq.lsp_ensure_capabilities(config))
       end
+    end,
+  }
+  use {
+    'norcalli/nvim-colorizer.lua',
+    config = function()
+      vim.api.nvim_set_keymap('n', '<leader>hh', '<CMD>ColorizerToggle<CR>', { noremap = true })
     end,
   }
   use { 'nvim-telescope/telescope-fzf-native.nvim', run = 'make' }
