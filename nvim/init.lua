@@ -226,8 +226,8 @@ return require('packer').startup(function(use)
                         ['<CR>'] = cmp.mapping.confirm({select = true}),
                         ['<Up>'] = cmp.mapping(cmp_prev, {'i', 's'}),
                         ['<Down>'] = cmp.mapping(cmp_next, {'i', 's'}),
-                        ['<Tab>'] = cmp.mapping(cmp_next, {'i', 's'}),
-                        ['<S-Tab>'] = cmp.mapping(cmp_prev, {'i', 's'})
+                        ['<Tab>'] = cmp.mapping(cmp_next, {'i', 's', 'c'}),
+                        ['<S-Tab>'] = cmp.mapping(cmp_prev, {'i', 's', 'c'})
                     }),
                     sources = cmp.config.sources({
                         {name = 'nvim_lsp'}, {name = 'vsnip'}
