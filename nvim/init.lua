@@ -22,25 +22,25 @@ vim.wo.relativenumber = true
 vim.o.termguicolors = true
 vim.o.background = 'dark'
 vim.wo.signcolumn = 'yes'
-vim.api.nvim_set_keymap('n', '<C-l>', [[<CMD>noh<CR>]], {noremap = true})
+vim.api.nvim_set_keymap('n', '<C-l>', '<CMD>noh<CR>', {noremap = true})
 vim.api.nvim_create_autocmd('BufEnter', {
-    pattern = "*",
+    pattern = '*',
     callback = function()
         vim.cmd('setlocal formatoptions-=c formatoptions-=r formatoptions-=o')
     end
 })
 vim.api.nvim_create_autocmd('TextYankPost', {
-    pattern = "*",
+    pattern = '*',
     callback = function()
-        vim.highlight.on_yank({higroup = "IncSearch", timeout = 300})
+        vim.highlight.on_yank({higroup = 'IncSearch', timeout = 300})
     end
 })
 vim.api.nvim_create_autocmd('BufWritePre', {
-    pattern = "*",
+    pattern = '*',
     callback = function() vim.cmd([[:%s/\s\+$//e]]) end
 })
 vim.api.nvim_create_autocmd('VimLeave', {
-    pattern = "*",
+    pattern = '*',
     callback = function() vim.cmd('!pkill eslint_d') end
 })
 vim.cmd(
@@ -64,7 +64,9 @@ return require('packer').startup(function(use)
     use {
         'airblade/vim-rooter',
         config = function()
-            vim.g.rooter_patterns = {'.git', 'package.json'}
+            vim.g.rooter_patterns = {
+                '.git', 'package.json', 'angular.json', 'tsconfig.app.json'
+            }
         end
     }
     use {'JoosepAlviste/nvim-ts-context-commentstring'}
@@ -76,7 +78,10 @@ return require('packer').startup(function(use)
             vim.cmd('colorscheme gruvbox')
         end
     }
-    use {'j-hui/fidget.nvim', config = function() require'fidget'.setup {} end}
+    use {
+        'j-hui/fidget.nvim',
+        config = function() require('fidget').setup({}) end
+    }
     use {
         'jose-elias-alvarez/null-ls.nvim',
         requires = {{'nvim-lua/plenary.nvim'}},
@@ -138,15 +143,15 @@ return require('packer').startup(function(use)
                     noremap = true,
                     ['n ]c'] = {
                         expr = true,
-                        '&diff ? \']c\' : \'<CMD>lua require"gitsigns.actions".next_hunk()<CR>\''
+                        [[&diff ? "]c" : "<CMD>lua require('gitsigns.actions').next_hunk()<CR>"]]
                     },
                     ['n [c'] = {
                         expr = true,
-                        '&diff ? \'[c\' : \'<CMD>lua require"gitsigns.actions".prev_hunk()<CR>\''
+                        [[&diff ? "[c" : "<CMD>lua require('gitsigns.actions').prev_hunk()<CR>"]]
                     },
-                    ['n <leader>gr'] = '<CMD>lua require"gitsigns".reset_hunk()<CR>',
-                    ['v <leader>gr'] = '<CMD>lua require"gitsigns".reset_hunk({vim.fn.line("."), vim.fn.line("v")})<CR>',
-                    ['n <leader>gp'] = '<CMD>lua require"gitsigns".preview_hunk()<CR>',
+                    ['n <leader>gr'] = [[<CMD>lua require('gitsigns').reset_hunk()<CR>]],
+                    ['v <leader>gr'] = [[<CMD>lua require('gitsigns').reset_hunk({vim.fn.line('.'), vim.fn.line('v')})<CR>]],
+                    ['n <leader>gp'] = [[<CMD>lua require('gitsigns').preview_hunk()<CR>]],
                     ['n <leader>gb'] = '<CMD>Git blame<CR>'
                 }
             })
@@ -182,7 +187,7 @@ return require('packer').startup(function(use)
                     return col ~= 0 and
                                vim.api
                                    .nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(
-                                   col, col):match("%s") == nil
+                                   col, col):match('%s') == nil
                 end
                 local cmp_next = function(fallback)
                     if cmp.visible() then
@@ -241,31 +246,31 @@ return require('packer').startup(function(use)
         },
         config = function()
             vim.api.nvim_set_keymap('n', '<C-]>',
-                                    [[<CMD>lua vim.lsp.buf.definition()<CR>]],
+                                    '<CMD>lua vim.lsp.buf.definition()<CR>',
                                     {noremap = true})
             vim.api.nvim_set_keymap('n', '<C-k>',
-                                    [[<CMD>lua vim.lsp.buf.signature_help()<CR>]],
+                                    '<CMD>lua vim.lsp.buf.signature_help()<CR>',
                                     {noremap = true})
             vim.api.nvim_set_keymap('n', '<leader>ca',
-                                    [[<CMD>lua vim.lsp.buf.code_action()<CR>]],
+                                    '<CMD>lua vim.lsp.buf.code_action()<CR>',
                                     {noremap = true})
             vim.api.nvim_set_keymap('n', '<leader>dd',
-                                    [[<CMD>lua vim.diagnostic.open_float()<CR>]],
+                                    '<CMD>lua vim.diagnostic.open_float()<CR>',
                                     {noremap = true})
             vim.api.nvim_set_keymap('n', '<leader>j',
-                                    [[<CMD> lua vim.lsp.buf.format()<CR>]],
+                                    '<CMD> lua vim.lsp.buf.format()<CR>',
                                     {noremap = true})
             vim.api.nvim_set_keymap('n', '<leader>rn',
-                                    [[<CMD>lua vim.lsp.buf.rename()<CR>]],
+                                    '<CMD>lua vim.lsp.buf.rename()<CR>',
                                     {noremap = true})
             vim.api.nvim_set_keymap('n', 'K',
-                                    [[<CMD>lua vim.lsp.buf.hover()<CR>]],
+                                    '<CMD>lua vim.lsp.buf.hover()<CR>',
                                     {noremap = true})
             vim.api.nvim_set_keymap('n', '[d',
-                                    [[<CMD>lua vim.diagnostic.goto_prev()<CR>]],
+                                    '<CMD>lua vim.diagnostic.goto_prev()<CR>',
                                     {noremap = true})
             vim.api.nvim_set_keymap('n', ']d',
-                                    [[<CMD>lua vim.diagnostic.goto_next()<CR>]],
+                                    '<CMD>lua vim.diagnostic.goto_next()<CR>',
                                     {noremap = true})
             vim.diagnostic.config({virtual_text = false})
             local lspconfig = require('lspconfig')
@@ -288,7 +293,7 @@ return require('packer').startup(function(use)
                             diagnostics = {globals = {'vim'}},
                             workspace = {
                                 library = vim.api
-                                    .nvim_get_runtime_file("", true)
+                                    .nvim_get_runtime_file('', true)
                             },
                             telemetry = {enable = false}
                         }
@@ -316,34 +321,34 @@ return require('packer').startup(function(use)
             telescope.setup()
             telescope.load_extension('fzf')
             vim.api.nvim_set_keymap('n', '<leader>fb',
-                                    [[<CMD>lua require'telescope.builtin'.buffers()<CR>]],
+                                    [[<CMD>lua require('telescope.builtin').buffers()<CR>]],
                                     {noremap = true})
             vim.api.nvim_set_keymap('n', '<leader>fc',
-                                    [[<CMD>lua require'telescope.builtin'.command_history()<CR>]],
+                                    [[<CMD>lua require('telescope.builtin').command_history()<CR>]],
                                     {noremap = true})
             vim.api.nvim_set_keymap('n', '<leader>fd',
-                                    [[<CMD>lua require'telescope.builtin'.diagnostics()<CR>]],
+                                    [[<CMD>lua require('telescope.builtin').diagnostics()<CR>]],
                                     {noremap = true})
             vim.api.nvim_set_keymap('n', '<leader>ff',
-                                    [[<CMD>lua require'telescope.builtin'.live_grep()<CR>]],
+                                    [[<CMD>lua require('telescope.builtin').live_grep()<CR>]],
                                     {noremap = true})
             vim.api.nvim_set_keymap('n', '<leader>fh',
-                                    [[<CMD>lua require'telescope.builtin'.oldfiles()<CR>]],
+                                    [[<CMD>lua require('telescope.builtin').oldfiles()<CR>]],
                                     {noremap = true})
             vim.api.nvim_set_keymap('n', '<leader>fp',
-                                    [[<CMD>lua require'telescope.builtin'.find_files()<CR>]],
+                                    [[<CMD>lua require('telescope.builtin').find_files()<CR>]],
                                     {noremap = true})
             vim.api.nvim_set_keymap('n', '<leader>fr',
-                                    [[<CMD>lua require'telescope.builtin'.lsp_references()<CR>]],
+                                    [[<CMD>lua require('telescope.builtin').lsp_references()<CR>]],
                                     {noremap = true})
             vim.api.nvim_set_keymap('n', '<leader>fs',
-                                    [[<CMD>lua require'telescope.builtin'.lsp_document_symbols()<CR>]],
+                                    [[<CMD>lua require('telescope.builtin').lsp_document_symbols()<CR>]],
                                     {noremap = true})
             vim.api.nvim_set_keymap('n', '<leader>ft',
-                                    [[<CMD>lua require'telescope.builtin'.colorscheme()<CR>]],
+                                    [[<CMD>lua require('telescope.builtin').colorscheme()<CR>]],
                                     {noremap = true})
             vim.api.nvim_set_keymap('n', '<leader>fw',
-                                    [[<CMD>lua require'telescope.builtin'.grep_string({default_text = vim.fn.expand('<cword>')})<CR>]],
+                                    [[<CMD>lua require('telescope.builtin').grep_string({default_text = vim.fn.expand('<cword>')})<CR>]],
                                     {noremap = true})
         end
     }
