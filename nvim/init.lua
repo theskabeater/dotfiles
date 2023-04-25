@@ -72,13 +72,6 @@ return require('packer').startup(function(use)
     use {'JoosepAlviste/nvim-ts-context-commentstring'}
     use {'elgiano/nvim-treesitter-angular', branch = 'topic/jsx-fix'}
     use {
-        'ellisonleao/gruvbox.nvim',
-        config = function()
-            require('gruvbox').setup({contrast = 'hard'})
-            vim.cmd('colorscheme gruvbox')
-        end
-    }
-    use {
         'j-hui/fidget.nvim',
         config = function() require('fidget').setup({}) end
     }
@@ -366,6 +359,15 @@ return require('packer').startup(function(use)
                 highlight = {enable = true},
                 indent = {enable = false}
             })
+        end
+    }
+    use {
+        'sainnhe/gruvbox-material',
+        config = function()
+            vim.g.gruvbox_material_background = 'hard'
+            vim.g.gruvbox_material_better_performance = true
+            vim.g.gruvbox_material_better_performance = true
+            vim.cmd('colorscheme gruvbox-material')
         end
     }
     use {'tpope/vim-commentary'}
