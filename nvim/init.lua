@@ -80,14 +80,14 @@ return require('packer').startup(function(use)
         requires = {{'nvim-lua/plenary.nvim'}},
         config = function()
             local null_ls = require('null-ls')
-            local source_config = { disabled_filetypes = {'fugitive'} };
+            local source_config = {disabled_filetypes = {'fugitive'}};
             null_ls.setup({
                 sources = {
                     null_ls.builtins.code_actions.eslint_d.with(source_config),
                     null_ls.builtins.diagnostics.eslint_d.with(source_config),
                     null_ls.builtins.formatting.eslint_d.with(source_config),
                     null_ls.builtins.completion.luasnip.with(source_config),
-                    null_ls.builtins.formatting.lua_forma.with(source_config),
+                    null_ls.builtins.formatting.lua_format.with(source_config)
                 }
             })
         end
@@ -273,9 +273,8 @@ return require('packer').startup(function(use)
                 local config = {
                     capabilities = require('cmp_nvim_lsp').default_capabilities(),
                     on_attach = function(client)
-                        if client.config.flags then
-                            client.config.flags.allow_incremental_sync = true
-                        end
+                        client.config.flags.allow_incremental_sync = true
+                        client.server_capabilities.semanticTokensProvider = nil
                         client.server_capabilities.documentFormattingProvider =
                             false
                     end
@@ -346,6 +345,7 @@ return require('packer').startup(function(use)
                                     {noremap = true})
         end
     }
+    use {'nvim-treesitter/playground'}
     use {
         'nvim-treesitter/nvim-treesitter',
         run = ':TSUpdate',
@@ -363,11 +363,11 @@ return require('packer').startup(function(use)
         end
     }
     use {
-        'sainnhe/gruvbox-material',
+        'ellisonleao/gruvbox.nvim',
         config = function()
-            vim.g.gruvbox_material_background = 'hard'
-            vim.g.gruvbox_material_better_performance = true
-            vim.cmd('colorscheme gruvbox-material')
+            vim.o.background = 'dark'
+            require('gruvbox').setup({contrast = 'hard'})
+            vim.cmd('colorscheme gruvbox')
         end
     }
     use {'tpope/vim-commentary'}
