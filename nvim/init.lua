@@ -39,10 +39,6 @@ vim.api.nvim_create_autocmd('BufWritePre', {
     pattern = '*',
     callback = function() vim.cmd([[:%s/\s\+$//e]]) end
 })
-vim.api.nvim_create_autocmd('VimLeave', {
-    pattern = '*',
-    callback = function() vim.cmd('!pkill eslint_d') end
-})
 vim.cmd(
     [[set statusline=%<%f\ %h%m%r%{get(b:,'gitsigns_head','')}%=%-14.(%l,%c%V%)\ %P]])
 local ensure_packer = function()
@@ -345,7 +341,6 @@ return require('packer').startup(function(use)
                                     {noremap = true})
         end
     }
-    use {'nvim-treesitter/playground'}
     use {
         'nvim-treesitter/nvim-treesitter',
         run = ':TSUpdate',
