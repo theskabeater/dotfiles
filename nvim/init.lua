@@ -24,19 +24,19 @@ vim.o.background = 'dark'
 vim.wo.signcolumn = 'yes'
 vim.api.nvim_set_keymap('n', '<C-l>', '<CMD>noh<CR>', {noremap = true})
 vim.api.nvim_create_autocmd('BufEnter', {
-    pattern = '*',
+    pattern = {'*'},
     callback = function()
         vim.cmd('setlocal formatoptions-=c formatoptions-=r formatoptions-=o')
     end
 })
 vim.api.nvim_create_autocmd('TextYankPost', {
-    pattern = '*',
+    pattern = {'*'},
     callback = function()
         vim.highlight.on_yank({higroup = 'IncSearch', timeout = 300})
     end
 })
 vim.api.nvim_create_autocmd('BufWritePre', {
-    pattern = '*',
+    pattern = {'*'},
     callback = function() vim.cmd([[:%s/\s\+$//e]]) end
 })
 vim.cmd(
@@ -60,9 +60,7 @@ return require('packer').startup(function(use)
     use {
         'airblade/vim-rooter',
         config = function()
-            vim.g.rooter_patterns = {
-                '.git', 'package.json', 'angular.json', 'tsconfig.app.json'
-            }
+            vim.g.rooter_patterns = {'.git', 'package.json', 'angular.json'}
         end
     }
     use {'JoosepAlviste/nvim-ts-context-commentstring'}
@@ -111,15 +109,18 @@ return require('packer').startup(function(use)
                 [[com! -nargs=? -complete=dir Vexplore leftabove vsplit | silent Dirvish <args>]],
                 false)
             vim.api.nvim_create_autocmd('FileType', {
-                pattern = 'dirvish',
+                pattern = {'dirvish'},
                 callback = function()
-                    vim.cmd([[silent! lua vim.api.nvim_set_keymap('', 'p')]])
-                    vim.cmd(
-                        [[silent! lua vim.api.nvim_set_keymap('', '<Esc>', ':normal gq<CR>', {noremap = true})]])
-                    vim.cmd(
-                        [[silent! lua vim.api.nvim_set_keymap('', '<C-c>', ':normal gq<CR>', {noremap = true})]])
-                    vim.cmd(
-                        [[silent! lua vim.api.nvim_set_keymap('', '<C-[>', ':normal gq<CR>', {noremap = true})]])
+                    vim.api.nvim_buf_del_keymap(0, '', 'p')
+                    vim.api.nvim_buf_set_keymap(0, '', '<Esc>',
+                                                ':normal gq<CR>',
+                                                {noremap = true, silent = true})
+                    vim.api.nvim_buf_set_keymap(0, '', '<C-c>',
+                                                ':normal gq<CR>',
+                                                {noremap = true, silent = true})
+                    vim.api.nvim_buf_set_keymap(0, '', '<C-[>',
+                                                ':normal gq<CR>',
+                                                {noremap = true, silent = true})
                 end
             })
         end
@@ -371,6 +372,16 @@ return require('packer').startup(function(use)
         config = function()
             vim.api.nvim_set_keymap('n', '<leader>gs', ':Git<CR>',
                                     {noremap = true})
+            vim.api.nvim_create_autocmd('FileType', {
+                pattern = {'fugitive'},
+                callback = function()
+                    vim.api.nvim_buf_set_keymap(0, '', '<Esc>',
+                                                ':normal gq<CR>',
+                                                {noremap = true, silent = true})
+
+                end
+            })
+
         end
     }
     use {'tpope/vim-repeat'}
