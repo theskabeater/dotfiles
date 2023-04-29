@@ -350,8 +350,8 @@ return require('packer').startup(function(use)
                 context_commentstring = {enable = true},
                 ensure_installed = {
                     'bash', 'css', 'go', 'html', 'javascript', 'json', 'lua',
-                    'markdown', 'python', 'query', 'ruby', 'rust', 'scss',
-                    'typescript', 'yaml'
+                    'make', 'markdown', 'python', 'query', 'ruby', 'rust',
+                    'scss', 'typescript', 'yaml'
                 },
                 highlight = {enable = true},
                 indent = {enable = false}
