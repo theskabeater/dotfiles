@@ -89,7 +89,6 @@ return require('packer').startup(function(use)
                     null_ls.builtins.code_actions.eslint_d.with(eslint_d_config),
                     null_ls.builtins.diagnostics.eslint_d.with(eslint_d_config),
                     null_ls.builtins.formatting.eslint_d.with(eslint_d_config),
-                    null_ls.builtins.completion.luasnip.with(source_config),
                     null_ls.builtins.formatting.lua_format.with(source_config)
                 }
             })
@@ -175,13 +174,13 @@ return require('packer').startup(function(use)
         requires = {
             'hrsh7th/nvim-cmp',
             requires = {
-                {'L3MON4D3/LuaSnip'}, {'hrsh7th/cmp-buffer'},
-                {'hrsh7th/cmp-cmdline'}, {'hrsh7th/cmp-nvim-lsp'},
-                {'hrsh7th/cmp-path'}, {'saadparwaiz1/cmp_luasnip'}
+                {'hrsh7th/cmp-buffer'}, {'hrsh7th/cmp-cmdline'},
+                {'hrsh7th/cmp-nvim-lsp'}, {'hrsh7th/cmp-path'},
+                {'hrsh7th/cmp-vsnip'}, {'hrsh7th/vim-vsnip'},
+                {'johnpapa/vscode-angular-snippets'}
             },
             config = function()
                 local cmp = require('cmp')
-                local luasnip = require('luasnip')
                 local has_words_before = function()
                     unpack = unpack or table.unpack
                     local line, col = unpack(vim.api.nvim_win_get_cursor(0))
@@ -193,8 +192,8 @@ return require('packer').startup(function(use)
                 local cmp_next = function(fallback)
                     if cmp.visible() then
                         cmp.select_next_item()
-                    elseif luasnip.expand_or_jumpable() then
-                        luasnip.expand_or_jump()
+                    elseif vim.fn['vsnip#available'](1) == 1 then
+                        vim.call('vsnip#expand')
                     elseif has_words_before() then
                         cmp.complete()
                     else
@@ -205,8 +204,8 @@ return require('packer').startup(function(use)
                 local cmp_prev = function(fallback)
                     if cmp.visible() then
                         cmp.select_prev_item()
-                    elseif luasnip.jumpable(-1) then
-                        luasnip.jump(-1)
+                    elseif vim.fn['vsnip#available'](-1) == 1 then
+                        vim.call('vsnip#expand')
                     else
                         fallback()
                     end
@@ -214,7 +213,7 @@ return require('packer').startup(function(use)
                 cmp.setup({
                     snippet = {
                         expand = function(args)
-                            luasnip.lsp_expand(args.body)
+                            vim.fn['vsnip#anonymous'](args.body)
                         end
                     },
                     mapping = cmp.mapping.preset.insert({
@@ -259,7 +258,7 @@ return require('packer').startup(function(use)
                                     '<CMD>lua vim.diagnostic.open_float()<CR>',
                                     {noremap = true})
             vim.api.nvim_set_keymap('n', '<leader>j',
-                                    '<CMD> lua vim.lsp.buf.format()<CR>',
+                                    '<CMD> lua vim.lsp.buf.format({async = true})<CR>',
                                     {noremap = true})
             vim.api.nvim_set_keymap('n', '<leader>rn',
                                     '<CMD>lua vim.lsp.buf.rename()<CR>',
@@ -296,6 +295,12 @@ return require('packer').startup(function(use)
                                     .nvim_get_runtime_file('', true)
                             },
                             telemetry = {enable = false}
+                        }
+                    }
+                elseif (lsp == 'tsserver') then
+                    config.init_options = {
+                        preferences = {
+                            importModuleSpecifierPreference = 'relative'
                         }
                     }
                 end
