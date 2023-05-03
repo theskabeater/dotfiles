@@ -285,27 +285,39 @@ return require('packer').startup(function(use)
                             false
                     end
                 }
-                if (lsp == 'lua_ls') then
-                    config.settings = {
-                        Lua = {
-                            runtime = {version = 'LuaJIT'},
-                            diagnostics = {globals = {'vim'}},
-                            workspace = {
-                                library = vim.api
-                                    .nvim_get_runtime_file('', true)
-                            },
-                            telemetry = {enable = false}
+                local cmd = lspconfig[lsp].document_config.default_config.cmd[1];
+                local configurable = vim.fn.executable(cmd)
+                if configurable == 1 then
+                    if (lsp == 'lua_ls') then
+                        config.settings = {
+                            Lua = {
+                                runtime = {version = 'LuaJIT'},
+                                diagnostics = {globals = {'vim'}},
+                                workspace = {
+                                    library = vim.api.nvim_get_runtime_file('',
+                                                                            true)
+                                },
+                                telemetry = {enable = false}
+                            }
                         }
-                    }
-                elseif (lsp == 'tsserver') then
-                    config.init_options = {
-                        preferences = {
-                            importModuleSpecifierPreference = 'relative'
+                    elseif (lsp == 'tsserver') then
+                        config.init_options = {
+                            preferences = {
+                                importModuleSpecifierPreference = 'relative'
+                            }
                         }
-                    }
+                        configurable = vim.fn.filereadable(vim.fn.getcwd() ..
+                                                               '/tsconfig.json')
+                    elseif (lsp == 'angularls') then
+                        configurable = vim.fn.filereadable(vim.fn.getcwd() ..
+                                                               '/angular.json')
+                    end
+                    if configurable == 1 then
+                        lspconfig[lsp].setup(config)
+                    end
                 end
-                lspconfig[lsp].setup(config)
             end
+
         end
     }
     use {
