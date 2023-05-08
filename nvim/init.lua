@@ -39,6 +39,14 @@ vim.api.nvim_create_autocmd('BufWritePre', {
     pattern = {'*'},
     callback = function() vim.cmd([[:%s/\s\+$//e]]) end
 })
+vim.api.nvim_create_autocmd('VimLeave', {
+    pattern = {'*'},
+    callback = function()
+        if vim.fn.executable('eslint_d') == 1 then
+            vim.cmd('!eslint_d stop')
+        end
+    end
+})
 vim.cmd(
     [[set statusline=%<%f\ %h%m%r%{get(b:,'gitsigns_head','')}%=%-14.(%l,%c%V%)\ %P]])
 local ensure_packer = function()
@@ -123,13 +131,13 @@ return require('packer').startup(function(use)
                     vim.api.nvim_buf_del_keymap(0, '', 'p')
                     vim.api.nvim_buf_set_keymap(0, '', '<Esc>',
                                                 ':normal gq<CR>',
-                                                {noremap = true})
+                                                {noremap = true, silent = true})
                     vim.api.nvim_buf_set_keymap(0, '', '<C-c>',
                                                 ':normal gq<CR>',
-                                                {noremap = true})
+                                                {noremap = true, silent = true})
                     vim.api.nvim_buf_set_keymap(0, '', '<C-[>',
                                                 ':normal gq<CR>',
-                                                {noremap = true})
+                                                {noremap = true, silent = true})
                 end
             })
         end
@@ -357,7 +365,7 @@ return require('packer').startup(function(use)
                                     {noremap = true})
             vim.api.nvim_set_keymap('n', '<leader>fr',
                                     [[<CMD>lua require('telescope.builtin').lsp_references()<CR>]],
-                                    {noremap = true})
+                                    {noremap = true, silent = true})
             vim.api.nvim_set_keymap('n', '<leader>fs',
                                     [[<CMD>lua require('telescope.builtin').lsp_document_symbols()<CR>]],
                                     {noremap = true})
