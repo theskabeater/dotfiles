@@ -124,22 +124,6 @@ return require('packer').startup(function(use)
             vim.api.nvim_exec(
                 [[com! -nargs=? -complete=dir Vexplore leftabove vsplit | silent Dirvish <args>]],
                 false)
-            vim.api.nvim_create_autocmd({'FileType'}, {
-                pattern = {'dirvish'},
-                once = true,
-                callback = function()
-                    vim.api.nvim_buf_del_keymap(0, '', 'p')
-                    vim.api.nvim_buf_set_keymap(0, '', '<Esc>',
-                                                ':normal gq<CR>',
-                                                {noremap = true, silent = true})
-                    vim.api.nvim_buf_set_keymap(0, '', '<C-c>',
-                                                ':normal gq<CR>',
-                                                {noremap = true, silent = true})
-                    vim.api.nvim_buf_set_keymap(0, '', '<C-[>',
-                                                ':normal gq<CR>',
-                                                {noremap = true, silent = true})
-                end
-            })
         end
     }
     use {
@@ -407,17 +391,6 @@ return require('packer').startup(function(use)
         config = function()
             vim.api.nvim_set_keymap('n', '<leader>gs', ':Git<CR>',
                                     {noremap = true})
-            vim.api.nvim_create_autocmd({'FileType'}, {
-                pattern = {'fugitive'},
-                once = true,
-                callback = function()
-                    vim.api.nvim_buf_set_keymap(0, '', '<Esc>',
-                                                ':normal gq<CR>',
-                                                {noremap = true})
-
-                end
-            })
-
         end
     }
     use {'tpope/vim-repeat'}
