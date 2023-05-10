@@ -65,12 +65,6 @@ local ensure_packer = function()
 end
 local packer_bootstrap = ensure_packer()
 return require('packer').startup(function(use)
-    use {
-        'airblade/vim-rooter',
-        config = function()
-            vim.g.rooter_patterns = {'.git', 'package.json', 'angular.json'}
-        end
-    }
     use {'JoosepAlviste/nvim-ts-context-commentstring'}
     use {'elgiano/nvim-treesitter-angular', branch = 'topic/jsx-fix'}
     use {
@@ -82,13 +76,20 @@ return require('packer').startup(function(use)
         requires = {{'nvim-lua/plenary.nvim'}},
         config = function()
             local null_ls = require('null-ls')
-            local source_config = {disabled_filetypes = {'fugitive'}};
+            local source_config = {disabled_filetypes = {'fugitive', 'dirvish'}};
             local unpack = unpack or table.unpack;
             local eslint_d_config = {
                 unpack(source_config),
+                filetypes = {
+                    'javascript', 'javascriptreact', 'json', 'jsonc',
+                    'typescript', 'typescriptreact', 'vue'
+                },
                 condition = function(utils)
+                    if string.match(vim.fn.getcwd(), 'node_modules') then
+                        return false
+                    end
                     return utils.root_has_file({
-                        ".eslintrc.js", ".eslintrc.json", ".eslintrc.cjs"
+                        '.eslintrc.js', '.eslintrc.json', '.eslintrc.cjs'
                     })
                 end
             };
@@ -135,11 +136,11 @@ return require('packer').startup(function(use)
                     noremap = true,
                     ['n ]c'] = {
                         expr = true,
-                        [[&diff ? "]c" : "<CMD>lua require('gitsigns.actions').next_hunk()<CR>"]]
+                        [[&diff ? ']c' : '<CMD>lua require('gitsigns.actions').next_hunk()<CR>']]
                     },
                     ['n [c'] = {
                         expr = true,
-                        [[&diff ? "[c" : "<CMD>lua require('gitsigns.actions').prev_hunk()<CR>"]]
+                        [[&diff ? '[c' : '<CMD>lua require('gitsigns.actions').prev_hunk()<CR>']]
                     },
                     ['n <leader>gr'] = [[<CMD>lua require('gitsigns').reset_hunk()<CR>]],
                     ['v <leader>gr'] = [[<CMD>lua require('gitsigns').reset_hunk({vim.fn.line('.'), vim.fn.line('v')})<CR>]],
