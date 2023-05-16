@@ -23,12 +23,6 @@ vim.o.termguicolors = true
 vim.o.background = 'dark'
 vim.wo.signcolumn = 'yes'
 vim.api.nvim_set_keymap('n', '<C-l>', '<CMD>noh<CR>', {noremap = true})
-vim.api.nvim_create_autocmd('BufEnter', {
-    pattern = {'*'},
-    callback = function()
-        vim.cmd('setlocal formatoptions-=c formatoptions-=r formatoptions-=o')
-    end
-})
 vim.api.nvim_create_autocmd('TextYankPost', {
     pattern = {'*'},
     callback = function()
@@ -63,18 +57,67 @@ local ensure_packer = function()
     end
     return false
 end
+if vim.g.vscode then
+    vim.api.nvim_set_keymap('n', '-',
+                            [[<CMD>call VSCodeNotify('workbench.view.explorer')<CR>]],
+                            {noremap = true})
+    vim.api.nvim_set_keymap('n', '[b', '<CMD>Tabprevious<CR>', {noremap = true})
+    vim.api.nvim_set_keymap('n', ']b', '<CMD>Tabnext<CR>', {noremap = true})
+    vim.api.nvim_set_keymap('n', '<leader>bd', '<CMD>Tabclose<CR>',
+                            {noremap = true})
+    vim.api.nvim_set_keymap('n', '<leader>bo', '<CMD>Tabonly<CR>',
+                            {noremap = true})
+    vim.api.nvim_set_keymap('n', '<C-k>',
+                            [[<CMD>call VSCodeNotify('editor.action.peekDefinition')<CR>]],
+                            {noremap = true})
+    vim.api.nvim_set_keymap('n', '<leader>fb',
+                            [[<CMD>call VSCodeNotify('workbench.action.quickOpenPreviousRecentlyUsedEditorInGroup')<CR>]],
+                            {noremap = true})
+    vim.api.nvim_set_keymap('n', '<leader>ff',
+                            [[<CMD>call VSCodeNotify('workbench.action.findInFiles', { 'query': ''})<CR>]],
+                            {noremap = true})
+    vim.api.nvim_set_keymap('n', '<leader>fh', '<CMD>Ex<CR>', {noremap = true})
+    vim.api.nvim_set_keymap('n', '<leader>fp',
+                            [[<CMD>call VSCodeNotify('workbench.action.quickOpen')<CR>]],
+                            {noremap = true})
+    vim.api.nvim_set_keymap('n', '<leader>fr',
+                            [[<CMD>call VSCodeNotify('editor.action.referenceSearch.trigger')<CR>]],
+                            {noremap = true})
+    vim.api.nvim_set_keymap('n', '<leader>fw',
+                            [[<CMD>call VSCodeNotify('workbench.action.findInFiles', { 'query': expand('<cword>')})<CR>]],
+                            {noremap = true})
+    vim.api.nvim_set_keymap('n', '<leader>gs',
+                            [[<CMD>call VSCodeNotify('workbench.scm.repositories.focus')<CR>]],
+                            {noremap = true})
+    vim.api.nvim_set_keymap('n', '<leader>j',
+                            [[<CMD>call VSCodeNotify('editor.action.formatDocument')<CR>]],
+                            {noremap = true})
+else
+    vim.g.loaded_netrw = 1
+    vim.g.loaded_netrwPlugin = 1
+end
 local packer_bootstrap = ensure_packer()
 return require('packer').startup(function(use)
-    use {'JoosepAlviste/nvim-ts-context-commentstring'}
-    use {'elgiano/nvim-treesitter-angular', branch = 'topic/jsx-fix'}
+    use {'JoosepAlviste/nvim-ts-context-commentstring', disable = vim.g.vscode}
+    use {
+        'elgiano/nvim-treesitter-angular',
+        branch = 'topic/jsx-fix',
+        disable = vim.g.vscode
+    }
     use {
         'j-hui/fidget.nvim',
-        config = function() require('fidget').setup({}) end
+        disable = vim.g.vscode,
+        config = function()
+            if vim.g.vscode then return end
+            require('fidget').setup({})
+        end
     }
     use {
         'jose-elias-alvarez/null-ls.nvim',
+        disable = vim.g.vscode,
         requires = {{'nvim-lua/plenary.nvim'}},
         config = function()
+            if vim.g.vscode then return end
             local null_ls = require('null-ls')
             local source_config = {disabled_filetypes = {'fugitive', 'dirvish'}};
             local unpack = unpack or table.unpack;
@@ -105,17 +148,19 @@ return require('packer').startup(function(use)
     }
     use {
         'junegunn/goyo.vim',
+        disable = vim.g.vscode,
         config = function()
+            if vim.g.vscode then return end
             vim.api.nvim_set_keymap('n', '<leader>gg', '<CMD>Goyo<CR>',
                                     {noremap = true})
         end
     }
-    vim.g.loaded_netrw = 1
-    vim.g.loaded_netrwPlugin = 1
     use {
         'justinmk/vim-dirvish',
+        disable = vim.g.vscode,
         requires = {{'roginfarrer/vim-dirvish-dovish'}},
         config = function()
+            if vim.g.vscode then return end
             vim.g.dirvish_mode = [[:sort ,^\v(.*[\/])|\ze,]]
             vim.api.nvim_exec(
                 [[com! -nargs=? -complete=dir Explore Dirvish <args>]], false)
@@ -129,8 +174,10 @@ return require('packer').startup(function(use)
     }
     use {
         'lewis6991/gitsigns.nvim',
+        disable = vim.g.vscode,
         requires = {{'nvim-lua/plenary.nvim'}},
         config = function()
+            if vim.g.vscode then return end
             require('gitsigns').setup({
                 keymaps = {
                     noremap = true,
@@ -152,7 +199,9 @@ return require('packer').startup(function(use)
     }
     use {
         'moll/vim-bbye',
+        disable = vim.g.vscode,
         config = function()
+            if vim.g.vscode then return end
             vim.api.nvim_set_keymap('n', '<leader>bo',
                                     [[<CMD>lua for _, number in ipairs(vim.api.nvim_list_bufs()) do if number ~= vim.api.nvim_get_current_buf() then vim.cmd('Bdelete ' .. number) end end<CR>]],
                                     {noremap = true})
@@ -164,6 +213,7 @@ return require('packer').startup(function(use)
     }
     use {
         'neovim/nvim-lspconfig',
+        disable = vim.g.vscode,
         requires = {
             'hrsh7th/nvim-cmp',
             requires = {
@@ -173,6 +223,7 @@ return require('packer').startup(function(use)
                 {'johnpapa/vscode-angular-snippets'}
             },
             config = function()
+                if vim.g.vscode then return end
                 local cmp = require('cmp')
                 local has_words_before = function()
                     unpack = unpack or table.unpack
@@ -238,6 +289,7 @@ return require('packer').startup(function(use)
             end
         },
         config = function()
+            if vim.g.vscode then return end
             vim.api.nvim_set_keymap('n', '<C-]>',
                                     '<CMD>lua vim.lsp.buf.definition()<CR>',
                                     {noremap = true})
@@ -315,18 +367,40 @@ return require('packer').startup(function(use)
     }
     use {
         'norcalli/nvim-colorizer.lua',
+        disable = vim.g.vscode,
         config = function()
+            if vim.g.vscode then return end
             vim.api.nvim_set_keymap('n', '<leader>hh',
                                     '<CMD>ColorizerToggle<CR>', {noremap = true})
         end
     }
     use {
+        'notjedi/nvim-rooter.lua',
+        disable = vim.g.vscode,
+        config = function()
+            if vim.g.vscode then return end
+            require('nvim-rooter').setup {
+                rooter_patterns = {
+                    '.git', '.hg', '.svn', '.package.json', 'angular.json',
+                    'tsconfig.json', 'project.json'
+                },
+                trigger_patterns = {'*'},
+                manual = false
+            }
+        end
+    }
+    use {
         'nvim-telescope/telescope.nvim',
+        disable = vim.g.vscode,
         requires = {
-            {'nvim-lua/popup.nvim'}, {'nvim-lua/plenary.nvim'},
-            {'nvim-telescope/telescope-fzf-native.nvim', run = 'make'}
+            {'nvim-lua/popup.nvim'}, {'nvim-lua/plenary.nvim'}, {
+                'nvim-telescope/telescope-fzf-native.nvim',
+                disable = vim.g.vscode,
+                run = 'make'
+            }
         },
         config = function()
+            if vim.g.vscode then return end
             local telescope = require('telescope')
             telescope.setup()
             telescope.load_extension('fzf')
@@ -364,8 +438,10 @@ return require('packer').startup(function(use)
     }
     use {
         'nvim-treesitter/nvim-treesitter',
+        disable = vim.g.vscode,
         run = ':TSUpdate',
         config = function()
+            if vim.g.vscode then return end
             require('nvim-treesitter.configs').setup({
                 context_commentstring = {enable = true},
                 ensure_installed = {
@@ -380,16 +456,20 @@ return require('packer').startup(function(use)
     }
     use {
         'ellisonleao/gruvbox.nvim',
+        disable = vim.g.vscode,
         config = function()
+            if vim.g.vscode then return end
             vim.o.background = 'dark'
             require('gruvbox').setup({contrast = 'hard'})
             vim.cmd('colorscheme gruvbox')
         end
     }
-    use {'tpope/vim-commentary'}
+    use {'tpope/vim-commentary', lazy = true, disable = vim.g.vscode}
     use {
         'tpope/vim-fugitive',
+        disable = vim.g.vscode,
         config = function()
+            if vim.g.vscode then return end
             vim.api.nvim_set_keymap('n', '<leader>gs', ':Git<CR>',
                                     {noremap = true})
         end
@@ -397,6 +477,11 @@ return require('packer').startup(function(use)
     use {'tpope/vim-repeat'}
     use {'tpope/vim-sleuth'}
     use {'tpope/vim-surround'}
+    use({
+        'iamcco/markdown-preview.nvim',
+        disable = vim.g.vscode,
+        run = function() vim.fn['mkdp#util#install']() end
+    })
     use {'wbthomason/packer.nvim'}
     if packer_bootstrap then require('packer').sync() end
 end)
