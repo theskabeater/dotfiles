@@ -153,7 +153,7 @@ return require('packer').startup(function(use)
                     map('v', '<leader>gr', function()
                         gs.reset_hunk({vim.fn.line('.'), vim.fn.line('v')})
                     end)
-                    map('n', '<leader>gp', gs.prev_hunk)
+                    map('n', '<leader>gp', gs.preview_hunk)
                 end
             })
         end
@@ -373,6 +373,9 @@ return require('packer').startup(function(use)
                                     [[<CMD>lua require('telescope.builtin').find_files(require('telescope.themes').get_ivy())<CR>]],
                                     {noremap = true})
             vim.api.nvim_set_keymap('n', '<leader>fr',
+                                    [[<CMD>lua require('telescope.builtin').registers(require('telescope.themes').get_ivy())<CR>]],
+                                    {noremap = true})
+            vim.api.nvim_set_keymap('n', '<leader>rr',
                                     [[<CMD>lua require('telescope.builtin').lsp_references(require('telescope.themes').get_ivy())<CR>]],
                                     {noremap = true})
             vim.api.nvim_set_keymap('n', '<leader>fs',
