@@ -37,7 +37,7 @@ vim.api.nvim_create_autocmd('VimLeave', {
     pattern = {'*'},
     callback = function()
         if vim.fn.executable('eslint_d') == 1 then
-            vim.cmd('!eslint_d stop')
+            vim.cmd('!eslint_d stop &')
         end
     end
 })
@@ -372,10 +372,10 @@ return require('packer').startup(function(use)
             vim.api.nvim_set_keymap('n', '<leader>fp',
                                     [[<CMD>lua require('telescope.builtin').find_files(require('telescope.themes').get_ivy())<CR>]],
                                     {noremap = true})
-            vim.api.nvim_set_keymap('n', '<leader>fr',
+            vim.api.nvim_set_keymap('n', '<leader>rr',
                                     [[<CMD>lua require('telescope.builtin').registers(require('telescope.themes').get_ivy())<CR>]],
                                     {noremap = true})
-            vim.api.nvim_set_keymap('n', '<leader>rr',
+            vim.api.nvim_set_keymap('n', '<leader>fr',
                                     [[<CMD>lua require('telescope.builtin').lsp_references(require('telescope.themes').get_ivy())<CR>]],
                                     {noremap = true})
             vim.api.nvim_set_keymap('n', '<leader>fs',
