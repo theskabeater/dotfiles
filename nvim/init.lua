@@ -63,6 +63,7 @@ return require('packer').startup(function(use)
     use {'elgiano/nvim-treesitter-angular', branch = 'topic/jsx-fix'}
     use {
         'j-hui/fidget.nvim',
+        tag = 'legacy',
         config = function() require('fidget').setup({}) end
     }
     use {
