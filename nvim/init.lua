@@ -60,11 +60,7 @@ end
 local packer_bootstrap = ensure_packer()
 return require('packer').startup(function(use)
     use {'elgiano/nvim-treesitter-angular', branch = 'topic/jsx-fix'}
-    use {
-        'j-hui/fidget.nvim',
-        tag = 'legacy',
-        config = function() require('fidget').setup({}) end
-    }
+    use {'j-hui/fidget.nvim'}
     use {
         'jose-elias-alvarez/null-ls.nvim',
         requires = {
