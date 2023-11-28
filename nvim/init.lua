@@ -59,7 +59,6 @@ local ensure_packer = function()
 end
 local packer_bootstrap = ensure_packer()
 return require('packer').startup(function(use)
-    use {'JoosepAlviste/nvim-ts-context-commentstring'}
     use {'elgiano/nvim-treesitter-angular', branch = 'topic/jsx-fix'}
     use {
         'j-hui/fidget.nvim',
@@ -68,10 +67,12 @@ return require('packer').startup(function(use)
     }
     use {
         'jose-elias-alvarez/null-ls.nvim',
-        requires = {{'nvim-lua/plenary.nvim'}},
+        requires = {
+            {'nvim-lua/plenary.nvim'},
+            {'JoosepAlviste/nvim-ts-context-commentstring'}
+        },
         config = function()
-            vim.g.loaded_netrw = 1
-            vim.g.loaded_netrwPlugin = 1
+            vim.g.skip_ts_context_commentstring_module = true
             local null_ls = require('null-ls')
             local source_config = {disabled_filetypes = {'fugitive', 'dirvish'}};
             local unpack = unpack or table.unpack;
@@ -112,6 +113,8 @@ return require('packer').startup(function(use)
         'justinmk/vim-dirvish',
         requires = {{'roginfarrer/vim-dirvish-dovish'}},
         config = function()
+            vim.g.loaded_netrw = 1
+            vim.g.loaded_netrwPlugin = 1
             vim.g.dirvish_mode = [[:sort ,^\v(.*[\/])|\ze,]]
             vim.api.nvim_exec(
                 [[com! -nargs=? -complete=dir Explore Dirvish <args>]], false)
@@ -294,7 +297,15 @@ return require('packer').startup(function(use)
                         config.settings = {
                             Lua = {
                                 runtime = {version = 'LuaJIT'},
-                                diagnostics = {globals = {'vim'}},
+                                diagnostics = {
+                                    globals = {'vim'},
+                                    diagnostics = {
+                                        disable = {
+                                            "missing-fields",
+                                            "incomplete-signature-doc"
+                                        }
+                                    }
+                                },
                                 workspace = {
                                     library = vim.api.nvim_get_runtime_file('',
                                                                             true)
@@ -395,14 +406,17 @@ return require('packer').startup(function(use)
         run = ':TSUpdate',
         config = function()
             require('nvim-treesitter.configs').setup({
-                context_commentstring = {enable = true},
+                auto_install = true,
                 ensure_installed = {
                     'bash', 'css', 'go', 'html', 'javascript', 'json', 'lua',
                     'make', 'markdown', 'python', 'query', 'ruby', 'rust',
                     'scss', 'typescript', 'yaml'
                 },
                 highlight = {enable = true},
-                indent = {enable = false}
+                ignore_install = {},
+                indent = {enable = false},
+                modules = {},
+                sync_install = false
             })
         end
     }
