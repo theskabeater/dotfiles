@@ -236,10 +236,13 @@ require("packer").startup(function(use)
 		branch = "feature-angular",
 		run = ":TSUpdate",
 		requires = {
-			"JoosepAlviste/nvim-ts-context-commentstring",
-			config = function()
-				vim.g.skip_ts_context_commentstring_module = true
-			end,
+			{
+				"JoosepAlviste/nvim-ts-context-commentstring",
+				config = function()
+					vim.g.skip_ts_context_commentstring_module = true
+				end,
+			},
+			"nvim-treesitter/playground",
 		},
 		config = function()
 			require("nvim-treesitter.configs").setup({
@@ -271,7 +274,6 @@ require("packer").startup(function(use)
 			})
 		end,
 	})
-	use("nvim-treesitter/playground")
 	-- git
 	use({
 		"lewis6991/gitsigns.nvim",
