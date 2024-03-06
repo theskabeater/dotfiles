@@ -52,6 +52,14 @@ vim.api.nvim_create_autocmd("VimLeave", {
 	end,
 })
 
+-- set angular filetype
+vim.api.nvim_create_autocmd("BufEnter", {
+	pattern = { "*.component.html" },
+	callback = function()
+		vim.bo.filetype = "angular"
+	end,
+})
+
 -- statusline
 vim.cmd([[set statusline=%<%f\ %h%m%r%{get(b:,'gitsigns_head','')}%=%-14.(%l,%c%V%)\ %P]])
 
@@ -66,6 +74,22 @@ require("packer").startup(function(use)
 			vim.cmd("colorscheme gruvbox")
 		end,
 	})
+
+	-- tsserver
+	use({
+		"pmizio/typescript-tools.nvim",
+		requires = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
+		config = function()
+			require("typescript-tools").setup({
+				settings = {
+					tsserver_file_preferences = {
+						importModuleSpecifierPreference = "relative",
+					},
+				},
+			})
+		end,
+	})
+
 	-- lsp
 	use({
 		"neovim/nvim-lspconfig",
@@ -78,7 +102,6 @@ require("packer").startup(function(use)
 				{ "hrsh7th/cmp-path" },
 				{ "hrsh7th/cmp-vsnip" },
 				{ "hrsh7th/vim-vsnip" },
-				{ "johnpapa/vscode-angular-snippets" },
 			},
 			config = function()
 				local cmp = require("cmp")
@@ -147,7 +170,12 @@ require("packer").startup(function(use)
 			vim.api.nvim_set_keymap("n", "<C-k>", "<CMD>lua vim.lsp.buf.signature_help()<CR>", { noremap = true })
 			vim.api.nvim_set_keymap("n", "<leader>ca", "<CMD>lua vim.lsp.buf.code_action()<CR>", { noremap = true })
 			vim.api.nvim_set_keymap("n", "<leader>dd", "<CMD>lua vim.diagnostic.open_float()<CR>", { noremap = true })
-			vim.api.nvim_set_keymap("n", "<leader>j", '<CMD>lua require("conform").format()<CR>', { noremap = true })
+			vim.api.nvim_set_keymap(
+				"n",
+				"<leader>j",
+				'<CMD>lua require("conform").format({ async = true, lsp_fallback = true})<CR>',
+				{ noremap = true }
+			)
 			vim.api.nvim_set_keymap("n", "<leader>rn", "<CMD>lua vim.lsp.buf.rename()<CR>", { noremap = true })
 			vim.api.nvim_set_keymap("n", "K", "<CMD>lua vim.lsp.buf.hover()<CR>", { noremap = true })
 			vim.api.nvim_set_keymap("n", "[d", "<CMD>lua vim.diagnostic.goto_prev()<CR>", { noremap = true })
@@ -155,23 +183,48 @@ require("packer").startup(function(use)
 			vim.diagnostic.config({ virtual_text = false })
 
 			local lspconfig = require("lspconfig")
-			lspconfig.tsserver.setup({
-				capabilities = require("cmp_nvim_lsp").default_capabilities(),
-				on_attach = function(client)
-					client.config.flags.allow_incremental_sync = true
-					client.server_capabilities.semanticTokensProvider = nil
-					client.server_capabilities.documentFormattingProvider = false
-				end,
-				init_options = { preferences = { importModuleSpecifierPreference = "relative" } },
-			})
+			-- lspconfig.tsserver.setup({
+			-- 	capabilities = require("cmp_nvim_lsp").default_capabilities(),
+			-- 	on_attach = function(client)
+			-- 		client.config.flags.allow_incremental_sync = true
+			-- 		client.server_capabilities.semanticTokensProvider = nil
+			-- 	end,
+			-- })
+
+			-- local project_library_path = "/Users/emoncada/ws/ensemble-project-discovery/ensemble-ui"
+			-- local project_library_path = "/Users/emoncada/src/raasdev/raas-ui/master"
+			-- local global_library_path = "/Users/emoncada/.config/yarn/global"
+			local cmd = {
+				"ngserver",
+				"--stdio",
+				"--tsProbeLocations",
+				"/Users/emoncada/.config/yarn/global/node_modules",
+				"--ngProbeLocations",
+				"/Users/emoncada/.config/yarn/global/node_modules",
+			}
 			lspconfig.angularls.setup({
+				cmd = cmd,
+				on_new_config = function(new_config, new_root_dir)
+					new_config.cmd = cmd
+				end,
 				capabilities = require("cmp_nvim_lsp").default_capabilities(),
+				root_dir = lspconfig.util.root_pattern("angular.json", "project.json"),
+				filetypes = { "typescript", "html", "typescriptreact", "typescript.tsx", "angular" },
 				on_attach = function(client)
 					client.config.flags.allow_incremental_sync = true
 					client.server_capabilities.semanticTokensProvider = nil
-					client.server_capabilities.documentFormattingProvider = false
 				end,
 			})
+		end,
+	})
+	use({
+		"joeveiga/ng.nvim",
+		config = function()
+			local opts = { noremap = true, silent = true }
+			local ng = require("ng")
+			vim.keymap.set("n", "<leader>at", ng.goto_template_for_component, opts)
+			vim.keymap.set("n", "<leader>ac", ng.goto_component_with_template_file, opts)
+			vim.keymap.set("n", "<leader>aT", ng.get_template_tcb, opts)
 		end,
 	})
 	use({
@@ -197,13 +250,7 @@ require("packer").startup(function(use)
 			require("fidget").setup()
 		end,
 	})
-	-- project stuff
-	use({
-		"airblade/vim-rooter",
-		config = function()
-			vim.g.rooter_patterns = { ".git", "tsconfig.json", "angular.json", "project.json" }
-		end,
-	})
+
 	-- formatters
 	use({
 		"stevearc/conform.nvim",
@@ -211,8 +258,11 @@ require("packer").startup(function(use)
 			require("conform").setup({
 				formatters_by_ft = {
 					lua = { "stylua" },
+					scss = { "prettierd" },
+					html = { "prettierd" },
+					angular = { "prettierd" },
 					typescript = { "eslint_d" },
-					javascript = { "eslint_d" },
+					javascript = { "prettierd" },
 				},
 			})
 		end,
@@ -230,16 +280,22 @@ require("packer").startup(function(use)
 			vim.api.nvim_exec([[com! -nargs=? -complete=dir Vexplore leftabove vsplit | silent Dirvish <args>]], false)
 		end,
 	})
+	use("derektata/lorem.nvim")
 	-- tree-sitter
 	use({
-		"dlvandenberg/nvim-treesitter",
-		branch = "feature-angular",
+		"nvim-treesitter/nvim-treesitter",
 		run = ":TSUpdate",
 		requires = {
 			{
 				"JoosepAlviste/nvim-ts-context-commentstring",
 				config = function()
 					vim.g.skip_ts_context_commentstring_module = true
+
+					require("ts_context_commentstring").setup({
+						languages = {
+							angular = "<!-- %s -->",
+						},
+					})
 				end,
 			},
 			"nvim-treesitter/playground",
@@ -247,10 +303,13 @@ require("packer").startup(function(use)
 		config = function()
 			require("nvim-treesitter.configs").setup({
 				ensure_installed = {
+					"angular",
 					"bash",
 					"css",
 					"go",
+					"graphql",
 					"html",
+					"java",
 					"javascript",
 					"json",
 					"lua",
@@ -338,7 +397,12 @@ require("packer").startup(function(use)
 		},
 		config = function()
 			local telescope = require("telescope")
-			telescope.setup({ extensions = { ["ui-select"] = require("telescope.themes").get_cursor() } })
+			telescope.setup({
+				defaults = { path_display = {
+					"truncate",
+				} },
+				extensions = { ["ui-select"] = require("telescope.themes").get_cursor() },
+			})
 			telescope.load_extension("fzf")
 			telescope.load_extension("ui-select")
 			vim.api.nvim_set_keymap(

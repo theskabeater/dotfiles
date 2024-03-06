@@ -2,4 +2,5 @@
 plugged
 packer_compiled.vim
 packer_compiled.lua
-.DS_Store
+nvim-chad/lazy-lock.json
+**/.DS_Store
