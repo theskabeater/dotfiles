@@ -19,20 +19,21 @@ local plugins = {
 		"williamboman/mason.nvim",
 		opts = overrides.mason,
 	},
-
 	{
 		"nvim-treesitter/nvim-treesitter",
 		opts = overrides.treesitter,
 	},
-
 	{
 		"nvim-tree/nvim-tree.lua",
 		opts = overrides.nvimtree,
 	},
-
 	{
 		"nvim-telescope/telescope.nvim",
 		opts = overrides.telescope,
+	},
+	{
+		"NvChad/nvterm",
+		opts = overrides.nvterm,
 	},
 	{
 		"stevearc/conform.nvim",
