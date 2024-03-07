@@ -227,6 +227,29 @@ M.nvterm = {
   },
 }
 
+M.ngnvim = {
+  n = {
+    ["<leader>ac"] = {
+      function()
+        require("ng").goto_component_with_template_file()
+      end,
+      "Goto template for component under cursor"
+    },
+    ["<leader>at"] = {
+      function()
+        require("ng").goto_template_for_component()
+      end,
+      "Go to component(s) for template"
+    },
+    ["<leader>aT"] = {
+      function()
+        require("ng").get_template_tcb()
+      end,
+      "Display template typecheck block"
+    }
+  }
+}
+
 -- more keybinds!
 
 return M
