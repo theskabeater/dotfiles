@@ -59,6 +59,7 @@ local plugins = {
 	},
 	{
 		"tpope/vim-fugitive",
+		cmd = "Git",
 	},
 	{
 		"pmizio/typescript-tools.nvim",
