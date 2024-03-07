@@ -23,26 +23,16 @@ M.treesitter = {
 		"vimdoc",
 		"yaml",
 	},
-	indent = {
-		enable = true,
-		-- disable = {
-		--   "python"
-		-- },
-	},
 }
 
 M.mason = {
 	ensure_installed = {
-		-- lua stuff
 		"lua-language-server",
 		"stylua",
-
-		-- web dev stuff
 		"angular-language-server@16.1.4",
 	},
 }
 
--- git support in nvimtree
 M.nvimtree = {
 	git = {
 		enable = true,
@@ -59,6 +49,9 @@ M.nvimtree = {
 }
 
 M.telescope = {
+	defaults = {
+		path_display = { "smart" },
+	},
 	pickers = {
 		buffers = {
 			theme = "ivy",
