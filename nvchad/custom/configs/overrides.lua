@@ -38,7 +38,6 @@ M.mason = {
 		"stylua",
 
 		-- web dev stuff
-		"typescript-language-server",
 		"angular-language-server@16.1.4",
 	},
 }

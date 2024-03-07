@@ -60,7 +60,11 @@ local plugins = {
 	},
 	{
 		"tpope/vim-fugitive",
-		cmd = "Git",
+	},
+	{
+		"pmizio/typescript-tools.nvim",
+		opts = { tsserver_path = "$HOME/.config/yarn/global/node_modules/typescript/lib/tsserver.js" },
+		ft = { "typescript" },
 	},
 
 	-- To make a plugin not be loaded

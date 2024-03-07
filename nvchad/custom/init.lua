@@ -1,12 +1,6 @@
 local autocmd = vim.api.nvim_create_autocmd
 
--- Auto resize panes when resizing nvim window
--- autocmd("VimResized", {
---   pattern = "*",
---   command = "tabdo wincmd =",
--- })
-
--- Highlight yanks
+--- Highlight yanks
 autocmd("TextYankPost", {
 	pattern = { "*" },
 	callback = function()
@@ -40,5 +34,9 @@ vim.api.nvim_create_autocmd("BufEnter", {
 	end,
 })
 
--- Cursorline hack because NVChad
-autocmd("VimEnter", { pattern = { "*" }, command = "highlight link Cursorline CursorColumn" })
+for _, group in ipairs(vim.fn.getcompletion("@lsp", "highlight")) do
+	vim.api.nvim_set_hl(0, group, {})
+end
+
+-- Vim global settings
+vim.opt.relativenumber = true
