@@ -130,6 +130,12 @@ M.telescope = {
 			end,
 			"LSP document symbols",
 		},
+		["<leader>fw"] = {
+			function()
+				require("telescope.builtin").grep_string()
+			end,
+			"LSP live_grep word under cursor",
+		},
 		["<leader>f/"] = {
 			function()
 				require("telescope.builtin").current_buffer_fuzzy_find()
