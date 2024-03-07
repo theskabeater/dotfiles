@@ -8,6 +8,7 @@ M.disabled = {
     ["<A-h>"] = "",
     ["<A-i>"] = "",
     ["<A-v>"] = "",
+    ["<C-c>"] = "",
     ["<C-n>"] = "",
     ["<C-h>"] = "",
     ["<C-j>"] = "",
@@ -195,6 +196,20 @@ M.nvimtree = {
         end
       end,
       "Open nvimtree if closed, focus nvimtree if open",
+    },
+    ["<C-c>"] = {
+      function()
+        local bufname = vim.api.nvim_buf_get_name(0)
+        if bufname then
+          if string.find(bufname, "NvimTree") then
+            local api = require "nvim-tree.api"
+            api.tree.close()
+          elseif string.find(bufname, "fugitive") then
+            vim.cmd("normal gq")
+          end
+        end
+      end,
+      "Close nvimtree and vim-fugitive when focused",
     },
     ["<Esc>"] = {
       function()
