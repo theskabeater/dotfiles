@@ -26,6 +26,7 @@ M.disabled = {
 		["<leader>fm"] = "",
 		["<leader>fw"] = "",
 		["<leader>fz"] = "",
+		["<leader>lf"] = "",
 		["<leader>ph"] = "",
 		["<leader>ra"] = "",
 		["<leader>rh"] = "",
@@ -154,9 +155,9 @@ M.lspconfig = {
 		},
 		["<leader>dd"] = {
 			function()
-				require("vim.diagnostic").open_float()
+				require("vim.diagnostic").open_float({ border = "rounded" })
 			end,
-			"LSP diagnostic",
+			"LSP float diagnostic",
 		},
 		["<leader>rn"] = {
 			function()
