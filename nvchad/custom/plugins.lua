@@ -56,7 +56,11 @@ local plugins = {
     end,
   },
 	{
-		"joeveiga/ng.nvim",
+		"joeveiga/ng.nvim"
+	},
+	{
+		"tpope/vim-fugitive",
+    cmd = "Git"
 	},
 
   -- To make a plugin not be loaded

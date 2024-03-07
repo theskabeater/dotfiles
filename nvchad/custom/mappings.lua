@@ -199,12 +199,16 @@ M.nvimtree = {
     ["<Esc>"] = {
       function()
         local bufname = vim.api.nvim_buf_get_name(0)
-        if bufname and string.find(bufname, "NvimTree") then
-          local api = require "nvim-tree.api"
-          api.tree.close()
+        if bufname then
+          if string.find(bufname, "NvimTree") then
+            local api = require "nvim-tree.api"
+            api.tree.close()
+          elseif string.find(bufname, "fugitive") then
+            vim.cmd("normal gq")
+          end
         end
       end,
-      "Close nvimtree when focused",
+      "Close nvimtree and vim-fugitive when focused",
     },
   },
 }
@@ -247,6 +251,23 @@ M.ngnvim = {
         require("ng").get_template_tcb()
       end,
       "Display template typecheck block"
+    }
+  }
+}
+
+M.fugitive = {
+  n = {
+    ["<leader>gs"] = {
+      function ()
+        vim.cmd("Git")
+      end,
+      "Git status"
+    },
+    ["<leader>gb"] = {
+      function ()
+        vim.cmd("Git blame")
+      end,
+      "Git blame"
     }
   }
 }
