@@ -191,9 +191,9 @@ M.nvimtree = {
 			function()
 				local api = require("nvim-tree.api")
 				if not api.tree.is_visible() then
-					api.tree.open({ find_file = true, focus = true })
+					api.tree.open({ focus = true, update_root = true })
 				else
-					api.tree.focus()
+					api.tree.focus({ focus = true, update_root = true })
 				end
 			end,
 			"Open nvimtree if closed, focus nvimtree if open",
