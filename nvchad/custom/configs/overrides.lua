@@ -83,6 +83,9 @@ M.telescope = {
 		registers = {
 			theme = "ivy",
 		},
+		grep_string = {
+			theme = "ivy",
+		},
 		help_tags = {
 			previewer = false,
 			theme = "ivy",
