@@ -16,6 +16,7 @@ M.disabled = {
 		["<C-l>"] = "",
 		["<C-]>"] = "",
 		["<S-Tab>"] = "",
+		["<leader>b"] = "",
 		["<leader>e"] = "",
 		["<leader>h"] = "",
 		["<leader>v"] = "",
@@ -43,9 +44,12 @@ M.general = {
 	n = {
 		["<leader>j"] = {
 			function()
+				if vim.bo.filetype == "typescript" then
+					vim.cmd("TSToolsRemoveUnusedImports")
+				end
 				require("conform").format()
 			end,
-			"Format with conform",
+			"conform.format() and TSToolsRemoveUnusedImports (typescript filetype)",
 		},
 
 		["<C-l>"] = {

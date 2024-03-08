@@ -46,7 +46,7 @@ local plugins = {
 				scss = { "prettierd" },
 				html = { "prettierd" },
 				angular = { "prettierd" },
-				typescript = { "eslint_d" },
+				typescript = { "prettierd" },
 			},
 		},
 	},
