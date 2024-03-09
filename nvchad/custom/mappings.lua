@@ -46,8 +46,11 @@ M.general = {
 			function()
 				if vim.bo.filetype == "typescript" then
 					vim.cmd("TSToolsRemoveUnusedImports")
+					os.execute("sleep 0")
+					require("conform").format()
+				else
+					require("conform").format()
 				end
-				require("conform").format()
 			end,
 			"conform.format() and TSToolsRemoveUnusedImports (typescript filetype)",
 		},

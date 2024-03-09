@@ -7,6 +7,14 @@ local plugins = {
 		"folke/which-key.nvim",
 		enabled = false,
 	},
+	{
+		"NvChad/nvim-colorizer.lua",
+		enabled = false,
+	},
+	{
+		"windwp/nvim-autopairs",
+		enabled = false,
+	},
 	-- Overrides
 	{
 		"neovim/nvim-lspconfig",
@@ -51,6 +59,25 @@ local plugins = {
 		},
 	},
 	-- My plugins
+	{
+		"numToStr/Comment.nvim",
+		dependencies = {
+			{
+				"JoosepAlviste/nvim-ts-context-commentstring",
+				config = function()
+					vim.g.skip_ts_context_commentstring_module = true
+					require("ts_context_commentstring").setup({
+						languages = {
+							angular = "<!-- %s -->",
+						},
+					})
+					require("Comment").setup({
+						pre_hook = require("ts_context_commentstring.integrations.comment_nvim").create_pre_hook(),
+					})
+				end,
+			},
+		},
+	},
 	{
 		"mfussenegger/nvim-lint",
 		ft = { "typescript", "javascript" },
