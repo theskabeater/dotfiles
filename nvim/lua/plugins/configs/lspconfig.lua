@@ -1,15 +1,12 @@
-local capabilities = require("cmp_nvim_lsp").default_capabilities()
-
-local on_init = function(client, _)
-	if client.supports_method("textDocument/semanticTokens") then
-		client.server_capabilities.semanticTokensProvider = nil
-	end
-end
-
+local utils = require("core.utils")
 local lspconfig = require("lspconfig")
+
+require("lspconfig.ui.windows").default_options.border = "rounded"
+
 lspconfig.lua_ls.setup({
-	on_init = on_init,
-	capabilities = capabilities,
+	on_init = utils.on_init,
+	handlers = utils.handlers,
+	capabilities = utils.capabilities(),
 	settings = {
 		Lua = {
 			diagnostics = {
@@ -27,6 +24,7 @@ lspconfig.lua_ls.setup({
 		},
 	},
 })
+
 local angular_project_roots = { "angular.json", "project.json" }
 local angular_project_root = vim.fs.dirname(vim.fs.find(angular_project_roots, { upward = true })[1])
 if angular_project_root then
@@ -39,8 +37,9 @@ if angular_project_root then
 		angular_project_root,
 	}
 	lspconfig.angularls.setup({
-		on_init = on_init,
-		capabilities = capabilities,
+		on_init = utils.on_init,
+		handlers = utils.handlers,
+		capabilities = utils.capabilities(),
 		cmd = angularls_cmd,
 		root_dir = lspconfig.util.root_pattern(angular_project_roots),
 		on_new_config = function(new_config, _)

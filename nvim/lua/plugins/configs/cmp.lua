@@ -9,19 +9,7 @@ cmp.setup.cmdline(":", {
 	sources = cmp.config.sources({ { name = "path" } }, { { name = "cmdline" } }),
 })
 
-local border = function(hl)
-	return {
-		{ "╭", hl },
-		{ "─", hl },
-		{ "╮", hl },
-		{ "│", hl },
-		{ "╯", hl },
-		{ "─", hl },
-		{ "╰", hl },
-		{ "│", hl },
-	}
-end
-
+local utils = require("core.utils")
 return {
 	preselect = cmp.PreselectMode.None,
 
@@ -39,11 +27,11 @@ return {
 	window = {
 		completion = {
 			winhighlight = "Normal:Normal,FloatBorder:FloatBorder,CursorLine:Visual,Search:None",
-			border = border("GruvboxBlueBold"),
+			border = utils.border("FloatBorder"),
 		},
 		documentation = {
 			winhighlight = "Normal:CmpDoc",
-			border = border("GruvboxBlueBold"),
+			border = utils.border("FloatBorder"),
 		},
 	},
 

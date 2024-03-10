@@ -16,6 +16,13 @@ gruvbox.setup({
 			bold = true,
 		},
 		PmenuThumb = { bg = gruvbox.palette.dark1 },
+		NormalFloat = {
+			bg = gruvbox.palette.dark0_hard,
+		},
+		FloatBorder = {
+			fg = gruvbox.palette.bright_blue,
+		},
+		LspInfoBorder = { link = "FloatBorder" },
 	},
 })
 

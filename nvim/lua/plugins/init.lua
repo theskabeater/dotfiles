@@ -1,3 +1,4 @@
+local utils = require("core.utils")
 local plugins = {
 	"nvim-lua/plenary.nvim",
 
@@ -52,7 +53,7 @@ local plugins = {
 					return require("plugins.configs.mason")
 				end,
 				config = function(_, opts)
-					require("mason").setup()
+					require("mason").setup({ ui = utils.ui })
 					require("mason-lspconfig").setup(opts)
 				end,
 			},
@@ -116,8 +117,13 @@ local plugins = {
 	{
 		"pmizio/typescript-tools.nvim",
 		ft = { "javascript", "typescript" },
+		dependencies = { { "neovim/nvim-lspconfig" }, { "hrsh7th/nvim-cmp" } },
 		config = function()
-			require("typescript-tools").setup({})
+			require("typescript-tools").setup({
+				on_init = utils.on_init,
+				handlers = utils.handlers,
+				capabilities = utils.capabilities(),
+			})
 		end,
 	},
 
@@ -204,9 +210,9 @@ local plugins = {
 	},
 }
 require("lazy").setup(plugins, {
+	ui = utils.ui,
 	performance = {
 		rtp = {
-			-- disable some rtp plugins
 			disabled_plugins = {
 				"2html_plugin",
 				"tohtml",
