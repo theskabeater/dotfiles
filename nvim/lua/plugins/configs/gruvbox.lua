@@ -15,6 +15,7 @@ gruvbox.setup({
 			bg = gruvbox.palette.dark0,
 			bold = true,
 		},
+		PmenuThumb = { bg = gruvbox.palette.dark1 },
 	},
 })
 
