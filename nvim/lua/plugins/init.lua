@@ -4,12 +4,8 @@ local plugins = {
 	{
 		"ellisonleao/gruvbox.nvim",
 		lazy = false,
-		opts = function()
-			return require("plugins.configs.others").gruvbox
-		end,
-		config = function(_, opts)
-			require("gruvbox").setup(opts)
-			vim.cmd("colorscheme gruvbox")
+		config = function()
+			require("plugins.configs.gruvbox")
 		end,
 	},
 

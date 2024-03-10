@@ -35,18 +35,6 @@ return {
 		end,
 	},
 
-	gruvbox = {
-		contrast = "hard",
-		overrides = {
-			SignColumn = { link = "LineNr" },
-			DiagnosticSignError = { link = "GruvboxRedBold" },
-			DiagnosticSignOk = { link = "GruvboxGreenBold" },
-			DiagnosticSignHint = { link = "GruvboxPurpleBold" },
-			DiagnosticSignInfo = { link = "GruvboxBoldBold" },
-			DiagnosticSignWarn = { link = "GruvboxYellowBold" },
-		},
-	},
-
 	luasnip = function(opts)
 		require("luasnip").config.set_config(opts)
 
