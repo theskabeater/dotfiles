@@ -28,10 +28,12 @@ return {
 		completion = {
 			winhighlight = "Normal:Normal,FloatBorder:FloatBorder,CursorLine:Visual,Search:None",
 			border = utils.border("FloatBorder"),
+			scrollbar = false,
 		},
 		documentation = {
 			winhighlight = "Normal:CmpDoc",
 			border = utils.border("FloatBorder"),
+			scrollbar = false,
 		},
 	},
 
