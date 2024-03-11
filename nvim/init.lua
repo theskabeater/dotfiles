@@ -48,6 +48,9 @@ vim.api.nvim_create_autocmd("VimLeave", {
 	end,
 })
 
+-- statusline
+vim.cmd([[set statusline=%<%f\ %h%m%r%{get(b:,'gitsigns_head','')}%=%-14.(%l,%c%V%)\ %P]])
+
 -- non-plugin keymaps
 local close_on_esc = function()
 	for _, ft in ipairs({ "fugitive" }) do
@@ -582,9 +585,7 @@ local plugins = {
 
 	{
 		"lewis6991/gitsigns.nvim",
-		cond = function()
-			return vim.fs.find(".git", { upward = true })[1] and true or false
-		end,
+		event = { "BufNewFile", "BufReadPre" },
 		config = function()
 			require("gitsigns").setup({
 				on_attach = function(bufnr)
