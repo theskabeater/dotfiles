@@ -222,13 +222,14 @@ local plugins = {
 
 	{
 		"neovim/nvim-lspconfig",
-		ft = { "angular", "lua", "typescript" },
+		ft = { "angular", "lua", "javascript", "typescript" },
 		cmd = { "LspInfo", "LspInstall", "LspUninstall" },
 		dependencies = {
 			{ "hrsh7th/nvim-cmp" },
 			{
 				"williamboman/mason.nvim",
 				dependencies = { "williamboman/mason-lspconfig.nvim" },
+				cmd = "Mason",
 				config = function()
 					require("mason").setup({ ui = ui })
 					require("mason-lspconfig").setup({
@@ -264,7 +265,7 @@ local plugins = {
 				},
 			})
 
-			local angular_project_roots = { "angular.json", "project.json" }
+			local angular_project_roots = { "angular.json", "nx.json", "project.json" }
 			local angular_project_root = vim.fs.dirname(vim.fs.find(angular_project_roots, { upward = true })[1])
 			if angular_project_root then
 				local angularls_cmd = {
@@ -281,6 +282,7 @@ local plugins = {
 					capabilities = lsp_capabilities(),
 					cmd = angularls_cmd,
 					root_dir = lspconfig.util.root_pattern(angular_project_roots),
+					filetypes = { "angular", "typescript" },
 					on_new_config = function(new_config, _)
 						new_config.cmd = angularls_cmd
 					end,
@@ -313,7 +315,7 @@ local plugins = {
 			},
 			{
 				"L3MON4D3/LuaSnip",
-				dependencies = "rafamadriz/friendly-snippets",
+				dependencies = { "rafamadriz/friendly-snippets", "johnpapa/vscode-angular-snippets" },
 				config = function()
 					require("luasnip").config.set_config({
 						{ history = true, updateevents = "TextChanged,TextChangedI" },
@@ -493,7 +495,7 @@ local plugins = {
 		keys = {
 			{ "<leader>ac", "<CMD>lua require('ng').goto_component_with_template_file()<CR>" },
 			{ "<leader>at", "<CMD>lua require('ng').goto_template_for_component()<CR>" },
-			{ "<leader>aT", "<CMD>lua require('ng').ng.get_template_tcb()<CR>" },
+			{ "<leader>aT", "<CMD>lua require('ng').get_template_tcb()<CR>" },
 		},
 	},
 
