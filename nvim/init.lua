@@ -187,6 +187,7 @@ local plugins = {
 					"css",
 					"go",
 					"graphql",
+					"haskell",
 					"html",
 					"java",
 					"javascript",
@@ -222,7 +223,7 @@ local plugins = {
 
 	{
 		"neovim/nvim-lspconfig",
-		ft = { "angular", "lua", "javascript", "typescript" },
+		ft = { "angular", "haskell", "lua", "javascript", "typescript" },
 		cmd = { "LspInfo", "LspInstall", "LspUninstall" },
 		dependencies = {
 			{ "hrsh7th/nvim-cmp" },
@@ -234,7 +235,7 @@ local plugins = {
 					require("mason").setup({ ui = ui })
 					require("mason-lspconfig").setup({
 						automatic_installation = true,
-						ensure_installed = { "lua_ls", "tsserver", "angularls" },
+						ensure_installed = { "angularls", "lua_ls", "tsserver" },
 					})
 				end,
 			},
@@ -244,26 +245,6 @@ local plugins = {
 
 			require("lspconfig.ui.windows").default_options.border = "rounded"
 			vim.diagnostic.config({ virtual_text = false })
-
-			lspconfig.lua_ls.setup({
-				on_init = lsp_on_init,
-				handlers = lsp_handlers,
-				capabilities = lsp_capabilities(),
-				settings = {
-					Lua = {
-						diagnostics = { globals = { "vim" } },
-						workspace = {
-							library = {
-								[vim.fn.expand("$VIMRUNTIME/lua")] = true,
-								[vim.fn.expand("$VIMRUNTIME/lua/vim/lsp")] = true,
-								[vim.fn.stdpath("data") .. "/lazy/lazy.nvim/lua/lazy"] = true,
-							},
-							maxPreload = 100000,
-							preloadFileSize = 10000,
-						},
-					},
-				},
-			})
 
 			local angular_project_roots = { "angular.json", "nx.json", "project.json" }
 			local angular_project_root = vim.fs.dirname(vim.fs.find(angular_project_roots, { upward = true })[1])
@@ -288,6 +269,34 @@ local plugins = {
 					end,
 				})
 			end
+
+			lspconfig.hls.setup({
+				settings = {
+					haskell = {
+						formattingProvider = "stylish-haskell",
+					},
+				},
+			})
+
+			lspconfig.lua_ls.setup({
+				on_init = lsp_on_init,
+				handlers = lsp_handlers,
+				capabilities = lsp_capabilities(),
+				settings = {
+					Lua = {
+						diagnostics = { globals = { "vim" } },
+						workspace = {
+							library = {
+								[vim.fn.expand("$VIMRUNTIME/lua")] = true,
+								[vim.fn.expand("$VIMRUNTIME/lua/vim/lsp")] = true,
+								[vim.fn.stdpath("data") .. "/lazy/lazy.nvim/lua/lazy"] = true,
+							},
+							maxPreload = 100000,
+							preloadFileSize = 10000,
+						},
+					},
+				},
+			})
 
 			vim.keymap.set("n", "<C-]>", "<CMD>lua vim.lsp.buf.definition()<CR>")
 			vim.keymap.set("n", "<C-k>", "<CMD>lua vim.lsp.buf.signature_help()<CR>")
@@ -441,7 +450,7 @@ local plugins = {
 
 	{
 		"mfussenegger/nvim-lint",
-		ft = { "javascript", "typescript" },
+		ft = { "haskell", "javascript", "typescript" },
 		config = function()
 			local lint = require("lint")
 
@@ -466,12 +475,14 @@ local plugins = {
 		config = function()
 			require("conform").setup({
 				formatters_by_ft = {
+					angular = { "prettierd" },
+					haskell = {},
+					html = { "prettierd" },
+					javascript = { "prettierd" },
+					json = { "prettierd" },
 					lua = { "stylua" },
 					scss = { "prettierd" },
-					html = { "prettierd" },
-					angular = { "prettierd" },
 					typescript = { "eslint_d" },
-					javascript = { "prettierd" },
 				},
 			})
 		end,
