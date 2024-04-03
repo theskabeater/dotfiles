@@ -77,7 +77,6 @@ end
 
 vim.keymap.set("n", "]b", "<CMD>bn<CR>")
 vim.keymap.set("n", "[b", "<CMD>bp<CR>")
-vim.keymap.set("n", "<leader>bd", "<CMD>bd<CR>")
 vim.keymap.set("n", "<leader>bo", close_other_buffers)
 
 -- plugin stuff below, bootstrap lazy
@@ -246,7 +245,7 @@ local plugins = {
 			require("lspconfig.ui.windows").default_options.border = "rounded"
 			vim.diagnostic.config({ virtual_text = false })
 
-			local angular_project_roots = { "angular.json", "nx.json", "project.json" }
+			local angular_project_roots = { "angular.json", "nx.json" }
 			local angular_project_root = vim.fs.dirname(vim.fs.find(angular_project_roots, { upward = true })[1])
 			if angular_project_root then
 				local angularls_cmd = {
@@ -296,6 +295,12 @@ local plugins = {
 						},
 					},
 				},
+			})
+
+			lspconfig.tsserver.setup({
+				on_init = lsp_on_init,
+				handlers = lsp_handlers,
+				capabilities = lsp_capabilities(),
 			})
 
 			vim.keymap.set("n", "<C-]>", "<CMD>lua vim.lsp.buf.definition()<CR>")
@@ -482,7 +487,7 @@ local plugins = {
 					json = { "prettierd" },
 					lua = { "stylua" },
 					scss = { "prettierd" },
-					typescript = { "eslint_d" },
+					typescript = { "prettierd", "eslint_d" },
 				},
 			})
 		end,
@@ -564,6 +569,7 @@ local plugins = {
 		dependencies = { "nvim-tree/nvim-web-devicons" },
 		config = function()
 			require("oil").setup({
+				view_options = { show_hidden = true },
 				keymaps = {
 					["g?"] = "actions.show_help",
 					["<CR>"] = "actions.select",
@@ -580,7 +586,6 @@ local plugins = {
 					["~"] = "actions.tcd",
 					["gs"] = "actions.change_sort",
 					["gx"] = "actions.open_external",
-					["g."] = "actions.toggle_hidden",
 					["g\\"] = "actions.toggle_trash",
 				},
 			})
@@ -635,6 +640,11 @@ local plugins = {
 				end,
 			})
 		end,
+	},
+
+	{
+		"moll/vim-bbye",
+		keys = { { "<leader>bd", "<CMD>Bdelete<CR>", "n" } },
 	},
 }
 require("lazy").setup(plugins, {
