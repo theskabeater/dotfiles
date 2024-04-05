@@ -4,3 +4,4 @@ packer_compiled.vim
 packer_compiled.lua
 lazy-lock.json
 **/.DS_Store
+kitty/*.py

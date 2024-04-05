@@ -175,6 +175,25 @@ local plugins = {
 	},
 
 	{
+		"theskabeater/vim-kitty-navigator",
+		enabled = true,
+		build = "cp *.py $HOME/.config/kitty/",
+		init = function()
+			vim.g.kitty_navigator_no_mappings = 1
+			vim.keymap.set("n", "<C-w>h", "<CMD>KittyNavigateLeft<CR>")
+			vim.keymap.set("n", "<C-w><C-h>", "<cmd>KittyNavigateLeft<CR>")
+			vim.keymap.set("n", "<C-w>j", "<CMD>KittyNavigateDown<CR>")
+			vim.keymap.set("n", "<C-w><C-j>", "<cmd>KittyNavigateDown<CR>")
+			vim.keymap.set("n", "<C-w>k", "<CMD>KittyNavigateUp<CR>")
+			vim.keymap.set("n", "<C-w><C-k>", "<cmd>KittyNavigateUp<CR>")
+			vim.keymap.set("n", "<C-w>l", "<CMD>KittyNavigateRight<CR>")
+			vim.keymap.set("n", "<C-w><C-l>", "<cmd>KittyNavigateRight<CR>")
+			vim.keymap.set("n", "<C-w>w", "<CMD>KittyNavigateNext<CR>")
+			vim.keymap.set("n", "<C-w><C-w>", "<cmd>KittyNavigateNext<CR>")
+		end,
+	},
+
+	{
 		"nvim-treesitter/nvim-treesitter",
 		event = { "BufNewFile", "BufReadPre" },
 		build = ":TSUpdate",
@@ -295,12 +314,6 @@ local plugins = {
 						},
 					},
 				},
-			})
-
-			lspconfig.tsserver.setup({
-				on_init = lsp_on_init,
-				handlers = lsp_handlers,
-				capabilities = lsp_capabilities(),
 			})
 
 			vim.keymap.set("n", "<C-]>", "<CMD>lua vim.lsp.buf.definition()<CR>")
