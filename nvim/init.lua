@@ -205,7 +205,6 @@ local plugins = {
 					"css",
 					"go",
 					"graphql",
-					"haskell",
 					"html",
 					"java",
 					"javascript",
@@ -241,7 +240,7 @@ local plugins = {
 
 	{
 		"neovim/nvim-lspconfig",
-		ft = { "angular", "haskell", "lua", "javascript", "typescript" },
+		ft = { "angular", "lua", "javascript", "typescript" },
 		cmd = { "LspInfo", "LspInstall", "LspUninstall" },
 		dependencies = {
 			{ "hrsh7th/nvim-cmp" },
@@ -288,12 +287,10 @@ local plugins = {
 				})
 			end
 
-			lspconfig.hls.setup({
-				settings = {
-					haskell = {
-						formattingProvider = "stylish-haskell",
-					},
-				},
+			lspconfig.tsserver.setup({
+				on_init = lsp_on_init,
+				handlers = lsp_handlers,
+				capabilities = lsp_capabilities(),
 			})
 
 			lspconfig.lua_ls.setup({
@@ -468,7 +465,7 @@ local plugins = {
 
 	{
 		"mfussenegger/nvim-lint",
-		ft = { "haskell", "javascript", "typescript" },
+		ft = { "javascript", "typescript" },
 		config = function()
 			local lint = require("lint")
 
@@ -494,7 +491,6 @@ local plugins = {
 			require("conform").setup({
 				formatters_by_ft = {
 					angular = { "prettierd" },
-					haskell = {},
 					html = { "prettierd" },
 					javascript = { "prettierd" },
 					json = { "prettierd" },
@@ -502,19 +498,6 @@ local plugins = {
 					scss = { "prettierd" },
 					typescript = { "prettierd", "eslint_d" },
 				},
-			})
-		end,
-	},
-
-	{
-		"pmizio/typescript-tools.nvim",
-		ft = { "javascript", "typescript" },
-		dependencies = { { "neovim/nvim-lspconfig" } },
-		config = function()
-			require("typescript-tools").setup({
-				on_init = lsp_on_init,
-				handlers = lsp_handlers,
-				capabilities = lsp_capabilities(),
 			})
 		end,
 	},
