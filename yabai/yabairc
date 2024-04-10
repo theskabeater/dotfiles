@@ -39,23 +39,23 @@ yabai -m config left_padding                 06
 yabai -m config right_padding                06
 yabai -m config window_gap                   06
 
-yabai -m rule --add app="zoom.us" sticky=on layer=above manage=off
-yabai -m rule --add app="Finder" sticky=on layer=above manage=off
-yabai -m rule --add app="System Preferences" sticky=on layer=above manage=off
-yabai -m rule --add app="Font Book" sticky=on layer=above manage=off
-yabai -m rule --add app="Docker Desktop" sticky=on layer=above manage=off
-yabai -m rule --add app="Calculator" sticky=on layer=above manage=off
-yabai -m rule --add app="Dictionary" sticky=on layer=above manage=off
-yabai -m rule --add app="Preview" sticky=on layer=above manage=off
-yabai -m rule --add app="ColorSync Utility" sticky=on layer=above manage=off
-yabai -m rule --add app="Photos" sticky=on layer=above manage=off
-yabai -m rule --add app="Photo Booth" sticky=on layer=above manage=off
-yabai -m rule --add app="Logi Options" sticky=on layer=above manage=off
-yabai -m rule --add app="Calendar" sticky=on layer=above manage=off
-yabai -m rule --add app="PyCharm" sticky=on layer=above manage=off
-yabai -m rule --add app="QuickTime Player" sticky=on layer=above manage=off
-yabai -m rule --add app="VirtualBox VM" sticky=on layer=above manage=off
-yabai -m rule --add app="VirtualBox" sticky=on layer=above manage=off
+yabai -m rule --add app="zoom.us" manage=off
+yabai -m rule --add app="Finder" manage=off
+yabai -m rule --add app="System Preferences" manage=off
+yabai -m rule --add app="Font Book" manage=off
+yabai -m rule --add app="Docker Desktop" manage=off
+yabai -m rule --add app="Calculator" manage=off
+yabai -m rule --add app="Dictionary" manage=off
+yabai -m rule --add app="Preview" manage=off
+yabai -m rule --add app="ColorSync Utility" manage=off
+yabai -m rule --add app="Photos" manage=off
+yabai -m rule --add app="Photo Booth" manage=off
+yabai -m rule --add app="Logi Options" manage=off
+yabai -m rule --add app="Calendar" manage=off
+yabai -m rule --add app="PyCharm" manage=off
+yabai -m rule --add app="QuickTime Player" manage=off
+yabai -m rule --add app="VirtualBox VM" manage=off
+yabai -m rule --add app="VirtualBox" manage=off
 
 # add the following to the end of your yabairc to have it launch automatically when yabai starts.
 # make sure the limelight binary is added somewhere in your $PATH

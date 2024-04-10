@@ -263,7 +263,7 @@ local plugins = {
 			require("lspconfig.ui.windows").default_options.border = "rounded"
 			vim.diagnostic.config({ virtual_text = false })
 
-			local angular_project_roots = { "nx.json" }
+			local angular_project_roots = { "angular.json", "nx.json" }
 			local angular_project_root = vim.fs.dirname(vim.fs.find(angular_project_roots, { upward = true })[1])
 			if angular_project_root then
 				local angularls_cmd = {
