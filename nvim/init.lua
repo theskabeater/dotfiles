@@ -263,7 +263,7 @@ local plugins = {
 			require("lspconfig.ui.windows").default_options.border = "rounded"
 			vim.diagnostic.config({ virtual_text = false })
 
-			local angular_project_roots = { "angular.json", "nx.json" }
+			local angular_project_roots = { "nx.json" }
 			local angular_project_root = vim.fs.dirname(vim.fs.find(angular_project_roots, { upward = true })[1])
 			if angular_project_root then
 				local angularls_cmd = {
@@ -286,12 +286,6 @@ local plugins = {
 					end,
 				})
 			end
-
-			lspconfig.tsserver.setup({
-				on_init = lsp_on_init,
-				handlers = lsp_handlers,
-				capabilities = lsp_capabilities(),
-			})
 
 			lspconfig.lua_ls.setup({
 				on_init = lsp_on_init,
@@ -321,6 +315,19 @@ local plugins = {
 			vim.keymap.set("n", "K", "<CMD>lua vim.lsp.buf.hover()<CR>")
 			vim.keymap.set("n", "[d", "<CMD>lua vim.diagnostic.goto_prev()<CR>")
 			vim.keymap.set("n", "]d", "<CMD>lua vim.diagnostic.goto_next()<CR>")
+		end,
+	},
+
+	{
+		"pmizio/typescript-tools.nvim",
+		dependencies = { { "neovim/nvim-lspconfig" } },
+		filetypes = { "angular", "typescript" },
+		config = function()
+			require("typescript-tools").setup({
+				on_init = lsp_on_init,
+				handlers = lsp_handlers,
+				capabilities = lsp_capabilities(),
+			})
 		end,
 	},
 
