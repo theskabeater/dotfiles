@@ -138,6 +138,13 @@ local plugins = {
 
 			gruvbox.setup({
 				contrast = "hard",
+				italic = {
+					strings = false,
+					emphasis = false,
+					comments = false,
+					operators = false,
+					folds = false,
+				},
 				overrides = {
 					-- recolor signcolumn so it matches gitsigns
 					SignColumn = { link = "LineNr" },
