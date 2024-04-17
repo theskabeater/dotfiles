@@ -328,12 +328,20 @@ local plugins = {
 	{
 		"pmizio/typescript-tools.nvim",
 		dependencies = { { "neovim/nvim-lspconfig" } },
-		filetypes = { "angular", "typescript" },
+		filetypes = { "typescript" },
 		config = function()
 			require("typescript-tools").setup({
 				on_init = lsp_on_init,
 				handlers = lsp_handlers,
 				capabilities = lsp_capabilities(),
+				settings = {
+					tsserver_file_preferences = {
+						importModuleSpecifierPreference = "relative",
+					},
+					tsserver_format_options = {
+						insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces = false,
+					},
+				},
 			})
 		end,
 	},
