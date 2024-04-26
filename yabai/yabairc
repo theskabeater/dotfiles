@@ -1,69 +1,59 @@
-# the scripting-addition must be loaded manually if
-# you are running yabai on macOS Big Sur. Uncomment
-# the following line to have the injection performed
-# when the config is executed during startup.
-#
-# for this to work you must configure sudo such that
-# it will be able to run the command without password
+#!/bin/bash
 
-sudo yabai --load-sa
-yabai -m signal --add event=dock_did_restart action="sudo yabai --load-sa"
+yabai -m config                              \
+  `# global settings`                        \
+  mouse_follows_focus          off           \
+  focus_follows_mouse          off           \
+  window_placement             second_child  \
+  window_topmost               off           \
+  window_shadow                on            \
+  window_opacity               off           \
+  window_opacity_duration      0.0           \
+  active_window_opacity        1.0           \
+  normal_window_opacity        0.90          \
+  window_border                off           \
+  window_border_width          6             \
+  window_origin_display        focused       \
+  active_window_border_color   0xff775759    \
+  normal_window_border_color   0xff555555    \
+  insert_feedback_color        0xffd75f5f    \
+  split_ratio                  0.50          \
+  auto_balance                 off           \
+  mouse_modifier               ctrl          \
+  mouse_action1                move          \
+  mouse_action2                resize        \
+  mouse_drop_action            swap          \
+  `# general space settings`                 \
+  layout                       bsp           \
+  top_padding                  06            \
+  bottom_padding               06            \
+  left_padding                 06            \
+  right_padding                06            \
+  window_gap                   06
 
-# global settings
-yabai -m config mouse_follows_focus          off
-yabai -m config focus_follows_mouse          off
-yabai -m config window_placement             second_child
-yabai -m config window_topmost               off
-yabai -m config window_shadow                on
-yabai -m config window_opacity               off
-yabai -m config window_opacity_duration      0.0
-yabai -m config active_window_opacity        1.0
-yabai -m config normal_window_opacity        0.90
-yabai -m config window_border                off
-yabai -m config window_border_width          6
-yabai -m config active_window_border_color   0xff775759
-yabai -m config normal_window_border_color   0xff555555
-yabai -m config insert_feedback_color        0xffd75f5f
-yabai -m config split_ratio                  0.50
-yabai -m config auto_balance                 off
-yabai -m config mouse_modifier               ctrl
-yabai -m config mouse_action1                move
-yabai -m config mouse_action2                resize
-yabai -m config mouse_drop_action            swap
-
-# general space settings
-yabai -m config layout                       bsp
-yabai -m config top_padding                  06
-yabai -m config bottom_padding               06
-yabai -m config left_padding                 06
-yabai -m config right_padding                06
-yabai -m config window_gap                   06
-
-yabai -m rule --add app="Calculator" manage=off
-yabai -m rule --add app="Calendar" manage=off
-yabai -m rule --add app="ColorSync Utility" manage=off
-yabai -m rule --add app="Dictionary" manage=off
-yabai -m rule --add app="Docker Desktop" manage=off
-yabai -m rule --add app="Finder" manage=off
-yabai -m rule --add app="Font Book" manage=off
-yabai -m rule --add app="Logi Options" manage=off
-yabai -m rule --add app="Photo Booth" manage=off
-yabai -m rule --add app="Photos" manage=off
-yabai -m rule --add app="Preview" manage=off
-yabai -m rule --add app="PyCharm" manage=off
-yabai -m rule --add app="QuickTime Player" manage=off
-yabai -m rule --add app="Rancher Desktop" manage=off
-yabai -m rule --add app="System Preferences" manage=off
-yabai -m rule --add app="System Settings" manage=off
-yabai -m rule --add app="VirtualBox VM" manage=off
-yabai -m rule --add app="VirtualBox" manage=off
-yabai -m rule --add app="zoom.us" manage=off
-
-# add the following to the end of your yabairc to have it launch automatically when yabai starts.
-# make sure the limelight binary is added somewhere in your $PATH
-
-# kill any existing limelight process if one exists, before we launch a new one
-killall limelight &> /dev/null
-/usr/local/bin/limelight &> /dev/null &
-
+# float apps by default
+FLOAT_APPS=$(cat <<-END
+Activity Monitor
+Calculator
+Calendar
+ColorSync Utility
+Dictionary
+Docker Desktop
+Finder
+Font Book
+Logi Options
+Photo Booth
+Photos
+Preview
+PyCharm
+QuickTime Player
+Rancher Desktop
+System Preferences
+System Settings
+VirtualBox VM
+VirtualBox
+zoom.us
+END)
+APP=$(echo "$FLOAT_APPS" | awk -v d='|' '{s=(NR==1?s:s d)$0}END{print s}')
+yabai -m rule --add app="$APP" manage=off
 echo "yabai configuration loaded.."

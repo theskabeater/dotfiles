@@ -259,7 +259,7 @@ local plugins = {
 					require("mason").setup({ ui = ui })
 					require("mason-lspconfig").setup({
 						automatic_installation = true,
-						ensure_installed = { "angularls", "lua_ls", "tsserver" },
+						ensure_installed = { "angularls", "lua_ls", "pylsp", "tsserver" },
 					})
 				end,
 			},
@@ -293,6 +293,12 @@ local plugins = {
 					end,
 				})
 			end
+
+			lspconfig.pylsp.setup({
+				on_init = lsp_on_init,
+				handlers = lsp_handlers,
+				capabilities = lsp_capabilities(),
+			})
 
 			lspconfig.lua_ls.setup({
 				on_init = lsp_on_init,
@@ -516,9 +522,15 @@ local plugins = {
 					html = { "prettierd" },
 					javascript = { "prettierd" },
 					json = { "prettierd" },
+					python = { "black" },
 					lua = { "stylua" },
 					scss = { "prettierd" },
 					typescript = { "prettierd", "eslint_d" },
+				},
+				formatters = {
+					black = {
+						prepend_args = { "--fast" },
+					},
 				},
 			})
 		end,
@@ -584,6 +596,7 @@ local plugins = {
 	{
 		"stevearc/oil.nvim",
 		keys = { { "-", "<CMD>Oil<CR>" } },
+		event = { "Syntax" },
 		dependencies = { "nvim-tree/nvim-web-devicons" },
 		config = function()
 			require("oil").setup({
