@@ -1,29 +1,22 @@
 #!/bin/bash
 
+# global settings
 yabai -m config                              \
-  `# global settings`                        \
   mouse_follows_focus          off           \
   focus_follows_mouse          off           \
   window_placement             second_child  \
-  window_topmost               off           \
-  window_shadow                on            \
+  window_shadow                off           \
   window_opacity               off           \
-  window_opacity_duration      0.0           \
-  active_window_opacity        1.0           \
   normal_window_opacity        0.90          \
-  window_border                off           \
-  window_border_width          6             \
   window_origin_display        focused       \
-  active_window_border_color   0xff775759    \
-  normal_window_border_color   0xff555555    \
   insert_feedback_color        0xffd75f5f    \
   split_ratio                  0.50          \
-  auto_balance                 off           \
   mouse_modifier               ctrl          \
   mouse_action1                move          \
-  mouse_action2                resize        \
-  mouse_drop_action            swap          \
-  `# general space settings`                 \
+  mouse_drop_action            swap
+
+# general space settings
+yabai -m config                              \
   layout                       bsp           \
   top_padding                  06            \
   bottom_padding               06            \
@@ -50,6 +43,7 @@ QuickTime Player
 Rancher Desktop
 System Preferences
 System Settings
+VIA
 VirtualBox VM
 VirtualBox
 zoom.us
