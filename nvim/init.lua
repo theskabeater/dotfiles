@@ -39,12 +39,18 @@ vim.api.nvim_create_autocmd("BufEnter", {
 	end,
 })
 
+vim.api.nvim_create_autocmd("BufEnter", {
+	pattern = { "Dockerfile.*.master" },
+	callback = function()
+		vim.bo.filetype = "dockerfile"
+	end,
+})
+
 vim.api.nvim_create_autocmd("VimLeave", {
 	pattern = { "*" },
 	callback = function()
-		if vim.fn.executable("eslint_d") == 1 then
-			vim.cmd("!eslint_d stop &")
-		end
+		vim.cmd("!pkill eslint_d &")
+		vim.cmd("!pkill prettierd &")
 	end,
 })
 
@@ -131,45 +137,19 @@ local plugins = {
 	"nvim-lua/plenary.nvim",
 
 	{
-		"ellisonleao/gruvbox.nvim",
+		"scottmckendry/cyberdream.nvim",
 		lazy = false,
+		priority = 1000,
 		config = function()
-			local gruvbox = require("gruvbox")
-
-			gruvbox.setup({
-				contrast = "hard",
-				italic = {
-					strings = false,
-					emphasis = false,
-					comments = false,
-					operators = false,
-					folds = false,
-				},
-				overrides = {
-					-- recolor signcolumn so it matches gitsigns
-					SignColumn = { link = "LineNr" },
-					-- recolor signcolumn diagnostics
-					DiagnosticSignError = { link = "GruvboxRedBold" },
-					DiagnosticSignOk = { link = "GruvboxGreenBold" },
-					DiagnosticSignHint = { link = "GruvboxPurpleBold" },
-					DiagnosticSignInfo = { link = "GruvboxBoldBold" },
-					DiagnosticSignWarn = { link = "GruvboxYellowBold" },
-					-- recolor cursorline
-					CursorLine = { bg = gruvbox.palette.dark0 },
-					-- recolor linenumber on cursorline
-					CursorLineNr = {
-						fg = gruvbox.palette.bright_yellow,
-						bg = gruvbox.palette.dark0,
-						bold = true,
-					},
-					-- recolor float windows
-					NormalFloat = { bg = gruvbox.palette.dark0_hard },
-					FloatBorder = { fg = gruvbox.palette.bright_blue },
-					LspInfoBorder = { link = "FloatBorder" },
-				},
+			require("cyberdream").setup({
+				-- Recommended - see "Configuring" below for more config options
+				transparent = true,
+				italic_comments = true,
+				hide_fillchars = true,
+				borderless_telescope = true,
+				terminal_colors = true,
 			})
-
-			vim.cmd("colorscheme gruvbox")
+			vim.cmd("colorscheme cyberdream") -- set the colorscheme
 		end,
 	},
 
@@ -182,21 +162,33 @@ local plugins = {
 	},
 
 	{
+		"norcalli/nvim-colorizer.lua",
+		keys = {
+			{ "<leader>hh", "<CMD>ColorizerToggle<CR>" },
+		},
+		config = function()
+			require("colorizer").setup()
+		end,
+	},
+
+	{
 		"theskabeater/vim-kitty-navigator",
-		enabled = true,
+		enabled = vim.fn.has("wsl") ~= 1,
 		build = "cp *.py $HOME/.config/kitty/",
 		init = function()
 			vim.g.kitty_navigator_no_mappings = 1
 			vim.keymap.set("n", "<C-w>h", "<CMD>KittyNavigateLeft<CR>")
-			vim.keymap.set("n", "<C-w><C-h>", "<cmd>KittyNavigateLeft<CR>")
+			vim.keymap.set("n", "<C-w><C-h>", "<CMD>KittyNavigateLeft<CR>")
 			vim.keymap.set("n", "<C-w>j", "<CMD>KittyNavigateDown<CR>")
-			vim.keymap.set("n", "<C-w><C-j>", "<cmd>KittyNavigateDown<CR>")
+			vim.keymap.set("n", "<C-w><C-j>", "<CMD>KittyNavigateDown<CR>")
 			vim.keymap.set("n", "<C-w>k", "<CMD>KittyNavigateUp<CR>")
-			vim.keymap.set("n", "<C-w><C-k>", "<cmd>KittyNavigateUp<CR>")
+			vim.keymap.set("n", "<C-w><C-k>", "<CMD>KittyNavigateUp<CR>")
 			vim.keymap.set("n", "<C-w>l", "<CMD>KittyNavigateRight<CR>")
-			vim.keymap.set("n", "<C-w><C-l>", "<cmd>KittyNavigateRight<CR>")
+			vim.keymap.set("n", "<C-w><C-l>", "<CMD>KittyNavigateRight<CR>")
 			vim.keymap.set("n", "<C-w>w", "<CMD>KittyNavigateNext<CR>")
-			vim.keymap.set("n", "<C-w><C-w>", "<cmd>KittyNavigateNext<CR>")
+			vim.keymap.set("n", "<C-w><C-w>", "<CMD>KittyNavigateNext<CR>")
+			vim.keymap.set("n", "<C-w>p", "<CMD>KittyNavigatePrevious<CR>")
+			vim.keymap.set("n", "<C-w><C-p>", "<CMD>KittyNavigatePrevious<CR>")
 		end,
 	},
 
@@ -270,7 +262,7 @@ local plugins = {
 			require("lspconfig.ui.windows").default_options.border = "rounded"
 			vim.diagnostic.config({ virtual_text = false })
 
-			local angular_project_roots = { "angular.json", "nx.json" }
+			local angular_project_roots = { "angular.json", "project.json" }
 			local angular_project_root = vim.fs.dirname(vim.fs.find(angular_project_roots, { upward = true })[1])
 			if angular_project_root then
 				local angularls_cmd = {
@@ -298,6 +290,15 @@ local plugins = {
 				on_init = lsp_on_init,
 				handlers = lsp_handlers,
 				capabilities = lsp_capabilities(),
+				settings = {
+					pylsp = {
+						plugins = {
+							pycodestyle = { enabled = false },
+							flake8 = { enabled = false },
+							yapf = { enabled = false },
+						},
+					},
+				},
 			})
 
 			lspconfig.lua_ls.setup({
@@ -520,9 +521,8 @@ local plugins = {
 				formatters_by_ft = {
 					angular = { "prettierd" },
 					html = { "prettierd" },
-					javascript = { "prettierd" },
+					javascript = { "prettierd", "eslint_d" },
 					json = { "prettierd" },
-					python = { "black" },
 					lua = { "stylua" },
 					scss = { "prettierd" },
 					typescript = { "prettierd", "eslint_d" },
