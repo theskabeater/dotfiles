@@ -143,7 +143,7 @@ local plugins = {
 		config = function()
 			require("cyberdream").setup({
 				-- Recommended - see "Configuring" below for more config options
-				transparent = true,
+				transparent = false,
 				italic_comments = true,
 				hide_fillchars = true,
 				borderless_telescope = true,
@@ -251,7 +251,7 @@ local plugins = {
 					require("mason").setup({ ui = ui })
 					require("mason-lspconfig").setup({
 						automatic_installation = true,
-						ensure_installed = { "angularls", "lua_ls", "pylsp", "tsserver" },
+						ensure_installed = { "angularls", "gopls", "lua_ls", "basedpyright", "ts_ls" },
 					})
 				end,
 			},
@@ -262,7 +262,7 @@ local plugins = {
 			require("lspconfig.ui.windows").default_options.border = "rounded"
 			vim.diagnostic.config({ virtual_text = false })
 
-			local angular_project_roots = { "angular.json", "project.json" }
+			local angular_project_roots = { "angular.json", "project.json", "nx.json" }
 			local angular_project_root = vim.fs.dirname(vim.fs.find(angular_project_roots, { upward = true })[1])
 			if angular_project_root then
 				local angularls_cmd = {
@@ -286,20 +286,23 @@ local plugins = {
 				})
 			end
 
-			lspconfig.pylsp.setup({
-				on_init = lsp_on_init,
-				handlers = lsp_handlers,
-				capabilities = lsp_capabilities(),
-				settings = {
-					pylsp = {
-						plugins = {
-							pycodestyle = { enabled = false },
-							flake8 = { enabled = false },
-							yapf = { enabled = false },
-						},
-					},
-				},
-			})
+			lspconfig.gopls.setup({})
+
+			-- lspconfig.basedpyright.setup({
+			-- 	on_init = lsp_on_init,
+			-- 	handlers = lsp_handlers,
+			-- 	capabilities = lsp_capabilities(),
+			-- 	settings = {
+			-- 		basedpyright = {
+			-- 			analysis = {
+			-- 				diagnosticMode = "openFilesOnly",
+			-- 				inlayHints = {
+			-- 					callArgumentNames = true,
+			-- 				},
+			-- 			},
+			-- 		},
+			-- 	},
+			-- })
 
 			lspconfig.lua_ls.setup({
 				on_init = lsp_on_init,
@@ -526,6 +529,7 @@ local plugins = {
 					lua = { "stylua" },
 					scss = { "prettierd" },
 					typescript = { "prettierd", "eslint_d" },
+					yaml = { "yamlfix" },
 				},
 				formatters = {
 					black = {
@@ -558,6 +562,7 @@ local plugins = {
 			{ "<leader>fd", "<CMD>lua require('telescope.builtin').diagnostics()<CR>" },
 			{ "<leader>ff", "<CMD>lua require('telescope.builtin').live_grep()<CR>" },
 			{ "<leader>fh", "<CMD>lua require('telescope.builtin').help_tags()<CR>" },
+			{ "<leader>fj", "<CMD>lua require('telescope.builtin').jumplist()<CR>" },
 			{ "<leader>fo", "<CMD>lua require('telescope.builtin').oldfiles()<CR>" },
 			{ "<leader>fp", "<CMD>lua require('telescope.builtin').find_files()<CR>" },
 			{ "<leader>fr", "<CMD>lua require('telescope.builtin').lsp_references()<CR>" },
@@ -581,6 +586,7 @@ local plugins = {
 					find_files = { theme = "ivy" },
 					grep_string = { theme = "ivy" },
 					help_tags = { theme = "ivy" },
+					jumplist = { theme = "ivy" },
 					live_grep = { theme = "ivy" },
 					lsp_references = { theme = "ivy" },
 					lsp_symboles = { theme = "ivy" },
@@ -676,6 +682,13 @@ local plugins = {
 	{
 		"moll/vim-bbye",
 		keys = { { "<leader>bd", "<CMD>Bdelete<CR>", "n" } },
+	},
+
+	{
+		"nvzone/typr",
+		dependencies = "nvzone/volt",
+		opts = {},
+		cmd = { "Typr", "TyprStats" },
 	},
 }
 require("lazy").setup(plugins, {
