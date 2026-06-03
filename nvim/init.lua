@@ -3,6 +3,7 @@ vim.g.mapleader = " "
 vim.o.background = "dark"
 vim.o.backup = false
 vim.o.clipboard = "unnamedplus"
+vim.o.list = true
 vim.o.diffopt = "vertical"
 vim.o.expandtab = true
 vim.o.ignorecase = true
@@ -40,7 +41,7 @@ vim.api.nvim_create_autocmd("BufEnter", {
 })
 
 vim.api.nvim_create_autocmd("BufEnter", {
-	pattern = { "Dockerfile.*.master" },
+	pattern = { "Dockerfile.*" },
 	callback = function()
 		vim.bo.filetype = "dockerfile"
 	end,
@@ -99,6 +100,36 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+-- utils
+vim.filetype.add({
+	filename = {
+		["Tiltfile"] = "tiltfile",
+		["Justfile"] = "just",
+		["justfile"] = "just",
+	},
+})
+
+vim.filetype.add({
+	extension = {
+		gotmpl = "gotmpl",
+		just = "just",
+	},
+	pattern = {
+		[".*/templates/.*%.tpl"] = "helm",
+		[".*/templates/.*%.ya?ml"] = "helm",
+		["helmfile.*%.ya?ml"] = "helm",
+		["%.?justfile"] = "just",
+	},
+})
+
+vim.cmd([[
+	augroup ft_group
+		autocmd!
+		autocmd FileType tiltfile setlocal commentstring=#\ %s
+		autocmd FileType helm setlocal commentstring=#\ %s
+	augroup END
+]])
+
 -- add rounded border with highlight group
 local border = function(hl)
 	return {
@@ -130,7 +161,7 @@ local lsp_handlers = {
 
 local lsp_capabilities = function()
 	-- don't call this unless until cmp is loaded
-	require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
+	return require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
 end
 
 local plugins = {
@@ -197,6 +228,15 @@ local plugins = {
 		event = { "BufNewFile", "BufReadPre" },
 		build = ":TSUpdate",
 		config = function()
+			local parser_config = require("nvim-treesitter.parsers").get_parser_configs()
+			parser_config.just = {
+				install_info = {
+					url = "https://github.com/casey/tree-sitter-just", -- Latest source
+					files = { "src/parser.c" },
+					branch = "main",
+				},
+				maintainers = { "IndianBoy42" },
+			}
 			require("nvim-treesitter.configs").setup({
 				ensure_installed = {
 					"angular",
@@ -207,6 +247,7 @@ local plugins = {
 					"html",
 					"java",
 					"javascript",
+					"just",
 					"json",
 					"lua",
 					"make",
@@ -216,13 +257,18 @@ local plugins = {
 					"ruby",
 					"rust",
 					"scss",
+					"starlark",
 					"typescript",
 					"vimdoc",
 					"yaml",
 				},
 				auto_install = true,
-				highlight = { enable = true },
+				highlight = {
+					enable = true,
+					disable = { "bash" },
+				},
 			})
+			vim.treesitter.language.register("starlark", "tiltfile")
 		end,
 	},
 
@@ -232,14 +278,16 @@ local plugins = {
 		dependencies = { { "nvim-treesitter/nvim-treesitter" } },
 		config = function()
 			require("ts_context_commentstring").setup({
-				languages = { angular = "<!-- %s -->" },
+				languages = {
+					angular = "<!-- %s -->",
+				},
 			})
 		end,
 	},
 
 	{
 		"neovim/nvim-lspconfig",
-		ft = { "angular", "lua", "javascript", "typescript" },
+		ft = { "angular", "lua", "javascript", "typescript", "python" },
 		cmd = { "LspInfo", "LspInstall", "LspUninstall" },
 		dependencies = {
 			{ "hrsh7th/nvim-cmp" },
@@ -251,60 +299,61 @@ local plugins = {
 					require("mason").setup({ ui = ui })
 					require("mason-lspconfig").setup({
 						automatic_installation = true,
-						ensure_installed = { "angularls", "gopls", "lua_ls", "basedpyright", "ts_ls" },
+						ensure_installed = { "angularls", "gopls", "lua_ls", "jedi_language_server", "ts_ls" },
 					})
 				end,
 			},
 		},
 		config = function()
-			local lspconfig = require("lspconfig")
-
 			require("lspconfig.ui.windows").default_options.border = "rounded"
 			vim.diagnostic.config({ virtual_text = false })
 
-			local angular_project_roots = { "angular.json", "project.json", "nx.json" }
-			local angular_project_root = vim.fs.dirname(vim.fs.find(angular_project_roots, { upward = true })[1])
-			if angular_project_root then
-				local angularls_cmd = {
-					"ngserver",
-					"--stdio",
-					"--tsProbeLocations",
-					vim.fn.stdpath("data") .. "/mason/packages/typescript-language-server/node_modules",
-					"--ngProbeLocations",
-					angular_project_root,
-				}
-				lspconfig.angularls.setup({
-					on_init = lsp_on_init,
-					handlers = lsp_handlers,
-					capabilities = lsp_capabilities(),
-					cmd = angularls_cmd,
-					root_dir = lspconfig.util.root_pattern(angular_project_roots),
-					filetypes = { "angular", "typescript" },
-					on_new_config = function(new_config, _)
-						new_config.cmd = angularls_cmd
-					end,
-				})
-			end
+			vim.lsp.config("angularls", {
+				on_init = lsp_on_init,
+				handlers = lsp_handlers,
+				capabilities = lsp_capabilities(),
+				filetypes = { "angular", "typescript", "html", "htmlangular" },
+			})
 
-			lspconfig.gopls.setup({})
-
-			-- lspconfig.basedpyright.setup({
-			-- 	on_init = lsp_on_init,
-			-- 	handlers = lsp_handlers,
-			-- 	capabilities = lsp_capabilities(),
-			-- 	settings = {
-			-- 		basedpyright = {
-			-- 			analysis = {
-			-- 				diagnosticMode = "openFilesOnly",
-			-- 				inlayHints = {
-			-- 					callArgumentNames = true,
-			-- 				},
-			-- 			},
-			-- 		},
-			-- 	},
-			-- })
-
-			lspconfig.lua_ls.setup({
+			local jedi_project_roots =
+				{ "pyproject.toml", "setup.py", "setup.cfg", "requirements.txt", "Pipfile", ".git" }
+			local jedi_language_server_cmd = { vim.fn.stdpath("data") .. "/mason/bin/jedi-language-server" }
+			vim.lsp.config("jedi_language_server", {
+				on_init = lsp_on_init,
+				handlers = lsp_handlers,
+				capabilities = lsp_capabilities(),
+				cmd = jedi_language_server_cmd,
+				root_markers = jedi_project_roots,
+				filetypes = { "python" },
+				on_new_config = function(new_config, _)
+					new_config.cmd = jedi_language_server_cmd
+				end,
+			})
+			local angular_ls_path = vim.fn.stdpath("data")
+				.. "/mason/packages/angular-language-server/node_modules/@angular/language-service"
+			vim.lsp.config("ts_ls", {
+				on_init = lsp_on_init,
+				handlers = lsp_handlers,
+				capabilities = lsp_capabilities(),
+				init_options = {
+					plugins = {
+						{
+							name = "@angular/language-service",
+							location = angular_ls_path,
+							languages = { "typescript", "html", "htmlangular" },
+						},
+					},
+					preferences = {
+						importModuleSpecifierPreference = "relative",
+					},
+					formatOptions = {
+						insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces = false,
+					},
+				},
+			})
+			vim.lsp.config("gopls", {})
+			vim.lsp.config("tilt_ls", {})
+			vim.lsp.config("lua_ls", {
 				on_init = lsp_on_init,
 				handlers = lsp_handlers,
 				capabilities = lsp_capabilities(),
@@ -332,27 +381,13 @@ local plugins = {
 			vim.keymap.set("n", "K", "<CMD>lua vim.lsp.buf.hover()<CR>")
 			vim.keymap.set("n", "[d", "<CMD>lua vim.diagnostic.goto_prev()<CR>")
 			vim.keymap.set("n", "]d", "<CMD>lua vim.diagnostic.goto_next()<CR>")
-		end,
-	},
-
-	{
-		"pmizio/typescript-tools.nvim",
-		dependencies = { { "neovim/nvim-lspconfig" } },
-		filetypes = { "typescript" },
-		config = function()
-			require("typescript-tools").setup({
-				on_init = lsp_on_init,
-				handlers = lsp_handlers,
-				capabilities = lsp_capabilities(),
-				settings = {
-					tsserver_file_preferences = {
-						importModuleSpecifierPreference = "relative",
-					},
-					tsserver_format_options = {
-						insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces = false,
-					},
-				},
-			})
+			vim.keymap.set("n", "<leader>oi", function()
+				vim.lsp.buf.execute_command({
+					command = "_typescript.organizeImports",
+					arguments = { vim.api.nvim_buf_get_name(0) },
+					title = "",
+				})
+			end)
 		end,
 	},
 
@@ -520,21 +555,20 @@ local plugins = {
 			{ "<leader>j", '<CMD>lua require("conform").format({ async = true, lsp_fallback = true})<CR>' },
 		},
 		config = function()
+			vim.env.PATH = vim.fn.stdpath("data") .. "/mason/bin" .. ":" .. vim.env.PATH
+
 			require("conform").setup({
 				formatters_by_ft = {
 					angular = { "prettierd" },
 					html = { "prettierd" },
+					htmlangular = { "prettierd" },
 					javascript = { "prettierd", "eslint_d" },
 					json = { "prettierd" },
 					lua = { "stylua" },
+					python = { "ruff", "ruff_organize_imports", "ruff_fix", "ruff_format" },
 					scss = { "prettierd" },
 					typescript = { "prettierd", "eslint_d" },
 					yaml = { "yamlfix" },
-				},
-				formatters = {
-					black = {
-						prepend_args = { "--fast" },
-					},
 				},
 			})
 		end,
@@ -726,3 +760,4 @@ require("lazy").setup(plugins, {
 		},
 	},
 })
+

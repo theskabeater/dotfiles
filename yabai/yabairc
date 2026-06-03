@@ -36,6 +36,8 @@ Docker Desktop
 Finder
 Font Book
 Logi Options
+Microsoft Remote Desktop
+OrbStack
 Photo Booth
 Photos
 Preview
@@ -45,8 +47,12 @@ Rancher Desktop
 System Preferences
 System Settings
 VIA
-VirtualBox VM
 VirtualBox
+VirtualBox VM
+VMware Fusion
+WinDiskWriter
+p4v
+P4V
 zoom.us
 END)
 APP=$(echo "$FLOAT_APPS" | awk -v d='|' '{s=(NR==1?s:s d)$0}END{print s}')
