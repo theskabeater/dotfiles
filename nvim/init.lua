@@ -614,6 +614,7 @@ local plugins = {
       { "<leader>fo", "<CMD>lua require('telescope.builtin').oldfiles()<CR>" },
       { "<leader>fp", "<CMD>lua require('telescope.builtin').find_files()<CR>" },
       { "<leader>fr", "<CMD>lua require('telescope.builtin').lsp_references()<CR>" },
+      { "<leader>fy", "<CMD>lua require('telescope.builtin').registers()<CR>" },
       {
         "<leader>fw",
         "<CMD>lua require('telescope.builtin').grep_string({default_text = vim.fn.expand('<cword>')})<CR>",
@@ -624,9 +625,9 @@ local plugins = {
       local telescope = require("telescope")
 
       telescope.setup({
-        defaults = {
+        defaults = require("telescope.themes").get_ivy({
           path_display = { "truncate" },
-        },
+        }),
         pickers = {
           current_buffer_fuzzy_find = { theme = "ivy", previewer = false },
           buffers = { theme = "ivy" },
@@ -728,66 +729,108 @@ local plugins = {
   },
 
   {
-    "moll/vim-bbye",
-    keys = { { "<leader>bd", "<CMD>Bdelete<CR>", "n" } },
+    "j-hui/fidget.nvim",
   },
 
   {
-    "yetone/avante.nvim",
-    event = "VeryLazy",
-    version = false,
-    build = "make",
+    "olimorris/codecompanion.nvim",
     dependencies = {
       "nvim-lua/plenary.nvim",
-      "MunifTanjim/nui.nvim",
-      "MeanderingProgrammer/render-markdown.nvim",
-      "nvim-tree/nvim-web-devicons",
-      "nvim-telescope/telescope.nvim",
+      "nvim-treesitter/nvim-treesitter",
+      {
+        'MeanderingProgrammer/render-markdown.nvim',
+        ft = { 'codecompanion' },
+      },
+      {
+        'lalitmee/codecompanion-spinners.nvim'
+      },
     },
-
-    opts = {
-      mode = "legacy",
-      provider = "lmstudio",
-      providers = {
-        lmstudio = {
-          __inherited_from = "openai",
-          endpoint = "http://127.0.0.1:1234/v1",
-          api_key_name = "",
-          model = "broadcom/devstral-small-2505",
-          timeout = 30000,
-          extra_request_body = {
-            temperature = 0,
-            max_tokens = 8192,
+    keys = {
+      {
+        "<leader>ac",
+        function()
+          vim.cmd([[exec "normal! \<Esc>"]])
+          vim.cmd("'<,'>CodeCompanionChat Add")
+          local function get_cc_win()
+            for _, win in ipairs(vim.api.nvim_list_wins()) do
+              if vim.api.nvim_win_is_valid(win) then
+                local buf = vim.api.nvim_win_get_buf(win)
+                if vim.bo[buf].filetype == "codecompanion" then
+                  return win, buf
+                end
+              end
+            end
+            return nil, nil
+          end
+          open_win = get_cc_win()
+          if open_win then
+            vim.api.nvim_set_current_win(open_win)
+          end
+        end,
+        mode = "v"
+      },
+      { "<leader>at", "<cmd>CodeCompanionChat Toggle<cr>", mode = "n" },
+      { "<leader>ai", "<cmd>CodeCompanion<cr>",            mode = "n" },
+      { "<leader>aa", "<cmd>CodeCompanionActions<cr>",     mode = "n" },
+    },
+    config = function()
+      require("codecompanion").setup({
+        adapters = {
+          http = {
+            lmstudio = function()
+              local adapter = require("codecompanion.adapters").extend("openai_compatible", {
+                name = "lmstudio",
+                env = {
+                  url = "http://127.0.0.1:1234",
+                  chat_url = "/v1/chat/completions",
+                  models_endpoint = "/v1/models",
+                  api_key = "lm-studio",
+                },
+                schema = {
+                  model = {
+                    default = "devstral-small-2505",
+                  },
+                },
+              })
+              local native_chat_output = adapter.handlers.chat_output
+              adapter.handlers.chat_output = function(self, data, tools)
+                if type(data) == "string" and (data:find("<html") or data:find("<!DOCTYPE")) then
+                  return { status = "error", output = "LM Studio backend crashed or returned HTML." }
+                end
+                return native_chat_output(self, data, tools)
+              end
+              return adapter
+            end,
           },
         },
-      },
-      windows = {
-        width = 55,
-        height = 20,
-        sidebar_header = { rounded = false, align = "left" },
-        selected_files = { height = 10, },
-        input = { height = 10, },
-        ask = { floating = true, },
-      },
-      behaviour = {
-        confirmation_ui_style = "popup",
-        use_cwd_as_project_root = true,
-        auto_check_diagnostics = false,
-        auto_add_current_file = false,
-        auto_suggestions = false,
-      },
-      selection = { hint_display = "none" },
-      selector = { provider = "telescope" },
-      file_selector = { provider = "telescope" },
-    },
+        opts = { chat = { max_lines = 1000 } },
+        display = {
+          chat = { window = { layout = "vertical", position = "right", width = 0.55 } }
+        },
+        interactions = { chat = { opts = { completion_provider = "cmp" } } },
+        strategies = {
+          chat = {
+            adapter = "lmstudio",
+            opts = {
+              auto_submit_errors = true,
+              auto_submit_success = true,
+              completion_opts = { max_tokens = 2048 },
+            },
+            tools = {
+              opts = { auto_submit_errors = true }
+            }
+          },
+          inline = { adapter = "lmstudio" },
+          cmd = { adapter = "lmstudio" },
+        },
+        extensions = { spinner = { opts = { style = "fidget" } } },
+      })
+    end,
   },
 
   {
-    "MeanderingProgrammer/render-markdown.nvim",
-    opts = {
-      file_types = { "markdown", "Avante" },
-    },
-    ft = { "markdown", "Avante" },
+    "moll/vim-bbye",
+    keys = { { "<leader>bd", "<CMD>Bdelete<CR>", "n" } },
   },
 
 }
