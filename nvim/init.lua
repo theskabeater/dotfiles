@@ -301,6 +301,7 @@ local plugins = {
           "dockerfile",
           "go",
           "graphql",
+          "helm",
           "html",
           "java",
           "javascript",
@@ -603,10 +604,6 @@ local plugins = {
           typescript = { format = ts_format },
         },
       })
-
-      -- configured but not enabled, install the server and add it to vim.lsp.enable to use
-      vim.lsp.config("gopls", {})
-      vim.lsp.config("tilt_ls", {})
 
       vim.lsp.enable({ "angularls", "jedi_language_server", "lua_ls", "ts_ls" })
 
