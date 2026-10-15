@@ -614,6 +614,25 @@ local plugins = {
       vim.keymap.set("n", "<C-]>", function() vim.lsp.buf.definition({ on_list = lsp_on_list(false) }) end)
       vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help)
       vim.keymap.set("n", "K", vim.lsp.buf.hover)
+
+      -- scroll an open hover/signature float without focusing it, otherwise page as usual.
+      -- smoothscroll so long wrapped lines scroll by screen row instead of jumping
+      local scroll_float = function(key, rows)
+        return function()
+          local win = vim.b.lsp_floating_preview
+          if win and vim.api.nvim_win_is_valid(win) then
+            vim.wo[win].smoothscroll = true
+            vim.api.nvim_win_call(win, function()
+              vim.cmd.normal({ math.abs(rows) .. vim.keycode(rows > 0 and "<C-e>" or "<C-y>"), bang = true })
+            end)
+          else
+            vim.cmd.normal({ vim.v.count1 .. vim.keycode(key), bang = true })
+          end
+        end
+      end
+      vim.keymap.set("n", "<C-b>", scroll_float("<C-b>", -4))
+      vim.keymap.set("n", "<C-f>", scroll_float("<C-f>", 4))
+
       vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action)
       vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename)
       vim.keymap.set("n", "<leader>dd", vim.diagnostic.open_float)
